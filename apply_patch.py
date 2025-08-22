@@ -1,26 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Single-stage 3-way patch applier with scoped conflict auto-resolution (OURS override mode).
-
-Current strategy (as requested):
-  - Run: git apply --3way --whitespace=fix <patch>
-  - Ignore non-zero return code if an expected token (e.g. 'LoadJSC') is found in an expected file.
-  - Conflict detection limited to files in the patch.
-  - Conflict resolution (OURS override):
-       THEIRS lines form the base.
-       For each OURS line:
-         * Find most similar unused THEIRS line (ratio >= threshold).
-         * Replace that THEIRS line with the OURS line.
-         * If no match >= threshold, keep THEIRS as-is (do NOT append OURS).
-       Resulting block长度 == 原 THEIRS 长度（纯替换，不扩张）。
-       (如果需要在无匹配时追加 OURS，可修改标注的注释。)
-  - After resolution, stage resolved files (git add).
+Single-stage 3-way patch applier with:
+  - In‑memory adaptive patch transformation (legacy Cast<T> -> T::cast) based on repository file probe.
+  - Scoped conflict auto-resolution (OURS override strategy you requested earlier).
+  - Token heuristic for success.
   - No semantic fallback.
 
+Legacy adaptation trigger:
+  If src/diagnostics/objects-printer.cc in the current checkout contains 'FixedArray::cast(*this)',
+  we treat this version as using the older API style and rewrite ONLY added (+) lines from the patch:
+     (v8::internal::)?Cast<Type>(expr)  ->  Type::cast(expr)
+     v8::internal::Cast(                ->  v8::internal::Script::cast(
+  The original patch.diff is NOT modified on disk; transformation is in-memory and piped to git apply.
+
 Exit codes:
-  0 success
-  2 failure (unresolved conflicts OR token missing & git apply failed)
+  0 = success (applied or token present, conflicts resolved)
+  2 = failure (no token & apply failed, or unresolved conflicts)
 
 Arguments:
   --patch
@@ -50,10 +46,19 @@ RE_CONFLICT_START = re.compile(rf'^<<<<<<< {LABEL_OURS}\s*$')
 RE_CONFLICT_MID   = re.compile(r'^=======\s*$')
 RE_CONFLICT_END   = re.compile(rf'^>>>>>>> {LABEL_THEIRS}\s*$')
 
-def run(cmd: str, cwd: str):
-    return subprocess.run(cmd, cwd=cwd, shell=True, text=True,
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# ---------- Subprocess helper ----------
+def run(cmd: str, cwd: str, input_text: str = None):
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        shell=True,
+        text=True,
+        input=input_text,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
 
+# ---------- Patch parsing ----------
 def parse_changed_files(patch_text: str) -> List[str]:
     files = []
     for line in patch_text.splitlines():
@@ -63,6 +68,58 @@ def parse_changed_files(patch_text: str) -> List[str]:
                 files.append(path)
     return files
 
+# ---------- Legacy API detection & transformation ----------
+CAST_TEMPLATE_RE = re.compile(r'\b(?:v8::internal::)?Cast<([A-Za-z_][A-Za-z0-9_:]*)>\s*\(')
+CAST_PREFIX_RE   = re.compile(r'\bv8::internal::Cast\s*\(')
+
+def needs_legacy_transform(root: str) -> bool:
+    probe_path = os.path.join(root, "src/diagnostics/objects-printer.cc")
+    if not os.path.isfile(probe_path):
+        return False
+    try:
+        with open(probe_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        return 'FixedArray::cast(*this)' in content
+    except Exception:
+        return False
+
+def transform_added_line(line: str) -> str:
+    # line starts with '+' (and not '+++ b/')
+    body = line[1:]
+    # Step 1: template Cast<T>
+    def repl_template(m):
+        t = m.group(1)
+        return f'{t}::cast('
+    body2 = CAST_TEMPLATE_RE.sub(repl_template, body)
+    # Step 2: plain v8::internal::Cast(
+    body3 = CAST_PREFIX_RE.sub('v8::internal::Script::cast(', body2)
+    if body3 is not body:
+        return '+' + body3
+    return line
+
+def maybe_transform_patch(root: str, patch_text: str, verbose: bool) -> str:
+    if not needs_legacy_transform(root):
+        if verbose:
+            print("[transform] legacy pattern NOT detected -> no Cast<T> rewrite")
+        return patch_text
+    transformed_lines = []
+    changed_count = 0
+    for line in patch_text.splitlines(keepends=True):
+        if line.startswith('+++ b/'):  # do not modify header lines
+            transformed_lines.append(line)
+            continue
+        if line.startswith('+') and not line.startswith('+++ '):
+            new_line = transform_added_line(line)
+            if new_line != line:
+                changed_count += 1
+            transformed_lines.append(new_line)
+        else:
+            transformed_lines.append(line)
+    if verbose:
+        print(f"[transform] old-api detected -> rewritten + lines: {changed_count}")
+    return ''.join(transformed_lines)
+
+# ---------- Token check ----------
 def file_contains_token(root: str, rel: str, token: str, ci: bool=False) -> bool:
     path = os.path.join(root, rel)
     if not os.path.isfile(path):
@@ -74,6 +131,7 @@ def file_contains_token(root: str, rel: str, token: str, ci: bool=False) -> bool
     except Exception:
         return False
 
+# ---------- Conflict detection ----------
 def detect_conflicts_in_files(root: str, files: List[str]) -> List[str]:
     marker = f"<<<<<<< {LABEL_OURS}"
     conflict = []
@@ -96,6 +154,7 @@ class ConflictStat:
     resolved: int
     leftover: bool
 
+# ---------- Conflict resolution (OURS override into THEIRS base) ----------
 def resolve_conflicts_in_file(root: str, rel: str, threshold: float, verbose=False) -> ConflictStat:
     full = os.path.join(root, rel)
     with open(full, 'r', encoding='utf-8', errors='ignore') as f:
@@ -129,10 +188,8 @@ def resolve_conflicts_in_file(root: str, rel: str, threshold: float, verbose=Fal
             ours_clean = [l.rstrip('\n') for l in ours]
             theirs_clean = [l.rstrip('\n') for l in theirs]
 
-            # OURS override:
-            # Base: result = copy of theirs_clean
             result = list(theirs_clean)
-            used = [False] * len(theirs_clean)  # track which THEIRS lines already replaced (to avoid double replace)
+            used = [False] * len(theirs_clean)
 
             for o_line in ours_clean:
                 best_idx = -1
@@ -145,18 +202,14 @@ def resolve_conflicts_in_file(root: str, rel: str, threshold: float, verbose=Fal
                         best_ratio = ratio
                         best_idx = ti
                 if best_idx != -1 and best_ratio >= threshold:
-                    # Replace that THEIRS line with OURS line
                     old_line = result[best_idx]
                     result[best_idx] = o_line
                     used[best_idx] = True
                     if verbose:
                         print(f"[conflict:{rel}] override theirs idx={best_idx} ratio={best_ratio:.2f}\n  OLD: {old_line!r}\n  NEW: {o_line!r}")
                 else:
-                    # 未匹配到足够相似的：保持原 THEIRS（不添加 ours）
                     if verbose:
                         print(f"[conflict:{rel}] keep theirs (no match >= {threshold}) ours_line={o_line!r}")
-                    # 如果你想把未匹配的 ours 行追加，请取消下面注释：
-                    # result.append(o_line)
 
             for line_text in result:
                 if not line_text.endswith('\n'):
@@ -190,6 +243,7 @@ def auto_resolve_conflicts(root: str, files: List[str], threshold: float, verbos
         stats.append(stat)
     return stats
 
+# ---------- Main ----------
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--patch', required=True, help='Unified diff patch file')
@@ -211,14 +265,17 @@ def main():
         return 2
 
     with open(patch_path, 'r', encoding='utf-8', errors='ignore') as f:
-        patch_text = f.read()
+        original_patch_text = f.read()
 
-    changed_files = parse_changed_files(patch_text)
+    # In‑memory adaptive transform (only + lines) if legacy API detected
+    patch_text = maybe_transform_patch(root, original_patch_text, args.verbose)
+
+    changed_files = parse_changed_files(original_patch_text)  # use original list (paths unaffected)
     if args.verbose:
         print(f"[info] Changed files ({len(changed_files)}): {changed_files}")
 
-    # 3-way apply
-    proc = run(f"git apply --3way --whitespace=fix {patch_path}", cwd=root)
+    # 3-way apply via stdin
+    proc = run("git apply --3way --whitespace=fix -", cwd=root, input_text=patch_text)
     if args.verbose:
         print("[git] return code:", proc.returncode)
         if proc.stdout.strip():
@@ -226,6 +283,7 @@ def main():
         if proc.stderr.strip():
             print("[git] stderr:\n", proc.stderr)
 
+    # Token heuristic
     token_found = file_contains_token(root, args.expect_file, args.expect_token,
                                       ci=args.case_insensitive_token)
     if args.verbose:
@@ -233,6 +291,7 @@ def main():
 
     base_success = (proc.returncode == 0) or token_found
 
+    # Conflict detection
     conflict_files = detect_conflicts_in_files(root, changed_files)
     if args.verbose:
         print(f"[info] Conflict files: {conflict_files}")
@@ -244,7 +303,6 @@ def main():
             unresolved = True
         else:
             stats = auto_resolve_conflicts(root, conflict_files, args.similarity_threshold, verbose=args.verbose)
-            # stage resolved (no leftover)
             stage_candidates = [s.file for s in stats if not s.leftover]
             if stage_candidates:
                 add_proc = run("git add " + " ".join(stage_candidates), cwd=root)

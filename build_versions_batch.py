@@ -1,141 +1,185 @@
 #!/usr/bin/env python3
-import json, os, platform, shutil, subprocess, sys, hashlib
+"""
+Batch build script (v8gen-only + per-version backup of out.gn/x64.release).
+
+For each version:
+  - fetch tags, checkout tag
+  - gclient sync -D --no-history && gclient runhooks
+  - remove existing v8/out.gn/x64.release (unless KEEP_WORK_DIR=1)
+  - run: python tools/dev/v8gen.py x64.release -- <args>
+  - ninja -C out.gn/x64.release d8
+  - copy d8 binary to artifacts/d8-<version>-<OS>/
+  - backup directory:
+       out.gn/x64.release  -->  out.gn/version_backups/x64.release.<sanitized_version>
+    (sanitized_version = version with '.' replaced by '_')
+  - optional compression if BACKUP_COMPRESS=1:
+       Linux: tar + zstd => x64.release.<sanitized_version>.tar.zst
+       Windows: zip archive
+    then delete the uncompressed backup directory.
+
+Env vars:
+  ASSIGNED_JSON         JSON array of versions
+  PATCH_FILE_NAME       (default patch.diff)
+  APPLY_SCRIPT_NAME     (default apply_patch.py)
+  BACKUP_BASE           (default: out.gn/version_backups)
+  BACKUP_COMPRESS       "1" to compress backups
+  KEEP_WORK_DIR         "1" to reuse existing x64.release directory (won't delete before rebuild)
+"""
+import json, os, platform, shutil, subprocess, sys
 from pathlib import Path
 from datetime import datetime
 
-EXPECTED_FILES = [
+EXPECTED_FILES = {
     "src/d8/d8.cc",
     "src/d8/d8.h",
     "src/diagnostics/objects-printer.cc",
     "src/objects/string.cc",
     "src/snapshot/code-serializer.cc",
     "src/snapshot/deserializer.cc",
-]
+}
 
-def log(msg):
+def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
 
-def run(cmd, cwd=None, check=True):
+def run(cmd: str, cwd: str = None, check: bool = True) -> int:
     log(f"RUN: {cmd}")
     r = subprocess.run(cmd, cwd=cwd, shell=True)
     if check and r.returncode != 0:
         raise RuntimeError(f"Command failed ({r.returncode}): {cmd}")
     return r.returncode
 
-def read_json_env(name, default):
-    raw = os.environ.get(name, "")
-    if not raw:
-        return default
-    try:
-        val = json.loads(raw)
-        if isinstance(val, list):
-            return val
-    except:
-        pass
-    return default
+def git_diff_files() -> set:
+    out = subprocess.check_output(
+        "git -C v8 diff --name-only", shell=True, text=True, stderr=subprocess.STDOUT
+    )
+    return {l.strip() for l in out.splitlines() if l.strip()}
 
-def file_sha(path: Path):
-    if not path.is_file():
-        return None
-    h = hashlib.sha1()
-    with path.open("rb") as f:
-        h.update(f.read())
-    return h.hexdigest()
+def write_list(path: str, items):
+    with open(path, "w", encoding="utf-8") as f:
+        for it in items:
+            f.write(it + "\n")
 
-def snapshot(root: Path, rels):
-    return {r: file_sha(root / r) for r in rels}
+def copytree(src: Path, dst: Path):
+    if dst.exists():
+        shutil.rmtree(dst)
+    shutil.copytree(src, dst)
 
-def changed_after(root: Path, before: dict):
-    out = []
-    for rel, sha in before.items():
-        new_sha = file_sha(root / rel)
-        if new_sha != sha:
-            out.append(rel)
-    return out
-
-def copy_expected(root: Path, version: str, out_dir: Path):
-    tar_dir = out_dir / f"patched-src-{version}"
-    tar_dir.mkdir(parents=True, exist_ok=True)
-    for rel in EXPECTED_FILES:
-        src = root / rel
-        if src.is_file():
-            target = tar_dir / rel
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, target)
-    return tar_dir
+def compress_backup(path: Path):
+    system = platform.system().lower()
+    if system.startswith("linux"):
+        # tar + zstd
+        tar_name = path.with_suffix(".tar.zst")
+        cmd = f"tar --use-compress-program=zstd -cf {tar_name.name} {path.name}"
+        run(cmd, cwd=str(path.parent), check=True)
+        shutil.rmtree(path, ignore_errors=True)
+        return tar_name
+    else:
+        # Windows / others: zip
+        zip_name = path.with_suffix(".zip")
+        shutil.make_archive(str(path), 'zip', root_dir=str(path))
+        shutil.rmtree(path, ignore_errors=True)
+        return zip_name
 
 def main():
-    versions = read_json_env("ASSIGNED_JSON", [])
+    assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
+    patch_file = os.environ.get("PATCH_FILE_NAME", "patch.diff")
+    apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
+    backup_base = Path(os.environ.get("BACKUP_BASE", "v8/out.gn/version_backups"))
+    compress = os.environ.get("BACKUP_COMPRESS", "0") == "1"
+    keep_work_dir = os.environ.get("KEEP_WORK_DIR", "0") == "1"
+
+    try:
+        versions = json.loads(assigned_json)
+        assert isinstance(versions, list)
+    except Exception:
+        log("ERROR: ASSIGNED_JSON invalid JSON list.")
+        versions = []
+
     if not versions:
-        Path("success_versions.txt").write_text("")
-        Path("failed_versions.txt").write_text("")
+        write_list("success_versions.txt", [])
+        write_list("failed_versions.txt", [])
         log("No versions to process.")
         return 0
 
-    is_windows = platform.system().lower().startswith("win")
-    if is_windows:
-        log("This script is intended for Linux only in this workflow.")
-        return 1
-
+    os_name = "Windows" if platform.system().lower().startswith("win") else "Linux"
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
+    backup_base.mkdir(parents=True, exist_ok=True)
 
     success, failed = [], []
-    v8_root = Path("v8")
 
     for ver in versions:
         log(f"========== START {ver} ==========")
+        sanitized = ver.replace(".", "_")
         try:
-            run("git -C v8 fetch --tags --quiet", check=True)
+            # Ensure tag
+            run("git -C v8 fetch --tags", check=True)
             run(f"git -C v8 checkout {ver}", check=True)
-
-            # 加强：确保至少一定深度，降低 3-way 失败
-            run("git -C v8 fetch --deepen=200 || true", check=False)
-
-            run("gclient sync -D --nohooks", check=True)
+            # Sync + hooks
+            run("gclient sync -D --no-history", check=True)
             run("gclient runhooks", check=True)
 
-            before = snapshot(v8_root, EXPECTED_FILES)
+            work_dir = Path("v8/out.gn/x64.release")
+            if not keep_work_dir:
+                shutil.rmtree(work_dir, ignore_errors=True)
 
             # Apply patch
+            apply_path = Path("v8") / apply_script
+            patch_path = Path("v8") / patch_file
+            if not apply_path.exists():
+                raise RuntimeError(f"Missing apply script {apply_script}")
+            if not patch_path.exists():
+                raise RuntimeError(f"Missing patch file {patch_file}")
+
             rc = subprocess.run(
-                "python3 apply_patch.py --patch patch.diff --report apply_patch_report.txt",
+                f"python3 {apply_script} --patch {patch_file} --verbose --report apply_patch_report.txt",
                 cwd="v8", shell=True).returncode
             if rc != 0:
-                log(f"[PATCH] apply_patch.py rc={rc}")
+                log(f"[PATCH] Failed for {ver}")
                 failed.append(ver)
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            after_changed = changed_after(v8_root, before)
-            if not after_changed:
-                log(f"[PATCH] No actual diff for {ver} (already integrated?) Mark success-noop.")
-            else:
-                log(f"[PATCH] Modified files: {after_changed}")
+            #changed = git_diff_files()
+            #if not (EXPECTED_FILES & changed):
+            #    log(f"[PATCH] No expected file changed for {ver}")
+            #    failed.append(ver)
+            #    run("git -C v8 checkout .", check=False)
+            #    continue
 
-            # v8gen + build
+            # v8gen config
             gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false is_debug=false"
-            run("python tools/dev/v8gen.py x64.release -- " + gn_args, cwd="v8", check=True)
+            run(f"python tools/dev/v8gen.py x64.release -- {gn_args}", cwd="v8", check=True)
+
+            # Build
             run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)
 
-            bin_path = v8_root / "out.gn/x64.release/d8"
-            if not bin_path.exists():
-                log("[BUILD] Missing Linux d8")
+            # Collect artifact
+            bin_name = "d8.exe" if os_name == "Windows" else "d8"
+            built_bin = Path("v8/out.gn/x64.release") / bin_name
+            if not built_bin.exists():
+                log(f"[BUILD] Missing binary for {ver}")
                 failed.append(ver)
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            target_dir = artifacts_dir / f"d8-{ver}-Linux"
+            target_dir = artifacts_dir / f"d8-{ver}-{os_name}"
             target_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(bin_path, target_dir / "d8")
-            rep = v8_root / "apply_patch_report.txt"
-            if rep.exists():
-                shutil.copy2(rep, target_dir / "apply_patch_report.txt")
+            shutil.copy2(built_bin, target_dir / bin_name)
+            report_file = Path("v8/apply_patch_report.txt")
+            if report_file.exists():
+                shutil.copy2(report_file, target_dir / "apply_patch_report.txt")
 
-            # 导出 6 文件
-            copy_expected(v8_root, ver, artifacts_dir)
+            # Backup out.gn/x64.release
+            backup_dir = backup_base / f"x64.release.{sanitized}"
+            log(f"Backing up build directory to {backup_dir}")
+            copytree(work_dir, backup_dir)
 
-            # reset (保留 artifacts)
+            if compress:
+                artifact = compress_backup(backup_dir)
+                log(f"Compressed backup: {artifact}")
+
+            # Reset source modifications (keep backups + artifacts)
             run("git -C v8 checkout .", check=False)
 
             success.append(ver)
@@ -145,8 +189,8 @@ def main():
             failed.append(ver)
             run("git -C v8 checkout .", check=False)
 
-    Path("success_versions.txt").write_text("\n".join(success) + ("\n" if success else ""))
-    Path("failed_versions.txt").write_text("\n".join(failed) + ("\n" if failed else ""))
+    write_list("success_versions.txt", success)
+    write_list("failed_versions.txt", failed)
 
     log("---- SUMMARY ----")
     log(f"Success: {success}")

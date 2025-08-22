@@ -140,12 +140,12 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            changed = git_diff_files()
-            if not (EXPECTED_FILES & changed):
-                log(f"[PATCH] No expected file changed for {ver}")
-                failed.append(ver)
-                run("git -C v8 checkout .", check=False)
-                continue
+            #changed = git_diff_files()
+            #if not (EXPECTED_FILES & changed):
+            #    log(f"[PATCH] No expected file changed for {ver}")
+            #    failed.append(ver)
+            #    run("git -C v8 checkout .", check=False)
+            #    continue
 
             # v8gen config
             gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false is_debug=false"

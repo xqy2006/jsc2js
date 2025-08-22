@@ -1,347 +1,290 @@
 #!/usr/bin/env python3
-import argparse, os, re, sys
-from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
+# -*- coding: utf-8 -*-
+"""
+Single-stage 3-way patch applier with scoped conflict auto-resolution (OURS override mode).
 
-def safe_print(*args, **kwargs):
-    text = " ".join(str(a) for a in args)
-    try:
-        print(text, **kwargs)
-    except UnicodeEncodeError:
-        enc = sys.stdout.encoding or "utf-8"
-        print(text.encode(enc, errors="replace").decode(enc, errors="replace"), **kwargs)
+Current strategy (as requested):
+  - Run: git apply --3way --whitespace=fix <patch>
+  - Ignore non-zero return code if an expected token (e.g. 'LoadJSC') is found in an expected file.
+  - Conflict detection limited to files in the patch.
+  - Conflict resolution (OURS override):
+       THEIRS lines form the base.
+       For each OURS line:
+         * Find most similar unused THEIRS line (ratio >= threshold).
+         * Replace that THEIRS line with the OURS line.
+         * If no match >= threshold, keep THEIRS as-is (do NOT append OURS).
+       Resulting block长度 == 原 THEIRS 长度（纯替换，不扩张）。
+       (如果需要在无匹配时追加 OURS，可修改标注的注释。)
+  - After resolution, stage resolved files (git add).
+  - No semantic fallback.
 
-ANGLE_RE = re.compile(r"<[^>]*>")
-SPACES_RE = re.compile(r"\s+")
-LOCAL_NAME_RE = re.compile(r"Local<(?:Name|String)>")
-COMMENT_PREFIX_RE = re.compile(r"^\s*//\s*")
-FUNC_SIG_RE = re.compile(
-    r"""^\s*(?:static\s+|inline\s+|constexpr\s+|template<.*>\s*)*
-        (?:[\w:<>~]+\s+)*[A-Za-z_][\w:<>]*::?[A-Za-z_][\w:<>]*\s*\([^;{}]*\)\s*(?:const\s*)?(?:\{|$)""",
-    re.VERBOSE,
-)
+Exit codes:
+  0 success
+  2 failure (unresolved conflicts OR token missing & git apply failed)
 
-@dataclass
-class Hunk:
-    header: str
-    raw_lines: List[str] = field(default_factory=list)
-    additions: List[str] = field(default_factory=list)
-    deletions: List[str] = field(default_factory=list)
-    context: List[str] = field(default_factory=list)
+Arguments:
+  --patch
+  --root
+  --report
+  --expect-token
+  --expect-file
+  --similarity-threshold
+  --no-auto-resolve
+  --case-insensitive-token
+  --verbose
+"""
 
-@dataclass
-class FilePatch:
-    path: str
-    hunks: List[Hunk] = field(default_factory=list)
+import argparse
+import difflib
+import os
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
+from typing import List
 
-def normalize_line(line: str) -> str:
-    l = line.rstrip()
-    if COMMENT_PREFIX_RE.match(l):
-        l = COMMENT_PREFIX_RE.sub("", l, count=1)
-    l = ANGLE_RE.sub("<T>", l)
-    l = LOCAL_NAME_RE.sub("Local<T>", l)
-    l = SPACES_RE.sub(" ", l).strip()
-    return l
+LABEL_OURS = "ours"
+LABEL_THEIRS = "theirs"
 
-def is_function_signature(line: str) -> bool:
-    return bool(FUNC_SIG_RE.match(line.strip()))
+RE_CONFLICT_START = re.compile(rf'^<<<<<<< {LABEL_OURS}\s*$')
+RE_CONFLICT_MID   = re.compile(r'^=======\s*$')
+RE_CONFLICT_END   = re.compile(rf'^>>>>>>> {LABEL_THEIRS}\s*$')
 
-def parse_patch(text: str) -> List[FilePatch]:
-    files, current, current_hunk = [], None, None
-    for raw in text.splitlines():
-        if raw.startswith("diff --git"):
-            current = None
-            current_hunk = None
-        elif raw.startswith("+++ b/"):
-            p = raw[6:].strip()
-            current = FilePatch(path=p)
-            files.append(current)
-        elif raw.startswith("@@ "):
-            if current is None: continue
-            current_hunk = Hunk(header=raw.strip())
-            current.hunks.append(current_hunk)
-        else:
-            if current_hunk is None: continue
-            if raw.startswith("+") and not raw.startswith("+++"):
-                current_hunk.raw_lines.append(raw)
-                current_hunk.additions.append(raw[1:])
-            elif raw.startswith("-") and not raw.startswith("---"):
-                current_hunk.raw_lines.append(raw)
-                current_hunk.deletions.append(raw[1:])
-            else:
-                if raw.startswith(" "):
-                    current_hunk.context.append(raw[1:])
-                current_hunk.raw_lines.append(raw)
+def run(cmd: str, cwd: str):
+    return subprocess.run(cmd, cwd=cwd, shell=True, text=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def parse_changed_files(patch_text: str) -> List[str]:
+    files = []
+    for line in patch_text.splitlines():
+        if line.startswith("+++ b/"):
+            path = line[6:].strip()
+            if path != "/dev/null":
+                files.append(path)
     return files
 
-def extract_candidate_function_names(h: Hunk) -> List[str]:
-    cands, pool = [], h.context + h.deletions + h.additions
-    for ln in pool:
-        if is_function_signature(ln):
-            m = re.search(r"([A-Za-z_][\w:]*)\s*\(", ln)
-            if m:
-                cands.append(m.group(1))
-    out, seen = [], set()
-    for c in cands:
-        if c not in seen:
-            seen.add(c); out.append(c)
-    return out
-
-def find_function_region(lines: List[str], name: str) -> Optional[Tuple[int,int]]:
-    nname = normalize_line(name)
-    for i, line in enumerate(lines):
-        if name in line or nname in normalize_line(line):
-            if is_function_signature(line):
-                depth=0; opened=False; j=i
-                while j < len(lines):
-                    for ch in lines[j]:
-                        if ch == "{": depth +=1; opened=True
-                        elif ch == "}":
-                            if opened:
-                                depth -=1
-                                if depth==0: return (i,j)
-                    j+=1
-    return None
-
-def block_already_contains(all_lines: List[str], block: List[str]) -> bool:
-    filt = [l for l in block if l.strip()]
-    if not filt: return True
-    fn = normalize_line(filt[0]); ln = normalize_line(filt[-1])
-    norms = [normalize_line(l) for l in all_lines]
-    return fn in norms and ln in norms
-
-def split_groups(h: Hunk):
-    groups=[]; d=[]; a=[]; mode=None
-    for raw in h.raw_lines:
-        if raw.startswith("-") and not raw.startswith("---"):
-            if mode=="add": groups.append((d,a)); d=[]; a=[]
-            mode="del"; d.append(raw[1:])
-        elif raw.startswith("+") and not raw.startswith("+++"):
-            mode="add"; a.append(raw[1:])
-        else:
-            if d or a: groups.append((d,a)); d=[]; a=[]
-            mode=None
-    if d or a: groups.append((d,a))
-    return groups
-
-def apply_groups_in_func(func_lines: List[str], groups) -> Tuple[List[str], str, bool]:
-    changed=False
-    for (del_block, add_block) in groups:
-        if not del_block and add_block:
-            if block_already_contains(func_lines, add_block): continue
-            insert_pos = len(func_lines)-1
-            for i in range(len(func_lines)-1, -1, -1):
-                if func_lines[i].strip()=="}": insert_pos=i; break
-            func_lines = func_lines[:insert_pos]+add_block+func_lines[insert_pos:]
-            changed=True
-            continue
-        del_norm=[normalize_line(l) for l in del_block if l.strip()]
-        norm_func=[normalize_line(l) for l in func_lines]
-        if not del_norm:
-            if add_block and not block_already_contains(func_lines, add_block):
-                insert_pos=len(func_lines)-1
-                for i in range(len(func_lines)-1,-1,-1):
-                    if func_lines[i].strip()=="}": insert_pos=i; break
-                func_lines=func_lines[:insert_pos]+add_block+func_lines[insert_pos:]
-                changed=True
-            continue
-        # contiguous
-        idx=-1
-        for i in range(len(norm_func)-len(del_norm)+1):
-            if norm_func[i:i+len(del_norm)]==del_norm:
-                idx=i; break
-        if idx>=0:
-            before=func_lines[:idx]; after=func_lines[idx+len(del_norm):]
-            func_lines=before+add_block+after
-            changed=True
-            continue
-        # scattered
-        positions=[]
-        for dn in del_norm:
-            p=next((k for k,x in enumerate(norm_func) if x==dn), None)
-            if p is None: positions=[]; break
-            positions.append(p)
-        if positions:
-            for p in sorted(set(positions), reverse=True):
-                del func_lines[p]
-            ins=min(positions)
-            func_lines=func_lines[:ins]+add_block+func_lines[ins:]
-            changed=True
-            continue
-        if block_already_contains(func_lines, add_block):
-            continue
-        return func_lines, "FAILED_GROUP", False
-    return func_lines, ("MODIFIED" if changed else "NOCHANGE"), True
-
-def file_level_apply(lines: List[str], h: Hunk) -> Tuple[List[str], str]:
-    groups=split_groups(h)
-    cur=lines[:]
-    norm=[normalize_line(l) for l in cur]
-    changed=False
-    for del_block, add_block in groups:
-        if not del_block and add_block:
-            if block_already_contains(cur, add_block): continue
-            # anchor
-            anchor=None
-            for c in reversed(h.context):
-                cn=normalize_line(c)
-                if cn in norm: anchor=cn; break
-            if anchor:
-                ai=next(i for i,x in enumerate(norm) if x==anchor)
-                cur=cur[:ai+1]+add_block+cur[ai+1:]
-            else:
-                if cur and cur[-1].strip(): cur.append("")
-                cur.extend(add_block)
-            norm=[normalize_line(l) for l in cur]
-            changed=True
-            continue
-        # deletion present
-        del_norm=[normalize_line(l) for l in del_block if l.strip()]
-        if not del_norm:
-            if add_block and not block_already_contains(cur, add_block):
-                if cur and cur[-1].strip(): cur.append("")
-                cur.extend(add_block); norm=[normalize_line(l) for l in cur]; changed=True
-            continue
-        # contiguous
-        idx=-1
-        for i in range(len(norm)-len(del_norm)+1):
-            if norm[i:i+len(del_norm)]==del_norm: idx=i; break
-        if idx>=0:
-            cur=cur[:idx]+add_block+cur[idx+len(del_norm):]
-            norm=[normalize_line(l) for l in cur]; changed=True; continue
-        # scattered ordered
-        pos=[]; start=0
-        for dn in del_norm:
-            p=next((j for j in range(start,len(norm)) if norm[j]==dn), None)
-            if p is None: pos=[]; break
-            pos.append(p); start=p+1
-        if pos:
-            first,last=pos[0],pos[-1]
-            cur=cur[:first]+add_block+cur[last+1:]
-            norm=[normalize_line(l) for l in cur]; changed=True; continue
-        if add_block and block_already_contains(cur, add_block):
-            continue
-        return lines, "FAILED"
-    return cur, ("MODIFIED" if changed else "NOCHANGE")
-
-def apply_hunk(file_lines: List[str], h: Hunk, file_path: str, hidx: int, total: int) -> Tuple[List[str], bool, str]:
-    is_add_only = len(h.deletions)==0 and len(h.additions)>0
-    add_func_sigs=[l for l in h.additions if is_function_signature(l)]
-    if is_add_only and add_func_sigs:
-        new=file_lines[:]; changed=False
-        for sig in add_func_sigs:
-            sn=normalize_line(sig)
-            if any(sn==normalize_line(x) for x in new): continue
-            anchor=None
-            for c in reversed(h.context):
-                if normalize_line(c) in [normalize_line(x) for x in new]:
-                    anchor=c; break
-            block=h.additions
-            if block_already_contains(new, block): continue
-            if anchor:
-                ai=next(i for i,x in enumerate(new) if normalize_line(x)==normalize_line(anchor))
-                new=new[:ai+1]+block+new[ai+1:]
-            else:
-                if new and new[-1].strip(): new.append("")
-                new.extend(block)
-            changed=True
-        status="MODIFIED" if changed else "NOCHANGE"
-        return new, True, status
-
-    func_candidates=extract_candidate_function_names(h)
-    if not func_candidates:
-        new,status=file_level_apply(file_lines, h)
-        ok = status!="FAILED"
-        return new, ok, status if ok else "FAILED"
-
-    new_file=file_lines[:]
-    for fn in func_candidates:
-        region=find_function_region(new_file, fn)
-        if not region: continue
-        s,e=region
-        block=new_file[s:e+1]
-        groups=split_groups(h)
-        new_block, status, ok=apply_groups_in_func(block, groups)
-        if ok:
-            if status=="MODIFIED":
-                new_file=new_file[:s]+new_block+new_file[e+1:]
-            return new_file, True, status
-        else:
-            # fallback pure add
-            only_add=all((not d and a) for d,a in groups)
-            if only_add:
-                merged=[]
-                for _,a in groups: merged.extend(a)
-                if not block_already_contains(block, merged):
-                    ip=len(block)-1
-                    for i in range(len(block)-1,-1,-1):
-                        if block[i].strip()=="}": ip=i; break
-                    block=block[:ip]+merged+block[ip:]
-                    new_file=new_file[:s]+block+new_file[e+1:]
-                return new_file, True, "MODIFIED"
-            # try next candidate
-            continue
-    # final fallback
-    new,status=file_level_apply(file_lines, h)
-    ok = status!="FAILED"
-    return new, ok, status if ok else "FAILED"
-
-def apply_file_patch(fp: FilePatch, verbose: bool) -> bool:
-    if not os.path.exists(fp.path):
-        safe_print(f"[WARN] Missing {fp.path}")
+def file_contains_token(root: str, rel: str, token: str, ci: bool=False) -> bool:
+    path = os.path.join(root, rel)
+    if not os.path.isfile(path):
         return False
-    with open(fp.path,"r",encoding="utf-8",errors="ignore") as f:
-        original=f.read().splitlines()
-    current=original
-    total=len(fp.hunks)
-    for i,h in enumerate(fp.hunks,1):
-        new_lines, ok, status=apply_hunk(current,h,fp.path,i,total)
-        if not ok:
-            safe_print(f"[HUNK] file={fp.path} index={i} status=FAILED")
-            return False
-        if verbose or status!="NOCHANGE":
-            safe_print(f"[HUNK] file={fp.path} index={i} status={status}")
-        current=new_lines
-    if current!=original:
-        with open(fp.path,"w",encoding="utf-8") as f:
-            f.write("\n".join(current)+"\n")
-        safe_print(f"[APPLIED] {fp.path}")
-    else:
-        safe_print(f"[NOCHANGE] {fp.path}")
-    return True
+    try:
+        with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        return token.lower() in content.lower() if ci else token in content
+    except Exception:
+        return False
+
+def detect_conflicts_in_files(root: str, files: List[str]) -> List[str]:
+    marker = f"<<<<<<< {LABEL_OURS}"
+    conflict = []
+    for rel in files:
+        full = os.path.join(root, rel)
+        if not os.path.isfile(full):
+            continue
+        try:
+            with open(full, 'r', encoding='utf-8', errors='ignore') as f:
+                if marker in f.read():
+                    conflict.append(rel)
+        except Exception:
+            pass
+    return conflict
+
+@dataclass
+class ConflictStat:
+    file: str
+    blocks: int
+    resolved: int
+    leftover: bool
+
+def resolve_conflicts_in_file(root: str, rel: str, threshold: float, verbose=False) -> ConflictStat:
+    full = os.path.join(root, rel)
+    with open(full, 'r', encoding='utf-8', errors='ignore') as f:
+        lines = f.readlines()
+
+    i = 0
+    n = len(lines)
+    out = []
+    blocks = 0
+    resolved = 0
+
+    while i < n:
+        if RE_CONFLICT_START.match(lines[i]):
+            blocks += 1
+            i += 1
+            ours = []
+            theirs = []
+            while i < n and not RE_CONFLICT_MID.match(lines[i]):
+                ours.append(lines[i]); i += 1
+            if i >= n:
+                out.extend(ours)
+                break
+            i += 1  # skip =======
+            while i < n and not RE_CONFLICT_END.match(lines[i]):
+                theirs.append(lines[i]); i += 1
+            if i >= n:
+                out.extend(ours + theirs)
+                break
+            i += 1  # skip >>>>>> theirs
+
+            ours_clean = [l.rstrip('\n') for l in ours]
+            theirs_clean = [l.rstrip('\n') for l in theirs]
+
+            # OURS override:
+            # Base: result = copy of theirs_clean
+            result = list(theirs_clean)
+            used = [False] * len(theirs_clean)  # track which THEIRS lines already replaced (to avoid double replace)
+
+            for o_line in ours_clean:
+                best_idx = -1
+                best_ratio = 0.0
+                for ti, t_line in enumerate(theirs_clean):
+                    if used[ti]:
+                        continue
+                    ratio = difflib.SequenceMatcher(None, o_line, t_line).ratio()
+                    if ratio > best_ratio:
+                        best_ratio = ratio
+                        best_idx = ti
+                if best_idx != -1 and best_ratio >= threshold:
+                    # Replace that THEIRS line with OURS line
+                    old_line = result[best_idx]
+                    result[best_idx] = o_line
+                    used[best_idx] = True
+                    if verbose:
+                        print(f"[conflict:{rel}] override theirs idx={best_idx} ratio={best_ratio:.2f}\n  OLD: {old_line!r}\n  NEW: {o_line!r}")
+                else:
+                    # 未匹配到足够相似的：保持原 THEIRS（不添加 ours）
+                    if verbose:
+                        print(f"[conflict:{rel}] keep theirs (no match >= {threshold}) ours_line={o_line!r}")
+                    # 如果你想把未匹配的 ours 行追加，请取消下面注释：
+                    # result.append(o_line)
+
+            for line_text in result:
+                if not line_text.endswith('\n'):
+                    line_text += '\n'
+                out.append(line_text)
+            resolved += 1
+        else:
+            out.append(lines[i])
+            i += 1
+
+    with open(full, 'w', encoding='utf-8') as f:
+        f.writelines(out)
+
+    leftover = False
+    with open(full, 'r', encoding='utf-8', errors='ignore') as f:
+        if f"<<<<<<< {LABEL_OURS}" in f.read():
+            leftover = True
+
+    return ConflictStat(rel, blocks, resolved, leftover)
+
+def auto_resolve_conflicts(root: str, files: List[str], threshold: float, verbose=False) -> List[ConflictStat]:
+    stats = []
+    for rel in files:
+        full = os.path.join(root, rel)
+        if not os.path.isfile(full):
+            continue
+        with open(full, 'r', encoding='utf-8', errors='ignore') as fd:
+            if f"<<<<<<< {LABEL_OURS}" not in fd.read():
+                continue
+        stat = resolve_conflicts_in_file(root, rel, threshold, verbose=verbose)
+        stats.append(stat)
+    return stats
 
 def main():
-    p=argparse.ArgumentParser()
-    p.add_argument("--patch",default="patch.diff")
-    p.add_argument("--verbose",action="store_true")
-    p.add_argument("--report",default="apply_patch_report.txt")
-    args=p.parse_args()
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--patch', required=True, help='Unified diff patch file')
+    ap.add_argument('--root', default='.', help='Repository root')
+    ap.add_argument('--report', default='apply_patch_report.txt')
+    ap.add_argument('--expect-token', default='LoadJSC', help='Token indicating patch success (heuristic)')
+    ap.add_argument('--expect-file', default='src/d8/d8.h', help='File to search token in')
+    ap.add_argument('--similarity-threshold', type=float, default=0.55)
+    ap.add_argument('--no-auto-resolve', dest='no_auto_resolve', action='store_true', help='Disable automatic conflict resolution')
+    ap.add_argument('--case-insensitive-token', action='store_true', help='Case-insensitive token search')
+    ap.add_argument('--verbose', action='store_true')
+    args = ap.parse_args()
 
-    if not os.path.isfile(args.patch):
-        safe_print("[ERROR] Patch file not found.")
+    root = os.path.abspath(args.root)
+    patch_path = os.path.abspath(args.patch)
+
+    if not os.path.isfile(patch_path):
+        print(f"[ERROR] Patch file not found: {patch_path}", file=sys.stderr)
         return 2
-    with open(args.patch,"r",encoding="utf-8",errors="ignore") as f:
-        patch_text=f.read()
-    fps=parse_patch(patch_text)
-    if not fps:
-        safe_print("[ERROR] No file patches parsed.")
-        return 2
-    safe_print("[INFO] Files to process:")
-    for fp in fps:
-        safe_print(f"  - {fp.path}")
 
-    all_ok=True; failed=None
-    for fp in fps:
-        if not apply_file_patch(fp, args.verbose):
-            all_ok=False; failed=fp.path; break
-    result="SUCCESS" if all_ok else f"FAIL ({failed})"
-    safe_print(f"[RESULT] {result}")
-    try:
-        with open(args.report,"w",encoding="utf-8") as r:
-            r.write(f"result={result}\n")
-            if failed: r.write(f"failed_file={failed}\n")
-    except Exception: pass
-    return 0 if all_ok else 2
+    with open(patch_path, 'r', encoding='utf-8', errors='ignore') as f:
+        patch_text = f.read()
 
-if __name__=="__main__":
+    changed_files = parse_changed_files(patch_text)
+    if args.verbose:
+        print(f"[info] Changed files ({len(changed_files)}): {changed_files}")
+
+    # 3-way apply
+    proc = run(f"git apply --3way --whitespace=fix {patch_path}", cwd=root)
+    if args.verbose:
+        print("[git] return code:", proc.returncode)
+        if proc.stdout.strip():
+            print("[git] stdout:\n", proc.stdout)
+        if proc.stderr.strip():
+            print("[git] stderr:\n", proc.stderr)
+
+    token_found = file_contains_token(root, args.expect_file, args.expect_token,
+                                      ci=args.case_insensitive_token)
+    if args.verbose:
+        print(f"[info] Token '{args.expect_token}' in {args.expect_file}: {token_found}")
+
+    base_success = (proc.returncode == 0) or token_found
+
+    conflict_files = detect_conflicts_in_files(root, changed_files)
+    if args.verbose:
+        print(f"[info] Conflict files: {conflict_files}")
+
+    stats: List[ConflictStat] = []
+    unresolved = False
+    if conflict_files:
+        if args.no_auto_resolve:
+            unresolved = True
+        else:
+            stats = auto_resolve_conflicts(root, conflict_files, args.similarity_threshold, verbose=args.verbose)
+            # stage resolved (no leftover)
+            stage_candidates = [s.file for s in stats if not s.leftover]
+            if stage_candidates:
+                add_proc = run("git add " + " ".join(stage_candidates), cwd=root)
+                if args.verbose:
+                    print(f"[git] staging resolved files rc={add_proc.returncode}")
+            still = detect_conflicts_in_files(root, conflict_files)
+            if still:
+                unresolved = True
+
+    success = base_success and not unresolved
+
+    report_lines = [
+        "Apply Patch Report",
+        "==================",
+        f"3-way return code: {proc.returncode}",
+        f"Token file: {args.expect_file}",
+        f"Token searched: {args.expect_token} (case_insensitive={args.case_insensitive_token})",
+        f"Token found: {token_found}",
+        f"Base success (rc==0 or token): {base_success}",
+    ]
+    if conflict_files:
+        report_lines.append(f"Initial conflict files: {conflict_files}")
+    if stats:
+        for st in stats:
+            report_lines.append(
+                f"Resolved {st.file}: blocks={st.blocks} resolved={st.resolved} leftover={st.leftover}"
+            )
+    report_lines.append(f"Unresolved conflicts: {unresolved}")
+    report_lines.append(f"Final success: {success}")
+    report_lines.append("Changed files:")
+    for cf in changed_files:
+        report_lines.append(f"  - {cf}")
+
+    with open(args.report, 'w', encoding='utf-8') as r:
+        r.write("\n".join(report_lines) + "\n")
+
+    if args.verbose:
+        print("\n".join(report_lines))
+
+    return 0 if success else 2
+
+if __name__ == '__main__':
     sys.exit(main())

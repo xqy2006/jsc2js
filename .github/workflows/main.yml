@@ -20,7 +20,7 @@ concurrency:
 
 env:
   V8_REPO: https://github.com/v8/v8.git
-  MIN_VERSION: 12.0.1
+  MIN_VERSION: 12.6.1
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}

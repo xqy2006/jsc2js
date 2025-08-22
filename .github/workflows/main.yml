@@ -127,7 +127,6 @@ jobs:
           cp apply_patch.py v8/
           cp patch.diff v8/
           cp partition_versions.py v8/ || true
-          cp build_versions_batch.py .
           ls -1
 
       - name: Process versions batch

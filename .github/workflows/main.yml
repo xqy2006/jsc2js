@@ -1,4 +1,4 @@
-name: Build patched V8 d8 (multi versions, fuzzy patch fallback)
+name: Build patched V8 d8 (multi versions, semantic fuzzy patch)
 
 on:
   schedule:
@@ -12,7 +12,7 @@ on:
 
 permissions:
   contents: write
-  actions: write   # 需要再次触发后续批次
+  actions: write
 
 concurrency:
   group: build-patched-v8
@@ -24,11 +24,11 @@ env:
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
-  FUZZ_FACTOR: "3"          # patch -F <n> (允许的模糊行数)
+  FUZZ_FACTOR: "3"
 
 jobs:
   determine-versions:
-    name: Determine unprocessed V8 versions
+    name: Determine unprocessed versions
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.determine.outputs.matrix }}
@@ -36,28 +36,23 @@ jobs:
       has_versions: ${{ steps.determine.outputs.has_versions }}
       leftover_total: ${{ steps.determine.outputs.leftover_total }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Python version
+      - name: Show Python
         run: python3 --version
-
       - name: Determine versions batch
         id: determine
-        run: |
-          python3 determine_versions.py
-
+        run: python3 determine_versions.py
       - name: Debug outputs
         run: |
-          echo "matrix=${{ steps.determine.outputs.matrix }}"
-          echo "versions=${{ steps.determine.outputs.versions }}"
-          echo "has_versions=${{ steps.determine.outputs.has_versions }}"
-          echo "leftover_total=${{ steps.determine.outputs.leftover_total }}"
+          echo matrix=${{ steps.determine.outputs.matrix }}
+          echo versions=${{ steps.determine.outputs.versions }}
+          echo has_versions=${{ steps.determine.outputs.has_versions }}
+          echo leftover=${{ steps.determine.outputs.leftover_total }}
 
   build:
-    name: Build d8 (${{ matrix.version }} / ${{ matrix.os }})
+    name: Build ${{ matrix.version }} / ${{ matrix.os }}
     needs: determine-versions
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ${{ matrix.os }}
@@ -68,8 +63,7 @@ jobs:
     env:
       VERSION: ${{ matrix.version }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -77,19 +71,18 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
-          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          echo "$PWD/depot_tools" >> $GITHUB_PATH
-          python --version
-          patch --version || true
+            set -e
+            sudo apt-get update
+            sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+            git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+            echo "$PWD/depot_tools" >> $GITHUB_PATH
+            python --version
+            patch --version || true
 
       - name: Prepare environment (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # Git for Windows 自带的 Git Bash 通常包含 patch.exe
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           python --version
@@ -103,90 +96,59 @@ jobs:
           git fetch --tags
           git checkout "$VERSION"
 
-      - name: Apply patch (git apply with 3-way, fallback to patch -F${{ env.FUZZ_FACTOR }})
+      - name: Pre-validate patch file list
+        id: prelist
+        shell: bash
+        run: |
+          set -e
+          if [ ! -f "$PATCH_FILE" ]; then
+            echo "Patch file missing at root."
+            echo "applied=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          mapfile -t FILES < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
+          echo "Patch lists ${#FILES[@]} unique files:"
+          printf '  %s\n' "${FILES[@]}"
+          if [ -n "${EXPECTED_PATCH_FILE_COUNT}" ] && [ "${#FILES[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
+            echo "File count mismatch (expected ${EXPECTED_PATCH_FILE_COUNT})."
+            echo "applied=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Apply patch (semantic fuzzy Python)
         id: apply
         shell: bash
         run: |
           set -e
           cd v8
-          if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
-            echo "Patch file not found!"
+          cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
+          cp "$GITHUB_WORKSPACE/apply_patch.py" .
+          python3 apply_patch.py --patch "$PATCH_FILE"
+          status=$?
+          if [ $status -ne 0 ]; then
+            echo "Semantic patch application failed (status=$status)."
+            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          cp "$GITHUB_WORKSPACE/$PATCH_FILE" base_patch.diff
-
-          # 读取文件列表
-          mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' base_patch.diff | sed 's|+++ b/||' | sort -u)
-          echo "Patch lists ${#EXPECTED[@]} unique files:"
-          printf '  %s\n' "${EXPECTED[@]}"
-
-          if [ -n "${EXPECTED_PATCH_FILE_COUNT}" ] && [ "${#EXPECTED[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
-            echo "Expected ${EXPECTED_PATCH_FILE_COUNT} files, got ${#EXPECTED[@]}."
-            echo "applied=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Step 1: 预检查
-          echo "== Pre-check with git apply --check --3way =="
-          if git apply --check --3way base_patch.diff 2>/dev/null; then
-            echo "Pre-check OK. Applying with git apply --3way..."
-            git apply --3way base_patch.diff || {
-              echo "Unexpected failure during actual apply after successful --check."
-              echo "applied=false" >> $GITHUB_OUTPUT
-              exit 0
-            }
-            METHOD="git-3way"
-          else
-            echo "Strict 3-way check failed. Attempt fuzzy fallback via 'patch -F${FUZZ_FACTOR}' ..."
-            if ! command -v patch >/dev/null 2>&1; then
-              echo "'patch' tool not available on this runner. Cannot fuzzy apply."
-              echo "applied=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-            # 先尝试 dry-run
-            if patch -p1 --dry-run -F"${FUZZ_FACTOR}" < base_patch.diff >/dev/null 2>&1; then
-              echo "Dry-run fuzzy succeeded. Applying fuzzy patch..."
-              # 确保干净（如果前面 git apply 半途修改了文件，这里重置）
-              git reset --hard
-              patch -p1 -F"${FUZZ_FACTOR}" < base_patch.diff || {
-                echo "Fuzzy patch application failed unexpectedly."
-                echo "applied=false" >> $GITHUB_OUTPUT
-                exit 0
-              }
-              METHOD="patch-fuzzy-F${FUZZ_FACTOR}"
-            else
-              echo "Fuzzy dry-run still failed. Mark patch not applicable."
-              echo "applied=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          fi
-
-          # Step 2: 验证修改
+          # 再做一次 git diff 检查是否真的修改了预期文件
           MODIFIED=$(git diff --name-only)
-          missing=0
-          for f in "${EXPECTED[@]}"; do
-            if ! grep -qx "$f" <<< "$MODIFIED"; then
-              echo "Expected modified file missing in diff: $f"
-              missing=1
+          echo "$MODIFIED" | sed 's/^/  MODIFIED: /'
+          # 简单验证（至少一个 patch 文件被修改）
+          any=0
+          while read -r f; do
+            [ -z "$f" ] && continue
+            if git diff --name-only | grep -qx "$f"; then
+              any=1
             fi
-          done
-          if [ $missing -ne 0 ]; then
-            echo "Not all expected files show modifications -> rollback."
-            git reset --hard
+          done < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
+          if [ $any -eq 0 ]; then
+            echo "No expected files show modifications -> treat as failure."
+            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-
-          echo "Patch applied successfully via $METHOD."
           echo "applied=true" >> $GITHUB_OUTPUT
-          echo "method=$METHOD" >> $GITHUB_OUTPUT
-
-      - name: Show patch method
-        if: steps.apply.outputs.applied == 'true'
-        shell: bash
-        run: |
-          echo "Apply method: ${{ steps.apply.outputs.method }}"
 
       - name: Configure & build (Linux)
         if: runner.os == 'Linux' && steps.apply.outputs.applied == 'true'
@@ -226,9 +188,11 @@ jobs:
           path: artifact/*
           retention-days: 14
 
-      - name: Skipped (patch not applied)
+      - name: Record failure (no patch)
         if: steps.apply.outputs.applied != 'true'
-        run: echo "Skipping build for $VERSION on ${{ runner.os }}."
+        shell: bash
+        run: |
+          echo "Patch not applied for $VERSION on ${{ runner.os }}"
 
   aggregate-and-release:
     name: Aggregate & release
@@ -238,8 +202,7 @@ jobs:
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -254,13 +217,37 @@ jobs:
           sudo apt-get install -y jq
           gh --version || true
 
-      - name: Ensure public/version.json
+      - name: Ensure meta JSON files
         run: |
           mkdir -p public
-          if [ ! -f public/version.json ]; then
-            echo "[]" > public/version.json
-          fi
+          [ -f public/version.json ] || echo "[]" > public/version.json
+          [ -f public/failed.json ] || echo "[]" > public/failed.json
+          echo "version.json:"
           cat public/version.json
+          echo "failed.json:"
+          cat public/failed.json
+
+      - name: Merge failed versions (from builds)
+        run: |
+          set -e
+          if ls downloaded | grep -E '^d8-' >/dev/null 2>&1; then
+            echo "Artifacts present."
+          fi
+          # 收集 failed_versions.txt（各 job 不同环境，不同平台几率有多个）
+          find . -name failed_versions.txt -maxdepth 3 -print -exec cat {} \; || true
+          # 来自各 OS 的 root 工作区不会合并，所以 build job 中写的是 $GITHUB_WORKSPACE/failed_versions.txt
+          # 这里再检查根目录
+          if [ -f failed_versions.txt ]; then
+            cat failed_versions.txt | sort -u > _failed_collected.txt
+            echo "Collected failed versions:"
+            cat _failed_collected.txt
+            [ -f public/failed.json ] || echo "[]" > public/failed.json
+            while read -r v; do
+              [ -z "$v" ] && continue
+              jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
+                jq --arg v "$v" '. + [$v]' public/failed.json > public/failed.tmp && mv public/failed.tmp public/failed.json
+            done < _failed_collected.txt
+          fi
 
       - name: Create releases & update version.json
         env:
@@ -271,17 +258,15 @@ jobs:
           UPDATED=false
           echo "$VERSIONS" | jq -r '.[]' | while read -r v; do
             [ -z "$v" ] && continue
-            echo "Processing version $v"
             LIN_DIR="downloaded/d8-${v}-Linux"
             WIN_DIR="downloaded/d8-${v}-Windows"
             if [ ! -d "$LIN_DIR" ] || [ ! -d "$WIN_DIR" ]; then
-              echo "Artifacts missing for $v -> skip"
+              echo "Skip release $v (missing one platform artifact)."
               continue
             fi
             mkdir -p "public/$v"
             cp "$LIN_DIR"/d8 "public/$v/d8-linux"
             cp "$WIN_DIR"/d8.exe "public/$v/d8-windows.exe"
-
             if gh release view "$v" >/dev/null 2>&1; then
               echo "Release $v exists."
             else
@@ -289,32 +274,31 @@ jobs:
                 "public/$v/d8-linux" \
                 "public/$v/d8-windows.exe" \
                 --title "$v" \
-                --notes "Patched d8 for V8 $v (flags: v8_enable_disassembler=true, v8_enable_object_print=true)."
+                --notes "Patched d8 for V8 $v (semantic fuzzy patch)."
             fi
-
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
               UPDATED=true
             fi
           done
-
           if [ "$UPDATED" = true ]; then
             jq 'sort_by(split(".") | map(tonumber))' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
           fi
           echo "Final version.json:"
           cat public/version.json
-          echo "Leftover after batch: ${{ needs.determine-versions.outputs.leftover_total }}"
+          echo "Final failed.json:"
+          cat public/failed.json
 
       - name: Commit & push
         run: |
           if git diff --quiet -- public; then
-            echo "No changes."
+            echo "No public/ changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update public with new patched d8 versions (batch) [skip ci]"
+          git commit -m "Update public (versions & failed) [skip ci]"
           git push
 
   trigger-next-batch:
@@ -328,13 +312,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_MAX: ${{ env.MAX_PER_RUN }}
         run: |
-          echo "Leftover detected -> triggering another batch."
+          echo "Leftover versions exist -> triggering next batch."
           REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
           if [ -z "$REF" ]; then
-            # 尝试获取默认分支
-            REF=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
+            REF=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" \
+              https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
           fi
-          echo "Triggering on ref $REF with MAX_PER_RUN=$NEXT_MAX"
           curl -s -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \

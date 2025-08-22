@@ -2,11 +2,17 @@
 import json, os, re, subprocess, sys
 
 MIN_VERSION = os.environ.get("MIN_VERSION", "12.0.1").strip()
-# MAX_PER_RUN：希望本次最多处理多少“版本”（每版本会产生 2 个矩阵项：Linux+Windows）
-# 如果为空或无效，使用 DEFAULT_CAP
-DEFAULT_CAP = 10
-MAX_PER_RUN_ENV = os.environ.get("MAX_PER_RUN", "").strip()
 REPO_URL = os.environ.get("V8_REPO", "https://github.com/v8/v8.git")
+
+# 每批最多处理多少版本（环境变量为空或非法时默认 20）
+DEFAULT_CAP = 20
+_raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
+try:
+    CAP = int(_raw_cap) if _raw_cap else DEFAULT_CAP
+    if CAP <= 0:
+        CAP = DEFAULT_CAP
+except ValueError:
+    CAP = DEFAULT_CAP
 
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 OUTPUT = os.environ.get("GITHUB_OUTPUT")
@@ -14,20 +20,8 @@ OUTPUT = os.environ.get("GITHUB_OUTPUT")
 def ver_tuple(v: str):
     return tuple(int(x) for x in v.split("."))
 
-def decide_cap() -> int:
-    if not MAX_PER_RUN_ENV:
-        return DEFAULT_CAP
-    try:
-        n = int(MAX_PER_RUN_ENV)
-        if n > 0:
-            return n
-    except ValueError:
-        pass
-    return DEFAULT_CAP
-
 def main():
-    cap = decide_cap()
-    print(f"[determine_versions] MIN_VERSION={MIN_VERSION} cap(per run)={cap}")
+    print(f"[determine_versions] MIN_VERSION={MIN_VERSION} CAP(per batch)={CAP}")
 
     os.makedirs("public", exist_ok=True)
     processed_path = "public/version.json"
@@ -64,14 +58,11 @@ def main():
         if SEMVER_RE.match(tag):
             tags_raw.append(tag)
 
-    # 排序去重
     tags = sorted(set(tags_raw), key=ver_tuple)
     min_t = ver_tuple(MIN_VERSION)
-
     unprocessed = [t for t in tags if ver_tuple(t) >= min_t and t not in processed_set]
 
-    # 截断本批次
-    batch = unprocessed[:cap]
+    batch = unprocessed[:CAP]
     leftover_total = max(0, len(unprocessed) - len(batch))
 
     include = []
@@ -83,7 +74,7 @@ def main():
     matrix_json = json.dumps({"include": include}, ensure_ascii=False, separators=(",", ":"))
     has_versions = "true" if batch else "false"
 
-    print(f"Detected new (total)={len(unprocessed)}, this batch={len(batch)}, leftover_after_batch={leftover_total}")
+    print(f"Total new (unprocessed)={len(unprocessed)}, batch={len(batch)}, leftover_after_batch={leftover_total}")
     print("Batch versions:", batch)
 
     if OUTPUT:

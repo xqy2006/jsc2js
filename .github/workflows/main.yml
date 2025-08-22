@@ -40,7 +40,7 @@ jobs:
       - name: Determine new versions
         id: determine
         run: |
-          python3 .github/scripts/determine_versions.py
+          python3 determine_versions.py
 
       - name: Debug outputs
         run: |

@@ -6,12 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       max_per_run:
-        description: "本次最多处理多少个新版本（留空使用默认）"
+        description: "本次最多处理多少个新版本（默认 20）"
         required: false
-        default: "3"
+        default: "20"
 
 permissions:
   contents: write
+  actions: write  # 允许后续触发新的 workflow run
 
 concurrency:
   group: build-patched-v8
@@ -22,8 +23,8 @@ env:
   V8_REPO: https://github.com/v8/v8.git
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
-  # 设置一个默认限制，避免矩阵过大
-  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '3' }}
+  # 默认每批 20，可通过 workflow_dispatch 输入覆盖
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
 
 jobs:
   determine-versions:
@@ -62,7 +63,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      max-parallel: 3   # 最多 3 个并行任务（满足你的要求）
+      max-parallel: 3   # 最多 3 个并发（如果想完全串行改成 1）
       matrix: ${{ fromJSON(needs.determine-versions.outputs.matrix) }}
     env:
       VERSION: ${{ matrix.version }}
@@ -74,7 +75,9 @@ jobs:
 
       - name: Prepare environment (Linux)
         if: runner.os == 'Linux'
+        shell: bash
         run: |
+          set -e
           sudo apt-get update
           sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -90,6 +93,7 @@ jobs:
           python --version
 
       - name: Clone V8
+        shell: bash
         run: |
           set -e
           git clone "$V8_REPO" v8
@@ -112,13 +116,11 @@ jobs:
           mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
           echo "Patch lists ${#EXPECTED[@]} unique files:"
           printf '  %s\n' "${EXPECTED[@]}"
-
           if [ -n "${EXPECTED_PATCH_FILE_COUNT}" ] && [ "${#EXPECTED[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
             echo "Expected ${EXPECTED_PATCH_FILE_COUNT} files, got ${#EXPECTED[@]}."
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-
           set +e
           git apply --3way "$PATCH_FILE"
           rc=$?
@@ -128,7 +130,6 @@ jobs:
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-
           MODIFIED=$(git diff --name-only)
           missing=0
           for f in "${EXPECTED[@]}"; do
@@ -142,13 +143,14 @@ jobs:
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-
           echo "Patch applied OK."
           echo "applied=true" >> $GITHUB_OUTPUT
 
       - name: Configure & build (Linux)
         if: runner.os == 'Linux' && steps.apply.outputs.applied == 'true'
+        shell: bash
         run: |
+          set -e
           cd v8
           python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true
           ninja -C out.gn/x64.release d8
@@ -163,7 +165,9 @@ jobs:
 
       - name: Package artifact
         if: steps.apply.outputs.applied == 'true'
+        shell: bash
         run: |
+          set -e
           mkdir -p artifact
           if [ "${{ runner.os }}" = "Windows" ]; then
             cp v8/out.gn/x64.release/d8.exe artifact/
@@ -177,6 +181,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: d8-${{ matrix.version }}-${{ runner.os }}
+            # path accepts glob
           path: artifact/*
           retention-days: 14
 
@@ -189,6 +194,8 @@ jobs:
     needs: [determine-versions, build]
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -216,8 +223,8 @@ jobs:
 
       - name: Create releases & update version.json
         env:
-            VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           UPDATED=false
@@ -255,7 +262,7 @@ jobs:
           fi
           echo "Final version.json:"
           cat public/version.json
-          echo "Leftover unprocessed after this batch: ${{ needs.determine-versions.outputs.leftover_total }}"
+          echo "Leftover after batch: ${{ needs.determine-versions.outputs.leftover_total }}"
 
       - name: Commit & push
         run: |
@@ -268,3 +275,28 @@ jobs:
           git add public
           git commit -m "Update public with new patched d8 versions (batch) [skip ci]"
           git push
+
+  trigger-next-batch:
+    name: Trigger next batch if leftovers
+    needs: aggregate-and-release
+    if: needs.aggregate-and-release.outputs.leftover_total != '' && needs.aggregate-and-release.outputs.leftover_total != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger next workflow run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT_MAX: ${{ env.MAX_PER_RUN }}
+        run: |
+          echo "Leftover detected -> triggering another batch."
+          # 解析默认分支名；对 schedule 通常为 main
+          REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
+          if [ -z "$REF" ]; then
+            REF="main"
+          fi
+          echo "Triggering on ref $REF with MAX_PER_RUN=$NEXT_MAX"
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/build-patched-v8.yml/dispatches \
+            -d "{\"ref\":\"${REF}\",\"inputs\":{\"max_per_run\":\"${NEXT_MAX}\"}}"
+          echo "Next batch dispatched."

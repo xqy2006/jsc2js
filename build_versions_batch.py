@@ -113,7 +113,7 @@ def main():
         sanitized = ver.replace(".", "_")
         try:
             # Ensure tag
-            run("git -C v8 fetch --tags", check=True)
+            run("git -C v8 fetch --tags --quiet", check=True)
             run(f"git -C v8 checkout {ver}", check=True)
             # Sync + hooks
             run("gclient sync -D --no-history", check=True)

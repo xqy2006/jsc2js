@@ -93,6 +93,8 @@ def transform_added_line(line: str) -> str:
     body2 = CAST_TEMPLATE_RE.sub(repl_template, body)
     # Step 2: plain v8::internal::Cast(
     body3 = CAST_PREFIX_RE.sub('v8::internal::Script::cast(', body2)
+    body3 = body3.replace('script_details)', 'script_details.origin_options)')
+    body3 = body3.replace("#include <iostream>","#include \"src/codegen/script-details.h\"")
     if body3 is not body:
         return '+' + body3
     return line

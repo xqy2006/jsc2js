@@ -3,8 +3,6 @@ import json, os, re, subprocess, sys
 
 MIN_VERSION = os.environ.get("MIN_VERSION", "12.0.1").strip()
 REPO_URL = os.environ.get("V8_REPO", "https://github.com/v8/v8.git")
-
-# 每批最多处理多少版本（环境变量为空或非法时默认 20）
 DEFAULT_CAP = 20
 _raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
 try:
@@ -20,34 +18,33 @@ OUTPUT = os.environ.get("GITHUB_OUTPUT")
 def ver_tuple(v: str):
     return tuple(int(x) for x in v.split("."))
 
+def load_json_list(path: str):
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
+    return []
+
 def main():
-    print(f"[determine_versions] MIN_VERSION={MIN_VERSION} CAP(per batch)={CAP}")
+    print(f"[determine_versions] MIN_VERSION={MIN_VERSION} CAP={CAP}")
 
     os.makedirs("public", exist_ok=True)
-    processed_path = "public/version.json"
-    if not os.path.exists(processed_path):
-        with open(processed_path, "w", encoding="utf-8") as f:
-            f.write("[]")
-    try:
-        with open(processed_path, "r", encoding="utf-8") as f:
-            processed = json.load(f)
-            if not isinstance(processed, list):
-                processed = []
-    except Exception:
-        processed = []
+    processed = load_json_list("public/version.json")
+    failed = load_json_list("public/failed.json")
     processed_set = set(processed)
+    failed_set = set(failed)
 
-    # 获取远程标签
-    res = subprocess.run(
-        ["git", "ls-remote", "--tags", REPO_URL],
-        capture_output=True, text=True, check=True
-    )
-    tags_raw = []
+    # 获取远程 tags
+    res = subprocess.run(["git", "ls-remote", "--tags", REPO_URL],
+                         capture_output=True, text=True, check=True)
+    tags = []
     for line in res.stdout.splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        parts = line.split()
+        parts = line.strip().split()
         if len(parts) != 2:
             continue
         ref = parts[1]
@@ -56,11 +53,15 @@ def main():
         tag = ref[len("refs/tags/"):]
         tag = tag.split("^")[0]
         if SEMVER_RE.match(tag):
-            tags_raw.append(tag)
+            tags.append(tag)
 
-    tags = sorted(set(tags_raw), key=ver_tuple)
+    tags = sorted(set(tags), key=ver_tuple)
     min_t = ver_tuple(MIN_VERSION)
-    unprocessed = [t for t in tags if ver_tuple(t) >= min_t and t not in processed_set]
+
+    unprocessed = [
+        t for t in tags
+        if ver_tuple(t) >= min_t and t not in processed_set and t not in failed_set
+    ]
 
     batch = unprocessed[:CAP]
     leftover_total = max(0, len(unprocessed) - len(batch))
@@ -74,8 +75,9 @@ def main():
     matrix_json = json.dumps({"include": include}, ensure_ascii=False, separators=(",", ":"))
     has_versions = "true" if batch else "false"
 
-    print(f"Total new (unprocessed)={len(unprocessed)}, batch={len(batch)}, leftover_after_batch={leftover_total}")
+    print(f"Total new (excluding processed & failed)={len(unprocessed)}, batch={len(batch)}, leftover={leftover_total}")
     print("Batch versions:", batch)
+    print("Failed blacklist size:", len(failed_set))
 
     if OUTPUT:
         with open(OUTPUT, "a", encoding="utf-8") as out:

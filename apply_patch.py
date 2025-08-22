@@ -197,7 +197,7 @@ def main():
     ap.add_argument('--report', default='apply_patch_report.txt')
     ap.add_argument('--expect-token', default='LoadJSC', help='Token indicating patch success (heuristic)')
     ap.add_argument('--expect-file', default='src/d8/d8.h', help='File to search token in')
-    ap.add_argument('--similarity-threshold', type=float, default=0.55)
+    ap.add_argument('--similarity-threshold', type=float, default=0.75)
     ap.add_argument('--no-auto-resolve', dest='no_auto_resolve', action='store_true', help='Disable automatic conflict resolution')
     ap.add_argument('--case-insensitive-token', action='store_true', help='Case-insensitive token search')
     ap.add_argument('--verbose', action='store_true')

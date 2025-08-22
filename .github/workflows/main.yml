@@ -1,4 +1,4 @@
-name: Build patched V8 d8 (multi versions, semantic fuzzy patch)
+name: Build patched V8 d8
 
 on:
   schedule:
@@ -19,12 +19,12 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  MIN_VERSION: 12.0.1
+  # 使用 GitHub 镜像获取 tags（较快），支持 3/4 段版本号
   V8_REPO: https://github.com/v8/v8.git
+  MIN_VERSION: 12.0.1
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
-  FUZZ_FACTOR: "3"
 
 jobs:
   determine-versions:
@@ -36,14 +36,26 @@ jobs:
       has_versions: ${{ steps.determine.outputs.has_versions }}
       leftover_total: ${{ steps.determine.outputs.leftover_total }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Ensure public JSON tracking
+        run: |
+          mkdir -p public
+          [ -f public/version.json ] || echo "[]" > public/version.json
+          [ -f public/failed.json ] || echo "[]" > public/failed.json
+          echo "version.json:"; cat public/version.json
+          echo "failed.json:"; cat public/failed.json
+
       - name: Show Python
         run: python3 --version
+
       - name: Determine versions batch
         id: determine
         run: python3 determine_versions.py
+
       - name: Debug outputs
         run: |
           echo matrix=${{ steps.determine.outputs.matrix }}
@@ -62,94 +74,101 @@ jobs:
       matrix: ${{ fromJSON(needs.determine-versions.outputs.matrix) }}
     env:
       VERSION: ${{ matrix.version }}
+      DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
+      GYP_MSVS_VERSION: "2022"
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ------------- Linux 准备 -------------
+      # -------- Prepare depot_tools & toolchain --------
       - name: Prepare (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
           set -eux
           sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch git-lfs
+          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          export PATH="$PWD/depot_tools:$PATH"
           echo "$PWD/depot_tools" >> $GITHUB_PATH
+          python --version
+          gclient --version
 
-      # ------------- Windows 准备：分两步确保 PATH 生效 -------------
-      - name: Prepare depot_tools path (Windows)
+      - name: Prepare (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           chcp 65001
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          # 追加到后续 steps PATH
-          echo "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "PYTHONUTF8=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PYTHONIOENCODING=UTF-8" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "DEPOT_TOOLS_WIN_TOOLCHAIN=0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "GYP_MSVS_VERSION=2022" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-      - name: Verify depot_tools & Python (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          chcp 65001
+          # 当前步骤立即生效
+          $env:PATH = "$PWD\depot_tools;" + $env:PATH
+          "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "PYTHONUTF8=1"              | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONIOENCODING=UTF-8"    | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "DEPOT_TOOLS_WIN_TOOLCHAIN=0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_VERSION=2022"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
-          Get-Command gclient | Format-List || (Write-Host "gclient not yet? PATH:"; Write-Host $env:Path)
-          # 有时第一次 PATH 尚未刷新，这里再直接修改当前进程 PATH 兜底
-          if (-not (Get-Command gclient -ErrorAction SilentlyContinue)) {
-            $p = (Resolve-Path depot_tools).Path
-            $env:Path = "$p;$env:Path"
-            Write-Host "Added to PATH at runtime: $p"
-            Get-Command gclient | Format-List
-          }
+          gclient --version
 
-      # ------------- 同步 V8 + 依赖（两平台同逻辑） -------------
-      - name: Sync V8 & deps
+      # -------- Sync V8 from GitHub (main repo) then DEPS from googlesource --------
+      - name: Sync V8 (tag-aware, shallow main repo)
         shell: bash
         run: |
           set -eux
-          echo "Python: $(which python || true)"
-          echo "gclient: $(which gclient || true)"
-
-          # 1. 配置 gclient（unmanaged，允许我们手动切 tag）
-          gclient config --name v8 --unmanaged https://chromium.googlesource.com/v8/v8.git
-
-            # 2. 初步同步 v8 主仓（不跑 hooks，减少不必要的第一次下载）
-          gclient sync --nohooks -D --with_branch_heads --with_tags
-
-          # 3. 切换 tag
+          # 1. 用 GitHub 主仓库（unmanaged 模式：我们手动 checkout tag）
+          gclient config --name v8 --unmanaged https://github.com/v8/v8.git
+          # 2. 初次同步主仓库（浅历史 & 不跑 hooks）
+            # --no-history (或旧版本 --nohistory) 减少 git 历史；如某些旧标签需要祖先提交可去掉
+          gclient sync --nohooks --no-history -D
+          # 3. 切 checkout 指定版本 tag
           cd v8
           git fetch --tags
           git checkout "${VERSION}"
-
-          # 4. 按该 tag 的 DEPS 拉依赖
           cd ..
-          gclient sync -D --with_branch_heads --with_tags
-
-          # 5. runhooks 生成 build 支持脚本、下载 gn / clang（CIPD）
+          # 4. 再同步依赖（DEPS 指向的仍是 googlesource/CIPD）
+          gclient sync --no-history -D
+          # 5. 运行 hooks（生成 gn, ninja, 下载 clang/gn 等 CIPD 包）
           gclient runhooks
+          cd v8
+          git log -1 --oneline
 
-          # 6. 打印 HEAD
-          git -C v8 log -1 --oneline
-
-      # ------------- 应用补丁 -------------
+      # -------- Apply custom patch (semantic fuzzy) --------
       - name: Apply patch
         id: apply
         shell: bash
         run: |
           set -e
-          cp "$PATCH_FILE" v8/
-          cp apply_patch.py v8/
           cd v8
+          if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
+            echo "Missing patch file $PATCH_FILE"
+            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
+            echo "applied=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
+          cp "$GITHUB_WORKSPACE/apply_patch.py" .
           python3 apply_patch.py --patch "$PATCH_FILE" --verbose --report apply_patch_report.txt
           rc=$?
           if [ $rc -ne 0 ]; then
-            echo "${VERSION}" >> "$GITHUB_WORKSPACE/failed_versions.txt"
+            echo "Patch application failed (rc=$rc)."
+            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
+            echo "applied=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          # 简单验证预期文件是否至少有一个修改
+          expected_changed=0
+          while read -r f; do
+            [ -z "$f" ] && continue
+            if git diff --name-only | grep -qx "$f"; then
+              expected_changed=1
+              break
+            fi
+          done < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
+          if [ $expected_changed -eq 0 ]; then
+            echo "No expected patch file changed after apply; treat as failure."
+            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -163,26 +182,25 @@ jobs:
           path: v8/apply_patch_report.txt
           retention-days: 7
 
-      # ------------- 编译 -------------
+      # -------- Build --------
       - name: Configure & build (Linux)
         if: runner.os == 'Linux' && steps.apply.outputs.applied == 'true'
         shell: bash
         run: |
           set -eux
           cd v8
-          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true
+          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false
           ninja -C out.gn/x64.release d8
 
       - name: Configure & build (Windows)
         if: runner.os == 'Windows' && steps.apply.outputs.applied == 'true'
         shell: pwsh
         run: |
-          Set-PSDebug -Trace 0
           cd v8
-          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true
+          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false
           ninja -C out.gn/x64.release d8
 
-      # ------------- 打包发布 -------------
+      # -------- Artifacts --------
       - name: Package artifact
         if: steps.apply.outputs.applied == 'true'
         shell: bash
@@ -200,13 +218,13 @@ jobs:
         if: steps.apply.outputs.applied == 'true'
         uses: actions/upload-artifact@v4
         with:
-            name: d8-${{ matrix.version }}-${{ runner.os }}
-            path: artifact/*
-            retention-days: 14
+          name: d8-${{ matrix.version }}-${{ runner.os }}
+          path: artifact/*
+          retention-days: 14
 
-      - name: Record failure
+      - name: Record failure (no patch)
         if: steps.apply.outputs.applied != 'true'
-        run: echo "Patch not applied, skip build for $VERSION"
+        run: echo "Skipping build for $VERSION on ${{ runner.os }} because patch not applied."
 
   aggregate-and-release:
     name: Aggregate & release
@@ -216,7 +234,8 @@ jobs:
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -227,41 +246,30 @@ jobs:
 
       - name: Install jq & gh
         run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          gh --version || true
+            sudo apt-get update
+            sudo apt-get install -y jq
+            gh --version || true
 
-      - name: Ensure meta JSON files
+      - name: Ensure JSON tracking
         run: |
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
-          echo "version.json:"
-          cat public/version.json
-          echo "failed.json:"
-          cat public/failed.json
+          echo "version.json:"; cat public/version.json
+          echo "failed.json:"; cat public/failed.json
 
-      - name: Merge failed versions (from builds)
+      - name: Merge failed versions
         run: |
           set -e
-          if ls downloaded | grep -E '^d8-' >/dev/null 2>&1; then
-            echo "Artifacts present."
-          fi
-          # 收集 failed_versions.txt（各 job 不同环境，不同平台几率有多个）
-          find . -name failed_versions.txt -maxdepth 3 -print -exec cat {} \; || true
-          # 来自各 OS 的 root 工作区不会合并，所以 build job 中写的是 $GITHUB_WORKSPACE/failed_versions.txt
-          # 这里再检查根目录
           if [ -f failed_versions.txt ]; then
-            cat failed_versions.txt | sort -u > _failed_collected.txt
-            echo "Collected failed versions:"
-            cat _failed_collected.txt
-            [ -f public/failed.json ] || echo "[]" > public/failed.json
+            sort -u failed_versions.txt > _failed_collected.txt
             while read -r v; do
               [ -z "$v" ] && continue
               jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
                 jq --arg v "$v" '. + [$v]' public/failed.json > public/failed.tmp && mv public/failed.tmp public/failed.json
             done < _failed_collected.txt
           fi
+          echo "failed.json after merge:"; cat public/failed.json
 
       - name: Create releases & update version.json
         env:
@@ -275,7 +283,7 @@ jobs:
             LIN_DIR="downloaded/d8-${v}-Linux"
             WIN_DIR="downloaded/d8-${v}-Windows"
             if [ ! -d "$LIN_DIR" ] || [ ! -d "$WIN_DIR" ]; then
-              echo "Skip release $v (missing one platform artifact)."
+              echo "Skip $v (missing one platform artifact)."
               continue
             fi
             mkdir -p "public/$v"
@@ -296,23 +304,23 @@ jobs:
             fi
           done
           if [ "$UPDATED" = true ]; then
-            jq 'sort_by(split(".") | map(tonumber))' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
+            # 排序：支持 3/4 段版本（补零到 4 段再比较）
+            jq '[.[]] | sort_by( (split(".") + ["0","0","0","0"])[0:4] | map(tonumber) )' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
           fi
-          echo "Final version.json:"
-          cat public/version.json
-          echo "Final failed.json:"
-          cat public/failed.json
+          echo "Final version.json:"; cat public/version.json
+          echo "Final failed.json:"; cat public/failed.json
 
-      - name: Commit & push
+      - name: Commit & push public/
         run: |
           if git diff --quiet -- public; then
-            echo "No public/ changes."
+            echo "No changes in public/."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update public (versions & failed) [skip ci]"
+            # 跳过再次触发（如你不想跳过，可移除 [skip ci]）
+          git commit -m "Update public (patched d8 versions batch) [skip ci]"
           git push
 
   trigger-next-batch:
@@ -326,7 +334,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_MAX: ${{ env.MAX_PER_RUN }}
         run: |
-          echo "Leftover versions exist -> triggering next batch."
+          echo "Leftover versions exist -> triggering another batch."
           REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
           if [ -z "$REF" ]; then
             REF=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" \

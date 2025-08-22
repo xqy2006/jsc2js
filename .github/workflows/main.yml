@@ -1,3 +1,4 @@
+# （以下为完整文件，保持之前六 worker 架构，主要改动：添加 build_versions_batch.py 的调用）
 name: Build patched V8 d8 (6 reusable workers)
 
 on:
@@ -36,23 +37,15 @@ jobs:
       leftover_total: ${{ steps.determine.outputs.leftover_total }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
       - name: Ensure tracking JSON
         run: |
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
-      - name: Python version
-        run: python3 --version
       - name: Determine versions
         id: determine
         run: python3 determine_versions.py
-      - name: Echo outputs
-        run: |
-          echo "versions=${{ steps.determine.outputs.versions }}"
-          echo "has_versions=${{ steps.determine.outputs.has_versions }}"
-          echo "leftover=${{ steps.determine.outputs.leftover_total }}"
 
   build:
     name: Build slot ${{ matrix.slot }} / ${{ matrix.os }}
@@ -73,26 +66,23 @@ jobs:
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - name: Write versions.json
         run: |
-          echo '${{ env.ALL_VERSIONS }}' > versions.json
-          cat versions.json
+            echo '${{ env.ALL_VERSIONS }}' > versions.json
 
-      - name: Partition versions for this slot
+      - name: Partition versions
         id: partition
-        run: |
-          python3 partition_versions.py
+        run: python3 partition_versions.py
         env:
           VERSIONS_JSON: ${{ env.ALL_VERSIONS }}
           SLOT_INDEX: ${{ env.SLOT_INDEX }}
           SLOTS_PER_OS: ${{ env.SLOTS_PER_OS }}
 
-      - name: Stop early if no versions
+      - name: No versions shortcut
         if: steps.partition.outputs.has_any == 'false'
-        run: echo "No versions assigned to this slot."
+        run: echo "This slot has no assigned versions."
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'
@@ -137,144 +127,18 @@ jobs:
           cp apply_patch.py v8/
           cp patch.diff v8/
           cp partition_versions.py v8/ || true
+          cp build_versions_batch.py .
+          ls -1
 
-      - name: Process versions (loop)
+      - name: Process versions batch
         if: steps.partition.outputs.has_any == 'true'
         shell: bash
         env:
           ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
-          echo "Assigned versions: $ASSIGNED_JSON"
-          python3 - <<'PY'
-import os, json, subprocess, shlex, sys
-
-assigned = json.loads(os.environ.get("ASSIGNED_JSON","[]"))
-if not assigned:
-    print("No versions to process.")
-    sys.exit(0)
-
-def run(cmd, cwd=None, check=True, reason=None):
-    print(f"[RUN] {cmd}")
-    r = subprocess.run(cmd, cwd=cwd, shell=True)
-    if check and r.returncode != 0:
-        raise RuntimeError(reason or f"Command failed: {cmd}")
-    return r.returncode
-
-success = []
-failed = []
-failure_reasons = []  # list of (version, reason)
-
-EXPECTED_FILES = {
-    "src/d8/d8.cc",
-    "src/d8/d8.h",
-    "src/diagnostics/objects-printer.cc",
-    "src/objects/string.cc",
-    "src/snapshot/code-serializer.cc",
-    "src/snapshot/deserializer.cc"
-}
-
-for v in assigned:
-    print(f"\n==== Processing {v} ====")
-    try:
-        try:
-            run("git -C v8 fetch --tags", reason="fetch-tags")
-            run(f"git -C v8 checkout {shlex.quote(v)}", reason="checkout-tag")
-        except Exception as e:
-            failed.append(v); failure_reasons.append((v,"checkout"))
-            print(f"[FAIL-{v}] checkout: {e}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        try:
-            run("gclient sync -D --no-history", reason="sync-deps")
-        except Exception as e:
-            failed.append(v); failure_reasons.append((v,"sync"))
-            print(f"[FAIL-{v}] sync: {e}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        try:
-            run("gclient runhooks", reason="runhooks")
-        except Exception as e:
-            failed.append(v); failure_reasons.append((v,"runhooks"))
-            print(f"[FAIL-{v}] runhooks: {e}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        # Apply patch
-        rc = subprocess.run("python3 apply_patch.py --patch patch.diff --verbose --report apply_patch_report.txt",
-                            cwd="v8", shell=True).returncode
-        if rc != 0:
-            failed.append(v); failure_reasons.append((v,"patch"))
-            print(f"[FAIL-{v}] patch apply failed rc={rc}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        # Validate diff
-        diff_out = subprocess.check_output("git -C v8 diff --name-only", shell=True, text=True)
-        if not any(line.strip() in EXPECTED_FILES for line in diff_out.splitlines()):
-            failed.append(v); failure_reasons.append((v,"patch-nochange"))
-            print(f"[FAIL-{v}] no expected file modified after patch.")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        # Build
-        build_dir = f"out.gn/x64.release.{v.replace('.', '_')}"
-        try:
-            run(f"python tools/dev/v8gen.py {build_dir} -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false",
-                cwd="v8", reason="build-config")
-        except Exception as e:
-            failed.append(v); failure_reasons.append((v,"build-config"))
-            print(f"[FAIL-{v}] build-config: {e}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        try:
-            run(f"ninja -C {build_dir} d8", cwd="v8", reason="build-ninja")
-        except Exception as e:
-            failed.append(v); failure_reasons.append((v,"build-ninja"))
-            print(f"[FAIL-{v}] build-ninja: {e}")
-            run("git -C v8 checkout .", check=False)
-            continue
-
-        # Collect artifact
-        import platform, shutil
-        os.makedirs("artifacts", exist_ok=True)
-        os_name = "Windows" if platform.system().lower().startswith("win") else "Linux"
-        target_dir = f"artifacts/d8-{v}-{os_name}"
-        os.makedirs(target_dir, exist_ok=True)
-        binary_name = "d8.exe" if os_name == "Windows" else "d8"
-        src_bin = os.path.join("v8", build_dir, binary_name)
-        if not os.path.exists(src_bin):
-            failed.append(v); failure_reasons.append((v,"binary-missing"))
-            print(f"[FAIL-{v}] binary missing")
-            run("git -C v8 checkout .", check=False)
-            continue
-        shutil.copy2(src_bin, os.path.join(target_dir, binary_name))
-        report_src = os.path.join("v8","apply_patch_report.txt")
-        if os.path.exists(report_src):
-            shutil.copy2(report_src, os.path.join(target_dir, "apply_patch_report.txt"))
-
-        # Clean modifications for next version
-        run("git -C v8 checkout .", check=False)
-        success.append(v)
-        print(f"[OK] {v}")
-    except Exception as e:
-        failed.append(v); failure_reasons.append((v,"exception"))
-        print(f"[FAIL-{v}] exception: {e}")
-        run("git -C v8 checkout .", check=False)
-
-print("SUCCESS:", success)
-print("FAILED:", failed)
-with open("success_versions.txt","w",encoding="utf-8") as f:
-    for s in success: f.write(s+"\n")
-with open("failed_versions.txt","w",encoding="utf-8") as f:
-    for s in failed: f.write(s+"\n")
-with open("failed_reasons.txt","w",encoding="utf-8") as f:
-    for v,r in failure_reasons:
-        f.write(f"{v}\t{r}\n")
-PY
+          python3 build_versions_batch.py || true
+          echo "Batch processing complete (errors captured in failed_versions.txt)."
 
       - name: Upload batch artifacts
         if: steps.partition.outputs.has_any == 'true'
@@ -285,7 +149,6 @@ PY
             artifacts/**
             success_versions.txt
             failed_versions.txt
-            failed_reasons.txt
           retention-days: 7
 
   aggregate-and-release:
@@ -297,80 +160,32 @@ PY
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
       - uses: actions/checkout@v4
-        with:
-            fetch-depth: 0
-
+        with: { fetch-depth: 0 }
       - name: Download all batch artifacts
         uses: actions/download-artifact@v4
         with:
           path: downloaded
-
       - name: Install tools
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
           gh --version || true
-
-      - name: Merge success/failed and reasons
+      - name: Merge success & failed
         run: |
           set -e
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
-          [ -f public/failed_detailed.json ] || echo "[]" > public/failed_detailed.json
-          touch _all_success.txt _all_failed.txt _all_failed_reasons.txt
-          find downloaded -type f -name success_versions.txt -exec cat {} \; >> _all_success.txt || true
-          find downloaded -type f -name failed_versions.txt -exec cat {} \; >> _all_failed.txt || true
-          find downloaded -type f -name failed_reasons.txt -exec cat {} \; >> _all_failed_reasons.txt || true
-          sort -u -o _all_success.txt _all_success.txt
-            # _all_failed 不去重前先排序
-          sort -u -o _all_failed.txt _all_failed.txt
-
-          echo "Success versions:"; cat _all_success.txt || true
-          echo "Failed versions:";  cat _all_failed.txt || true
-          echo "Failed reasons raw:"; head -100 _all_failed_reasons.txt || true
-
-          # 更新 failed.json (版本数组)
+          find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
+          find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
+          sort -u -o _all_success.txt _all_success.txt || true
+          sort -u -o _all_failed.txt _all_failed.txt || true
           while read -r v; do
             [ -z "$v" ] && continue
             jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
               jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
           done < _all_failed.txt
-
-          # 更新 failed_detailed.json (对象数组)
-          # 读取现有
-          tmp_failed=$(mktemp)
-          cp public/failed_detailed.json "$tmp_failed"
-          python3 - <<'PY'
-import json,sys
-detail_path="public/failed_detailed.json"
-with open(detail_path,"r",encoding="utf-8") as f:
-    try:
-        data=json.load(f)
-        if not isinstance(data,list): data=[]
-    except:
-        data=[]
-existing={d["version"]:d for d in data if isinstance(d,dict) and "version" in d}
-# 读新的 reason 列表
-new=[]
-with open("_all_failed_reasons.txt","r",encoding="utf-8") as f:
-    for line in f:
-        line=line.rstrip()
-        if not line: continue
-        if "\t" in line:
-            v,r=line.split("\t",1)
-        else:
-            v,r=line,"unknown"
-        if v in existing: # 保留首次原因
-            continue
-        new.append({"version":v,"reason":r})
-data=list(existing.values())+new
-with open(detail_path,"w",encoding="utf-8") as f:
-    json.dump(data,f,ensure_ascii=False,indent=2)
-PY
-          echo "failed_detailed.json:"; cat public/failed_detailed.json
-
-      - name: Reconstruct per-version artifact dirs
+      - name: Reconstruct per-version dirs
         run: |
           set -e
           mkdir -p stage
@@ -393,9 +208,6 @@ PY
               [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
             fi
           done
-          echo "Stage structure:"
-          find stage -maxdepth 2 -type f -print
-
       - name: Create releases & update version.json
         env:
           ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
@@ -405,24 +217,23 @@ PY
           [ -f public/version.json ] || echo "[]" > public/version.json
           updated=false
           for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
-            [ -z "$v" ] && continue
             L="stage/d8-${v}-Linux/d8"
             W="stage/d8-${v}-Windows/d8.exe"
             if [ ! -f "$L" ] || [ ! -f "$W" ]; then
-              echo "Skip release for $v (missing one platform artifact)."
+              echo "Skip $v (missing artifact)."
               continue
             fi
             mkdir -p "public/$v"
             cp "$L" "public/$v/d8-linux"
             cp "$W" "public/$v/d8-windows.exe"
             if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v already exists."
+              echo "Release $v exists."
             else
               gh release create "$v" \
                 "public/$v/d8-linux" \
                 "public/$v/d8-windows.exe" \
                 --title "$v" \
-                --notes "Patched d8 for V8 $v (batched multi-version build)."
+                --notes "Patched d8 for V8 $v (multi-version batch)."
             fi
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
@@ -434,8 +245,6 @@ PY
           fi
           echo "version.json:"; cat public/version.json
           echo "failed.json:";  cat public/failed.json
-          echo "failed_detailed.json:"; cat public/failed_detailed.json
-
       - name: Commit & push tracking
         run: |
           if git diff --quiet -- public; then
@@ -445,11 +254,11 @@ PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update tracking (batch workers + reasons) [skip ci]"
+          git commit -m "Update tracking (batch build) [skip ci]"
           git push
 
   trigger-next-batch:
-    name: Trigger next batch if leftovers
+    name: Trigger next batch
     needs: [aggregate-and-release]
     if: needs.aggregate-and-release.outputs.leftover_total != '' && needs.aggregate-and-release.outputs.leftover_total != '0'
     runs-on: ubuntu-latest
@@ -459,7 +268,6 @@ PY
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_MAX: ${{ env.MAX_PER_RUN }}
         run: |
-          echo "Triggering next batch..."
           REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
           if [ -z "$REF" ]; then
             REF=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \

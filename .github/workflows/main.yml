@@ -24,7 +24,7 @@ env:
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
-  SLOTS_PER_OS: 3   # 每个平台 3 个 worker，总共 6
+  SLOTS_PER_OS: 3
 
 jobs:
   determine-versions:
@@ -138,139 +138,142 @@ jobs:
           cp patch.diff v8/
           cp partition_versions.py v8/ || true
 
-      - name: Process versions (loop, with build failure tracking)
+      - name: Process versions (loop)
         if: steps.partition.outputs.has_any == 'true'
         shell: bash
         env:
-            ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
           echo "Assigned versions: $ASSIGNED_JSON"
-          # 预创建结果文件（让实时写入后即便中途中断仍存在）
-          : > success_versions.txt
-          : > failed_versions.txt
-          : > failed_reasons.txt
           python3 - <<'PY'
-import os, json, subprocess, shlex, sys, textwrap, platform, shutil, time
+import os, json, subprocess, shlex, sys
 
 assigned = json.loads(os.environ.get("ASSIGNED_JSON","[]"))
 if not assigned:
-    print("No versions to process in loop.")
+    print("No versions to process.")
     sys.exit(0)
 
-OS_NAME = "Windows" if platform.system().lower().startswith("win") else "Linux"
-
-def run(cmd, cwd=None, check=True, capture=False):
+def run(cmd, cwd=None, check=True, reason=None):
     print(f"[RUN] {cmd}")
-    if capture:
-        result = subprocess.run(cmd, cwd=cwd, shell=True, text=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if check and result.returncode != 0:
-            raise RuntimeError(f"Command failed ({result.returncode}): {cmd}\n---- OUTPUT ----\n{result.stdout}")
-        return result
-    else:
-        rc = subprocess.run(cmd, cwd=cwd, shell=True).returncode
-        if check and rc != 0:
-            raise RuntimeError(f"Command failed ({rc}): {cmd}")
-        return rc
+    r = subprocess.run(cmd, cwd=cwd, shell=True)
+    if check and r.returncode != 0:
+        raise RuntimeError(reason or f"Command failed: {cmd}")
+    return r.returncode
 
-def append_line(path, line):
-    with open(path,"a",encoding="utf-8") as f:
-        f.write(line.rstrip()+"\n")
+success = []
+failed = []
+failure_reasons = []  # list of (version, reason)
 
-success_versions = []
-failed_versions = []
+EXPECTED_FILES = {
+    "src/d8/d8.cc",
+    "src/d8/d8.h",
+    "src/diagnostics/objects-printer.cc",
+    "src/objects/string.cc",
+    "src/snapshot/code-serializer.cc",
+    "src/snapshot/deserializer.cc"
+}
 
 for v in assigned:
-    log_file = f"build-log-{v}.txt"
-    print(f"\n==== Processing version {v} ====")
-    append_line(log_file, f"== Build log for {v} ==")
-    reason = None
+    print(f"\n==== Processing {v} ====")
     try:
-        start_ts = time.time()
-        # 1. Checkout tag
-        append_line(log_file, "Checkout tag")
-        run(f"git -C v8 fetch --tags", check=True)
-        run(f"git -C v8 checkout {shlex.quote(v)}", check=True)
+        try:
+            run("git -C v8 fetch --tags", reason="fetch-tags")
+            run(f"git -C v8 checkout {shlex.quote(v)}", reason="checkout-tag")
+        except Exception as e:
+            failed.append(v); failure_reasons.append((v,"checkout"))
+            print(f"[FAIL-{v}] checkout: {e}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 2. Sync DEPS for this tag + runhooks
-        append_line(log_file, "Sync DEPS")
-        run("gclient sync -D --no-history", check=True)
-        run("gclient runhooks", check=True)
+        try:
+            run("gclient sync -D --no-history", reason="sync-deps")
+        except Exception as e:
+            failed.append(v); failure_reasons.append((v,"sync"))
+            print(f"[FAIL-{v}] sync: {e}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 3. Clean previous build directory
-        build_dir = f"out.gn/x64.release.{v.replace('.', '_')}"
-        run(f"rm -rf v8/{build_dir}", check=False)
+        try:
+            run("gclient runhooks", reason="runhooks")
+        except Exception as e:
+            failed.append(v); failure_reasons.append((v,"runhooks"))
+            print(f"[FAIL-{v}] runhooks: {e}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 4. Apply patch
-        append_line(log_file, "Apply patch")
+        # Apply patch
         rc = subprocess.run("python3 apply_patch.py --patch patch.diff --verbose --report apply_patch_report.txt",
                             cwd="v8", shell=True).returncode
         if rc != 0:
-            reason = "PATCH_FAIL"
-            raise RuntimeError(f"Patch apply failed rc={rc}")
+            failed.append(v); failure_reasons.append((v,"patch"))
+            print(f"[FAIL-{v}] patch apply failed rc={rc}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 5. Validate expected file changed
+        # Validate diff
         diff_out = subprocess.check_output("git -C v8 diff --name-only", shell=True, text=True)
-        expected_files = {
-            "src/d8/d8.cc","src/d8/d8.h","src/diagnostics/objects-printer.cc",
-            "src/objects/string.cc","src/snapshot/code-serializer.cc",
-            "src/snapshot/deserializer.cc"
-        }
-        if not any(f in diff_out.splitlines() for f in expected_files):
-            reason = "PATCH_NO_EFFECT"
-            raise RuntimeError("Patch applied but no target files modified")
+        if not any(line.strip() in EXPECTED_FILES for line in diff_out.splitlines()):
+            failed.append(v); failure_reasons.append((v,"patch-nochange"))
+            print(f"[FAIL-{v}] no expected file modified after patch.")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 6. Configure (v8gen)
-        append_line(log_file, "Configure (v8gen)")
-        gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false"
+        # Build
+        build_dir = f"out.gn/x64.release.{v.replace('.', '_')}"
         try:
-            run(f"python tools/dev/v8gen.py {build_dir} -- {gn_args}", cwd="v8", check=True)
+            run(f"python tools/dev/v8gen.py {build_dir} -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false",
+                cwd="v8", reason="build-config")
         except Exception as e:
-            reason = "CONFIG_FAIL"
-            raise
+            failed.append(v); failure_reasons.append((v,"build-config"))
+            print(f"[FAIL-{v}] build-config: {e}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 7. Build
-        append_line(log_file, "Build (ninja)")
         try:
-            run(f"ninja -C {build_dir} d8", cwd="v8", check=True)
+            run(f"ninja -C {build_dir} d8", cwd="v8", reason="build-ninja")
         except Exception as e:
-            reason = "BUILD_FAIL"
-            raise
+            failed.append(v); failure_reasons.append((v,"build-ninja"))
+            print(f"[FAIL-{v}] build-ninja: {e}")
+            run("git -C v8 checkout .", check=False)
+            continue
 
-        # 8. Collect artifact
-        append_line(log_file, "Collect artifact")
+        # Collect artifact
+        import platform, shutil
         os.makedirs("artifacts", exist_ok=True)
-        tgt_dir = f"artifacts/d8-{v}-{OS_NAME}"
-        os.makedirs(tgt_dir, exist_ok=True)
-        binary_name = "d8.exe" if OS_NAME == "Windows" else "d8"
-        built_bin = os.path.join("v8", build_dir, binary_name)
-        if not os.path.exists(built_bin):
-            reason = "MISSING_BINARY"
-            raise RuntimeError("Built binary missing")
-        shutil.copy2(built_bin, os.path.join(tgt_dir, binary_name))
-        report_src = os.path.join("v8", "apply_patch_report.txt")
+        os_name = "Windows" if platform.system().lower().startswith("win") else "Linux"
+        target_dir = f"artifacts/d8-{v}-{os_name}"
+        os.makedirs(target_dir, exist_ok=True)
+        binary_name = "d8.exe" if os_name == "Windows" else "d8"
+        src_bin = os.path.join("v8", build_dir, binary_name)
+        if not os.path.exists(src_bin):
+            failed.append(v); failure_reasons.append((v,"binary-missing"))
+            print(f"[FAIL-{v}] binary missing")
+            run("git -C v8 checkout .", check=False)
+            continue
+        shutil.copy2(src_bin, os.path.join(target_dir, binary_name))
+        report_src = os.path.join("v8","apply_patch_report.txt")
         if os.path.exists(report_src):
-            shutil.copy2(report_src, os.path.join(tgt_dir, "apply_patch_report.txt"))
+            shutil.copy2(report_src, os.path.join(target_dir, "apply_patch_report.txt"))
 
-        # 9. Success
-        success_versions.append(v)
-        append_line("success_versions.txt", v)
-        append_line(log_file, f"SUCCESS finished in {time.time()-start_ts:.1f}s")
-        print(f"==== Version {v} SUCCESS ====")
-
+        # Clean modifications for next version
+        run("git -C v8 checkout .", check=False)
+        success.append(v)
+        print(f"[OK] {v}")
     except Exception as e:
-        if reason is None:
-            reason = "OTHER_FAIL"
-        failed_versions.append(v)
-        append_line("failed_versions.txt", v)
-        append_line("failed_reasons.txt", f"{v} {reason}")
-        append_line(log_file, f"FAIL ({reason}): {e}")
-        print(f"==== Version {v} FAILED ({reason}) ====")
-    finally:
-        # Always revert modifications for next version
-        subprocess.run("git -C v8 checkout .", shell=True)
-        # (Optionally could also delete build_dir on failure)
+        failed.append(v); failure_reasons.append((v,"exception"))
+        print(f"[FAIL-{v}] exception: {e}")
+        run("git -C v8 checkout .", check=False)
+
+print("SUCCESS:", success)
+print("FAILED:", failed)
+with open("success_versions.txt","w",encoding="utf-8") as f:
+    for s in success: f.write(s+"\n")
+with open("failed_versions.txt","w",encoding="utf-8") as f:
+    for s in failed: f.write(s+"\n")
+with open("failed_reasons.txt","w",encoding="utf-8") as f:
+    for v,r in failure_reasons:
+        f.write(f"{v}\t{r}\n")
 PY
 
       - name: Upload batch artifacts
@@ -283,7 +286,6 @@ PY
             success_versions.txt
             failed_versions.txt
             failed_reasons.txt
-            build-log-*.txt
           retention-days: 7
 
   aggregate-and-release:
@@ -296,7 +298,7 @@ PY
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+            fetch-depth: 0
 
       - name: Download all batch artifacts
         uses: actions/download-artifact@v4
@@ -309,36 +311,71 @@ PY
           sudo apt-get install -y jq
           gh --version || true
 
-      - name: Merge success & failed lists
+      - name: Merge success/failed and reasons
         run: |
           set -e
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
+          [ -f public/failed_detailed.json ] || echo "[]" > public/failed_detailed.json
           touch _all_success.txt _all_failed.txt _all_failed_reasons.txt
           find downloaded -type f -name success_versions.txt -exec cat {} \; >> _all_success.txt || true
-            # 失败版本
           find downloaded -type f -name failed_versions.txt -exec cat {} \; >> _all_failed.txt || true
-            # 失败原因（可选，不影响列表逻辑）
           find downloaded -type f -name failed_reasons.txt -exec cat {} \; >> _all_failed_reasons.txt || true
           sort -u -o _all_success.txt _all_success.txt
+            # _all_failed 不去重前先排序
           sort -u -o _all_failed.txt _all_failed.txt
+
           echo "Success versions:"; cat _all_success.txt || true
-          echo "Failed versions:"; cat _all_failed.txt || true
-          echo "Failed reasons:"; cat _all_failed_reasons.txt || true
-          # 更新 failed.json
+          echo "Failed versions:";  cat _all_failed.txt || true
+          echo "Failed reasons raw:"; head -100 _all_failed_reasons.txt || true
+
+          # 更新 failed.json (版本数组)
           while read -r v; do
             [ -z "$v" ] && continue
             jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
               jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
           done < _all_failed.txt
 
+          # 更新 failed_detailed.json (对象数组)
+          # 读取现有
+          tmp_failed=$(mktemp)
+          cp public/failed_detailed.json "$tmp_failed"
+          python3 - <<'PY'
+import json,sys
+detail_path="public/failed_detailed.json"
+with open(detail_path,"r",encoding="utf-8") as f:
+    try:
+        data=json.load(f)
+        if not isinstance(data,list): data=[]
+    except:
+        data=[]
+existing={d["version"]:d for d in data if isinstance(d,dict) and "version" in d}
+# 读新的 reason 列表
+new=[]
+with open("_all_failed_reasons.txt","r",encoding="utf-8") as f:
+    for line in f:
+        line=line.rstrip()
+        if not line: continue
+        if "\t" in line:
+            v,r=line.split("\t",1)
+        else:
+            v,r=line,"unknown"
+        if v in existing: # 保留首次原因
+            continue
+        new.append({"version":v,"reason":r})
+data=list(existing.values())+new
+with open(detail_path,"w",encoding="utf-8") as f:
+    json.dump(data,f,ensure_ascii=False,indent=2)
+PY
+          echo "failed_detailed.json:"; cat public/failed_detailed.json
+
       - name: Reconstruct per-version artifact dirs
         run: |
           set -e
           mkdir -p stage
           find downloaded -type f -name d8 -o -name d8.exe | while read -r bin; do
-            base=$(basename "$(dirname "$bin")")  # d8-<version>-OS
+            base=$(basename "$(dirname "$bin")")
             ver="${base#d8-}"
             if echo "$base" | grep -q "\-Linux$"; then
               ver="${ver%-Linux}"
@@ -369,7 +406,6 @@ PY
           updated=false
           for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
             [ -z "$v" ] && continue
-            # 需要两个平台都成功才发布
             L="stage/d8-${v}-Linux/d8"
             W="stage/d8-${v}-Windows/d8.exe"
             if [ ! -f "$L" ] || [ ! -f "$W" ]; then
@@ -386,7 +422,7 @@ PY
                 "public/$v/d8-linux" \
                 "public/$v/d8-windows.exe" \
                 --title "$v" \
-                --notes "Patched d8 for V8 $v (multi-version worker batch)."
+                --notes "Patched d8 for V8 $v (batched multi-version build)."
             fi
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
@@ -398,6 +434,7 @@ PY
           fi
           echo "version.json:"; cat public/version.json
           echo "failed.json:";  cat public/failed.json
+          echo "failed_detailed.json:"; cat public/failed_detailed.json
 
       - name: Commit & push tracking
         run: |
@@ -408,7 +445,7 @@ PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update tracking (batch workers) [skip ci]"
+          git commit -m "Update tracking (batch workers + reasons) [skip ci]"
           git push
 
   trigger-next-batch:

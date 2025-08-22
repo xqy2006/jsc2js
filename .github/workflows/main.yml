@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
+    inputs:
+      max_per_run:
+        description: "本次最多处理多少个新版本（留空使用默认）"
+        required: false
+        default: "3"
 
 permissions:
   contents: write
@@ -17,8 +22,8 @@ env:
   V8_REPO: https://github.com/v8/v8.git
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
-  # 限制每次最多处理多少个新版本（空字符串 = 不限制）
-  MAX_PER_RUN: ""
+  # 设置一个默认限制，避免矩阵过大
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '3' }}
 
 jobs:
   determine-versions:
@@ -28,16 +33,17 @@ jobs:
       matrix: ${{ steps.determine.outputs.matrix }}
       versions_json: ${{ steps.determine.outputs.versions }}
       has_versions: ${{ steps.determine.outputs.has_versions }}
+      leftover_total: ${{ steps.determine.outputs.leftover_total }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Show Python version
+      - name: Python version
         run: python3 --version
 
-      - name: Determine new versions
+      - name: Determine versions batch
         id: determine
         run: |
           python3 determine_versions.py
@@ -47,6 +53,7 @@ jobs:
           echo "matrix=${{ steps.determine.outputs.matrix }}"
           echo "versions=${{ steps.determine.outputs.versions }}"
           echo "has_versions=${{ steps.determine.outputs.has_versions }}"
+          echo "leftover_total=${{ steps.determine.outputs.leftover_total }}"
 
   build:
     name: Build d8 (${{ matrix.version }} / ${{ matrix.os }})
@@ -55,6 +62,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      max-parallel: 3   # 最多 3 个并行任务（满足你的要求）
       matrix: ${{ fromJSON(needs.determine-versions.outputs.matrix) }}
     env:
       VERSION: ${{ matrix.version }}
@@ -71,7 +79,6 @@ jobs:
           sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" >> $GITHUB_PATH
-          echo "PATH after depot_tools: $PATH"
           python --version
 
       - name: Prepare environment (Windows)
@@ -97,17 +104,17 @@ jobs:
           set -e
           cd v8
           if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
-            echo "Patch file not found at repo root!"
+            echo "Patch file not found!"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
           cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
           mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
-          echo "Patch lists ${#EXPECTED[@]} unique file paths:"
+          echo "Patch lists ${#EXPECTED[@]} unique files:"
           printf '  %s\n' "${EXPECTED[@]}"
 
           if [ -n "${EXPECTED_PATCH_FILE_COUNT}" ] && [ "${#EXPECTED[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
-            echo "Expected ${EXPECTED_PATCH_FILE_COUNT} files but patch lists ${#EXPECTED[@]}"
+            echo "Expected ${EXPECTED_PATCH_FILE_COUNT} files, got ${#EXPECTED[@]}."
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -117,7 +124,7 @@ jobs:
           rc=$?
           set -e
           if [ $rc -ne 0 ]; then
-            echo "git apply failed code=$rc"
+            echo "git apply failed rc=$rc"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -126,12 +133,12 @@ jobs:
           missing=0
           for f in "${EXPECTED[@]}"; do
             if ! grep -qx "$f" <<< "$MODIFIED"; then
-              echo "Missing modified file in diff: $f"
+              echo "Missing diff file: $f"
               missing=1
             fi
           done
           if [ $missing -ne 0 ]; then
-            echo "Not all expected files appear in diff."
+            echo "Not all expected files modified."
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -175,10 +182,10 @@ jobs:
 
       - name: Skipped (patch not applied)
         if: steps.apply.outputs.applied != 'true'
-        run: echo "Skipping build for $VERSION on ${{ runner.os }} (patch not applied)."
+        run: echo "Skipping build for $VERSION on ${{ runner.os }}."
 
   aggregate-and-release:
-    name: Aggregate artifacts & create releases
+    name: Aggregate & release
     needs: [determine-versions, build]
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
@@ -207,10 +214,10 @@ jobs:
           fi
           cat public/version.json
 
-      - name: Create releases and update version.json
+      - name: Create releases & update version.json
         env:
-          VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           UPDATED=false
@@ -220,7 +227,7 @@ jobs:
             LIN_DIR="downloaded/d8-${v}-Linux"
             WIN_DIR="downloaded/d8-${v}-Windows"
             if [ ! -d "$LIN_DIR" ] || [ ! -d "$WIN_DIR" ]; then
-              echo "Missing artifacts for $v -> skip release"
+              echo "Artifacts missing for $v -> skip"
               continue
             fi
             mkdir -p "public/$v"
@@ -228,7 +235,7 @@ jobs:
             cp "$WIN_DIR"/d8.exe "public/$v/d8-windows.exe"
 
             if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v already exists, skipping create."
+              echo "Release $v exists."
             else
               gh release create "$v" \
                 "public/$v/d8-linux" \
@@ -242,20 +249,22 @@ jobs:
               UPDATED=true
             fi
           done
+
           if [ "$UPDATED" = true ]; then
             jq 'sort_by(split(".") | map(tonumber))' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
           fi
           echo "Final version.json:"
           cat public/version.json
+          echo "Leftover unprocessed after this batch: ${{ needs.determine-versions.outputs.leftover_total }}"
 
-      - name: Commit & push updates
+      - name: Commit & push
         run: |
           if git diff --quiet -- public; then
-            echo "No changes to commit."
+            echo "No changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update public with new patched d8 versions [skip ci]"
+          git commit -m "Update public with new patched d8 versions (batch) [skip ci]"
           git push

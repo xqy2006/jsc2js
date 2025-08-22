@@ -2,12 +2,11 @@ name: Build patched V8 d8 (multi versions)
 
 on:
   schedule:
-    - cron: "0 2 * * *"     # 每天 02:00 UTC 运行
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
-  actions: read
 
 concurrency:
   group: build-patched-v8
@@ -17,8 +16,8 @@ env:
   MIN_VERSION: 12.0.1
   V8_REPO: https://github.com/v8/v8.git
   PATCH_FILE: patch.diff
-  EXPECTED_PATCH_FILE_COUNT: 6
-  # 可选：设置一次运行最多处理多少个新版本（避免构建时间过长），为空表示不限制
+  EXPECTED_PATCH_FILE_COUNT: "6"
+  # 限制每次最多处理多少个新版本（空字符串 = 不限制）
   MAX_PER_RUN: ""
 
 jobs:
@@ -30,93 +29,24 @@ jobs:
       versions_json: ${{ steps.determine.outputs.versions }}
       has_versions: ${{ steps.determine.outputs.has_versions }}
     steps:
-      - name: Checkout this repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare version list (Python)
+      - name: Show Python version
+        run: python3 --version
+
+      - name: Determine new versions
         id: determine
         run: |
-          set -e
-          python3 - <<'PYCODE'
-import json, os, re, subprocess, sys
+          python3 .github/scripts/determine_versions.py
 
-MIN_VERSION = os.environ.get("MIN_VERSION", "12.0.1")
-MAX_PER_RUN = os.environ.get("MAX_PER_RUN","").strip()
-repo_url = os.environ["V8_REPO"]
-
-# 读取已处理版本
-os.makedirs("public", exist_ok=True)
-processed_path = "public/version.json"
-if not os.path.exists(processed_path):
-    with open(processed_path,"w",encoding="utf-8") as f: f.write("[]")
-with open(processed_path,"r",encoding="utf-8") as f:
-    try:
-        processed = json.load(f)
-        if not isinstance(processed,list): processed=[]
-    except Exception:
-        processed=[]
-
-processed_set = set(processed)
-
-# 获取远程标签
-res = subprocess.run(["git","ls-remote","--tags", repo_url], capture_output=True, text=True, check=True)
-tag_lines = [l.strip() for l in res.stdout.splitlines() if l.strip()]
-tag_names = []
-for line in tag_lines:
-    parts = line.split()
-    if len(parts) != 2: continue
-    ref = parts[1]
-    if not ref.startswith("refs/tags/"): continue
-    tag = ref[len("refs/tags/"):]
-    # 剥离可能存在的 ^{} （指向 annotated tag 对象）
-    tag = tag.split("^")[0]
-    tag_names.append(tag)
-
-# 仅保留严格语义版本：x.y.z （纯数字，不带后缀，如 14.1.96-pgo 要过滤）
-semver_re = re.compile(r"^\d+\.\d+\.\d+$")
-
-def ver_tuple(v):
-    return tuple(int(x) for x in v.split("."))
-
-filtered = [t for t in tag_names if semver_re.match(t)]
-# 去重
-filtered = sorted(set(filtered), key=lambda v: ver_tuple(v))
-
-# 过滤 >= MIN_VERSION 且未处理
-min_tuple = ver_tuple(MIN_VERSION)
-new_versions = [v for v in filtered if ver_tuple(v) >= min_tuple and v not in processed_set]
-
-if MAX_PER_RUN:
-    try:
-        limit = int(MAX_PER_RUN)
-        if limit > 0:
-            new_versions = new_versions[:limit]
-    except:
-        pass
-
-# 输出 versions_json
-versions_json = json.dumps(new_versions, ensure_ascii=False)
-
-# 生成矩阵 include
-include = []
-for v in new_versions:
-    include.append({"os":"ubuntu-latest","version":v})
-    include.append({"os":"windows-latest","version":v})
-
-matrix = json.dumps({"include": include}, ensure_ascii=False)
-
-has_versions = "true" if new_versions else "false"
-
-# 写入 GITHUB_OUTPUT
-with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as out:
-    out.write(f"versions={versions_json}\n")
-    out.write(f"matrix={matrix}\n")
-    out.write(f"has_versions={has_versions}\n")
-
-print("Detected new versions:", new_versions)
-PYCODE
+      - name: Debug outputs
+        run: |
+          echo "matrix=${{ steps.determine.outputs.matrix }}"
+          echo "versions=${{ steps.determine.outputs.versions }}"
+          echo "has_versions=${{ steps.determine.outputs.has_versions }}"
 
   build:
     name: Build d8 (${{ matrix.version }} / ${{ matrix.os }})
@@ -129,7 +59,7 @@ PYCODE
     env:
       VERSION: ${{ matrix.version }}
     steps:
-      - name: Checkout this repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -141,8 +71,8 @@ PYCODE
           sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" >> $GITHUB_PATH
-          echo "Python:"; python --version
-          echo "gn/ninja should be available after this."
+          echo "PATH after depot_tools: $PATH"
+          python --version
 
       - name: Prepare environment (Windows)
         if: runner.os == 'Windows'
@@ -167,48 +97,46 @@ PYCODE
           set -e
           cd v8
           if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
-            echo "Patch file not found!"
+            echo "Patch file not found at repo root!"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
           cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
           mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
-          echo "Expected files (${#EXPECTED[@]}):"
+          echo "Patch lists ${#EXPECTED[@]} unique file paths:"
           printf '  %s\n' "${EXPECTED[@]}"
 
-          if [ "${EXPECTED_PATCH_FILE_COUNT}" != "" ] && [ "${#EXPECTED[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
-            echo "Patch expected file count mismatch: got ${#EXPECTED[@]}, want ${EXPECTED_PATCH_FILE_COUNT}"
+          if [ -n "${EXPECTED_PATCH_FILE_COUNT}" ] && [ "${#EXPECTED[@]}" -ne "${EXPECTED_PATCH_FILE_COUNT}" ]; then
+            echo "Expected ${EXPECTED_PATCH_FILE_COUNT} files but patch lists ${#EXPECTED[@]}"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # 尝试应用
           set +e
           git apply --3way "$PATCH_FILE"
-          status=$?
+          rc=$?
           set -e
-          if [ $status -ne 0 ]; then
-            echo "git apply failed with code $status"
+          if [ $rc -ne 0 ]; then
+            echo "git apply failed code=$rc"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-            # 确认所有文件都在 diff 中
           MODIFIED=$(git diff --name-only)
           missing=0
           for f in "${EXPECTED[@]}"; do
-            if ! grep -qx "$f" <<<"$MODIFIED"; then
-              echo "Missing modified file: $f"
+            if ! grep -qx "$f" <<< "$MODIFIED"; then
+              echo "Missing modified file in diff: $f"
               missing=1
             fi
           done
           if [ $missing -ne 0 ]; then
-            echo "Not all expected files modified."
+            echo "Not all expected files appear in diff."
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          echo "Patch applied successfully."
+          echo "Patch applied OK."
           echo "applied=true" >> $GITHUB_OUTPUT
 
       - name: Configure & build (Linux)
@@ -260,7 +188,7 @@ PYCODE
         with:
           fetch-depth: 0
 
-      - name: Download all artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: downloaded
@@ -271,7 +199,7 @@ PYCODE
           sudo apt-get install -y jq
           gh --version || true
 
-      - name: Prepare public/version.json
+      - name: Ensure public/version.json
         run: |
           mkdir -p public
           if [ ! -f public/version.json ]; then
@@ -279,21 +207,20 @@ PYCODE
           fi
           cat public/version.json
 
-      - name: Process versions & create releases
+      - name: Create releases and update version.json
         env:
           VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          NEW_VERS=$(echo "$VERSIONS" | jq -r '.[]')
           UPDATED=false
-
-          for v in $NEW_VERS; do
-            echo "=== Handling version $v ==="
+          echo "$VERSIONS" | jq -r '.[]' | while read -r v; do
+            [ -z "$v" ] && continue
+            echo "Processing version $v"
             LIN_DIR="downloaded/d8-${v}-Linux"
             WIN_DIR="downloaded/d8-${v}-Windows"
             if [ ! -d "$LIN_DIR" ] || [ ! -d "$WIN_DIR" ]; then
-              echo "Missing artifacts for $v (Linux or Windows) -> skip release"
+              echo "Missing artifacts for $v -> skip release"
               continue
             fi
             mkdir -p "public/$v"
@@ -301,7 +228,7 @@ PYCODE
             cp "$WIN_DIR"/d8.exe "public/$v/d8-windows.exe"
 
             if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v already exists."
+              echo "Release $v already exists, skipping create."
             else
               gh release create "$v" \
                 "public/$v/d8-linux" \
@@ -315,15 +242,13 @@ PYCODE
               UPDATED=true
             fi
           done
-
           if [ "$UPDATED" = true ]; then
-            jq 'sort_by( (split(".") | map(tonumber)) )' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
+            jq 'sort_by(split(".") | map(tonumber))' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
           fi
-
           echo "Final version.json:"
           cat public/version.json
 
-      - name: Commit & push public directory (if changed)
+      - name: Commit & push updates
         run: |
           if git diff --quiet -- public; then
             echo "No changes to commit."

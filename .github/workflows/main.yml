@@ -3,10 +3,10 @@ name: Build patched V8 d8 (multi versions)
 on:
   schedule:
     - cron: "0 2 * * *"   # 每天 02:00 UTC 运行
-  workflow_dispatch:       # 手动触发
+  workflow_dispatch:
 
 permissions:
-  contents: write          # 需要写入 public 目录 & 创建 release
+  contents: write
   actions: read
 
 concurrency:
@@ -17,7 +17,6 @@ env:
   MIN_VERSION: 12.0.1
   V8_REPO: https://github.com/v8/v8.git
   PATCH_FILE: patch.diff
-  # 如果需要限制最大处理版本（例如避免未来主线标签），可以添加 MAX_VERSION
 
 jobs:
   determine-versions:
@@ -26,6 +25,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       versions_json: ${{ steps.collect.outputs.versions }}
+      has_versions: ${{ steps.set-matrix.outputs.has_versions }}
     steps:
       - name: Checkout this repo
         uses: actions/checkout@v4
@@ -39,58 +39,45 @@ jobs:
           if [ ! -f public/version.json ]; then
             echo "[]" > public/version.json
           fi
-          echo "processed=$(cat public/version.json | tr -d '\n')" >> $GITHUB_OUTPUT
+          echo "processed=$(tr -d '\n' < public/version.json)" >> $GITHUB_OUTPUT
 
       - name: Fetch V8 tags
         id: fetch_tags
         run: |
-          git ls-remote --tags $V8_REPO | awk '{print $2}' | sed -n 's@refs/tags/@@p' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+' | sort -V > all_tags.txt
-          echo "All semver-like tags:"
-          head all_tags.txt
+          git ls-remote --tags "$V8_REPO" | awk '{print $2}' | sed -n 's@refs/tags/@@p' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+' | sort -V > all_tags.txt
           echo "TOTAL_TAGS=$(wc -l < all_tags.txt)"
-          echo "tags<<EOF" >> $GITHUB_OUTPUT
-          cat all_tags.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          head all_tags.txt
 
       - name: Filter new versions since MIN_VERSION
         id: filter
         run: |
           MIN_VERSION="${MIN_VERSION}"
-          processed='${{ steps.load.outputs.processed }}'
-          echo "Processed list: $processed"
-          # Convert processed JSON array to newline list
-            echo "$processed" | jq -r '.[]' > processed.txt
+          echo '${{ steps.load.outputs.processed }}' | jq -r '.[]' > processed.txt
           NEW_LIST=()
           while read -r tag; do
-            # semver compare using sort -V
-            if [ "$(printf "%s\n%s\n" "$MIN_VERSION" "$tag" | sort -V | head -n1)" != "$tag" ]; then
-              continue  # tag < MIN_VERSION
+            [ -z "$tag" ] && continue
+            # 如果 tag < MIN_VERSION 则跳过
+            if [ "$(printf "%s\n%s\n" "$MIN_VERSION" "$tag" | sort -V | head -n1)" != "$MIN_VERSION" ]; then
+              continue
             fi
             if grep -qx "$tag" processed.txt; then
               continue
             fi
             NEW_LIST+=("$tag")
           done < all_tags.txt
-
-          if [ ${#NEW_LIST[@]} -eq 0 ]; then
-            echo "No new versions to process."
-          fi
-
           printf "%s\n" "${NEW_LIST[@]}" > new_versions.txt
-          echo "new_versions<<EOF" >> $GITHUB_OUTPUT
-          cat new_versions.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "New versions count: ${#NEW_LIST[@]}"
 
       - name: Build dynamic matrix JSON
         id: set-matrix
         run: |
-          versions_file=new_versions.txt
-          if [ ! -s "$versions_file" ]; then
+          if [ ! -s new_versions.txt ]; then
             echo 'matrix={"include":[]}' >> $GITHUB_OUTPUT
+            echo "has_versions=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          # Create objects for each version & os
-          MATRIX=$(jq -n -c '
+            MATRIX=$(jq -n -c '
               [inputs | split("\n")[] | select(length>0)] as $vers |
               $vers | map(
                 [
@@ -98,9 +85,9 @@ jobs:
                   {"os":"windows-latest","version":.}
                 ][]
               ) | {include: .}
-          ' <(cat "$versions_file"))
-          echo "Generated matrix: $MATRIX"
+          ' <(cat new_versions.txt))
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "has_versions=true" >> $GITHUB_OUTPUT
 
       - name: Collect versions JSON
         id: collect
@@ -115,7 +102,7 @@ jobs:
   build:
     name: Build d8 (${{ matrix.version }} / ${{ matrix.os }})
     needs: determine-versions
-    if: ${{ fromJSON(needs.determine-versions.outputs.matrix).include != null && length(fromJSON(needs.determine-versions.outputs.matrix).include) > 0 }}
+    if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -132,26 +119,29 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison
+          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip
           python --version
-          echo "ENV prepared."
+          # 获取 depot_tools (确保有 gn / ninja 最新版本)
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "$PWD/depot_tools" >> $GITHUB_PATH
 
       - name: Prepare environment (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Write-Host "Ensure Python & Visual Studio build tools available (host images usually have them)."
           python --version
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "$PWD/depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Clone V8
         run: |
-          git clone --depth=1 --branch "$VERSION" $V8_REPO v8 || {
-            echo "Falling back to full clone to get tag."
-            git clone $V8_REPO v8
-            cd v8
-            git checkout "$VERSION"
-          }
+          set -e
+          # 直接获取指定标签（不能保证存在浅克隆 -> 退回全克隆）
+          git clone $V8_REPO v8
           cd v8
+          git fetch --tags
+          git checkout "$VERSION"
+          # （可选）初始化子模块
           git submodule update --init --recursive || true
 
       - name: Apply patch
@@ -160,18 +150,22 @@ jobs:
         run: |
           set -e
           cd v8
-          cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
-          # Extract expected 6 files from patch
-          mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | head -n6)
-          if [ "${#EXPECTED[@]}" -ne 6 ]; then
-            echo "Did not find exactly 6 files in patch (found ${#EXPECTED[@]})."
+          if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
+            echo "Patch file not found!"
+            echo "applied=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
+          cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
+          # 抽取 patch 中全部 +++ b/ 行（假设 6 个，如果不是可调整）
+          mapfile -t EXPECTED < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||')
+          echo "Expected modified files (${#EXPECTED[@]}):"
+          printf '  %s\n' "${EXPECTED[@]}"
           set +e
           git apply --3way "$PATCH_FILE"
           APPLY_STATUS=$?
           set -e
           if [ $APPLY_STATUS -ne 0 ]; then
-            echo "Patch application failed."
+            echo "Patch application failed (exit $APPLY_STATUS)"
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -184,11 +178,11 @@ jobs:
             fi
           done
           if [ $missing -ne 0 ]; then
-            echo "Not all expected files were modified."
+            echo "Some expected files not modified."
             echo "applied=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          echo "Patch applied successfully."
+          echo "Patch applied OK."
           echo "applied=true" >> $GITHUB_OUTPUT
 
       - name: Configure & build (Linux)
@@ -221,21 +215,18 @@ jobs:
         if: steps.apply.outputs.applied == 'true'
         uses: actions/upload-artifact@v4
         with:
-            name: d8-${{ matrix.version }}-${{ runner.os }}
-            path: artifact/*
-            retention-days: 14
+          name: d8-${{ matrix.version }}-${{ runner.os }}
+          path: artifact/*
+          retention-days: 14
 
-      - name: Mark skipped (no patch)
+      - name: Skipped (patch not applied)
         if: steps.apply.outputs.applied != 'true'
-        run: |
-          echo "Skipping build for $VERSION on ${{ runner.os }} (patch not applied)."
+        run: echo "Skipping build for $VERSION on ${{ runner.os }} (patch not applied)."
 
   aggregate-and-release:
     name: Aggregate artifacts & create releases
-    needs:
-      - determine-versions
-      - build
-    if: ${{ needs.determine-versions.outputs.versions_json != '[]' }}
+    needs: [determine-versions, build]
+    if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -248,11 +239,10 @@ jobs:
         with:
           path: downloaded
 
-      - name: Install jq & gh
+      - name: Install jq
         run: |
           sudo apt-get update
-            sudo apt-get install -y jq
-          gh --version || true
+          sudo apt-get install -y jq
 
       - name: Prepare public/version.json
         run: |
@@ -270,52 +260,49 @@ jobs:
           set -e
           NEW_VERS=$(echo "$VERSIONS" | jq -r '.[]')
           UPDATED=false
+
           for v in $NEW_VERS; do
             echo "=== Handling version $v ==="
-            if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v already exists, skip."
+            # 匹配已上传工件目录名
+            LIN_DIR=$(ls -d downloaded/d8-"$v"-Linux 2>/dev/null || true)
+            WIN_DIR=$(ls -d downloaded/d8-"$v"-Windows 2>/dev/null || true)
+            if [ -z "$LIN_DIR" ] || [ -z "$WIN_DIR" ]; then
+              echo "Missing artifacts for $v (Linux or Windows). Skip release."
               continue
             fi
-            LINUX_PATH="downloaded/d8-${v}-Linux"
-            WIN_PATH="downloaded/d8-${v}-Windows"
-            # On Windows runner.os names used in artifact are 'Windows' and 'Linux' or 'macOS'? We used runner.os which yields 'Linux' and 'Windows'
-            if [ ! -d "$LINUX_PATH" ] || [ ! -d "$WIN_PATH" ]; then
-              echo "Artifacts missing for $v (Linux or Windows). Skip release."
-              continue
-            fi
+
             mkdir -p "public/$v"
-            # Normalize names
-            if [ -f "$LINUX_PATH/d8" ]; then
-              cp "$LINUX_PATH/d8" "public/$v/d8-linux"
-            fi
-            if [ -f "$WIN_PATH/d8.exe" ]; then
-              cp "$WIN_PATH/d8.exe" "public/$v/d8-windows.exe"
-            fi
-            ls -l "public/$v"
+            cp "$LIN_DIR"/d8 "public/$v/d8-linux"
+            cp "$WIN_DIR"/d8.exe "public/$v/d8-windows.exe"
 
-            # Create release
-            gh release create "$v" \
-              "public/$v/d8-linux" \
-              "public/$v/d8-windows.exe" \
-              --title "$v" \
-              --notes "Patched d8 for V8 $v (options: v8_enable_disassembler=true, v8_enable_object_print=true)."
+            if gh release view "$v" >/dev/null 2>&1; then
+              echo "Release $v already exists, skip creating."
+            else
+              gh release create "$v" \
+                "public/$v/d8-linux" \
+                "public/$v/d8-windows.exe" \
+                --title "$v" \
+                --notes "Patched d8 for V8 $v (flags: v8_enable_disassembler=true, v8_enable_object_print=true)."
+            fi
 
-            # Update version.json if not present
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
               UPDATED=true
             fi
           done
+
           if [ "$UPDATED" = true ]; then
-            sort -V public/version.json | jq 'sort_by(split(".")|map(tonumber))' public/version.json > public/version.tmp || true
+            # 重新排序（语义排序）
+            jq 'sort_by( (split(".") | map(tonumber)) )' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
           fi
+
           echo "Final version.json:"
           cat public/version.json
 
       - name: Commit & push public directory (if changed)
         run: |
           if git diff --quiet -- public; then
-            echo "No changes to public/ to commit."
+            echo "No changes to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"

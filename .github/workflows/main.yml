@@ -9,7 +9,7 @@ on:
       max_per_run:
         description: "本次最多处理多少个新版本（默认 20）"
         required: false
-        default: "20"
+        default: "30"
 
 permissions:
   contents: write
@@ -24,7 +24,7 @@ env:
   MIN_VERSION: 12.0.1
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
-  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}
   SLOTS_PER_OS: 3
 
 jobs:

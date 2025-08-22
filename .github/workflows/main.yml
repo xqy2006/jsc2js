@@ -1,4 +1,4 @@
-name: Build patched V8 d8
+name: Build patched V8 d8 (6 reusable workers)
 
 on:
   schedule:
@@ -19,61 +19,55 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # 使用 GitHub 镜像获取 tags（较快），支持 3/4 段版本号
   V8_REPO: https://github.com/v8/v8.git
   MIN_VERSION: 12.0.1
   PATCH_FILE: patch.diff
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '20' }}
+  SLOTS_PER_OS: 3   # 每个平台 3 个 worker，总共 6
 
 jobs:
   determine-versions:
     name: Determine unprocessed versions
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.determine.outputs.matrix }}
       versions_json: ${{ steps.determine.outputs.versions }}
       has_versions: ${{ steps.determine.outputs.has_versions }}
       leftover_total: ${{ steps.determine.outputs.leftover_total }}
     steps:
-      - name: Checkout infra repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Ensure public JSON tracking
+      - name: Ensure tracking JSON
         run: |
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
-          echo "version.json:"; cat public/version.json
-          echo "failed.json:"; cat public/failed.json
-
-      - name: Show Python
+      - name: Python version
         run: python3 --version
-
-      - name: Determine versions batch
+      - name: Determine versions
         id: determine
         run: python3 determine_versions.py
-
-      - name: Debug outputs
+      - name: Echo outputs
         run: |
-          echo matrix=${{ steps.determine.outputs.matrix }}
-          echo versions=${{ steps.determine.outputs.versions }}
-          echo has_versions=${{ steps.determine.outputs.has_versions }}
-          echo leftover=${{ steps.determine.outputs.leftover_total }}
+          echo "versions=${{ steps.determine.outputs.versions }}"
+          echo "has_versions=${{ steps.determine.outputs.has_versions }}"
+          echo "leftover=${{ steps.determine.outputs.leftover_total }}"
 
   build:
-    name: Build ${{ matrix.version }} / ${{ matrix.os }}
+    name: Build slot ${{ matrix.slot }} / ${{ matrix.os }}
     needs: determine-versions
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      max-parallel: 3
-      matrix: ${{ fromJSON(needs.determine-versions.outputs.matrix) }}
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        slot: [0,1,2]
     env:
-      VERSION: ${{ matrix.version }}
+      ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+      SLOT_INDEX: ${{ matrix.slot }}
+      SLOTS_PER_OS: 3
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       GYP_MSVS_VERSION: "2022"
     steps:
@@ -82,9 +76,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      # -------- Prepare depot_tools & toolchain --------
+      - name: Write versions.json
+        run: |
+          echo '${{ env.ALL_VERSIONS }}' > versions.json
+          cat versions.json
+
+      - name: Partition versions for this slot
+        id: partition
+        run: |
+          python3 partition_versions.py
+        env:
+          VERSIONS_JSON: ${{ env.ALL_VERSIONS }}
+          SLOT_INDEX: ${{ env.SLOT_INDEX }}
+          SLOTS_PER_OS: ${{ env.SLOTS_PER_OS }}
+
+      - name: Stop early if no versions
+        if: steps.partition.outputs.has_any == 'false'
+        run: echo "No versions assigned to this slot."
+
       - name: Prepare (Linux)
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'
         shell: bash
         run: |
           set -eux
@@ -97,134 +108,183 @@ jobs:
           gclient --version
 
       - name: Prepare (Windows)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
         shell: pwsh
         run: |
           chcp 65001
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          # 当前步骤立即生效
           $env:PATH = "$PWD\depot_tools;" + $env:PATH
           "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "PYTHONUTF8=1"              | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "PYTHONIOENCODING=UTF-8"    | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "DEPOT_TOOLS_WIN_TOOLCHAIN=0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "GYP_MSVS_VERSION=2022"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
           gclient --version
 
-      # -------- Sync V8 from GitHub (main repo) then DEPS from googlesource --------
-      - name: Sync V8 (tag-aware, shallow main repo)
+      - name: Initial sync (GitHub main repo)
+        if: steps.partition.outputs.has_any == 'true'
         shell: bash
         run: |
           set -eux
-          # 1. 用 GitHub 主仓库（unmanaged 模式：我们手动 checkout tag）
           gclient config --name v8 --unmanaged https://github.com/v8/v8.git
-          # 2. 初次同步主仓库（浅历史 & 不跑 hooks）
-            # --no-history (或旧版本 --nohistory) 减少 git 历史；如某些旧标签需要祖先提交可去掉
-          gclient sync --nohooks --no-history -D
-          # 3. 切 checkout 指定版本 tag
-          cd v8
-          git fetch --tags
-          git checkout "${VERSION}"
-          cd ..
-          # 4. 再同步依赖（DEPS 指向的仍是 googlesource/CIPD）
-          gclient sync --no-history -D
-          # 5. 运行 hooks（生成 gn, ninja, 下载 clang/gn 等 CIPD 包）
+          gclient sync --nohooks -D --no-history
           gclient runhooks
-          cd v8
-          git log -1 --oneline
 
-      # -------- Apply custom patch (semantic fuzzy) --------
-      - name: Apply patch
-        id: apply
+      - name: Copy helper scripts
+        if: steps.partition.outputs.has_any == 'true'
+        run: |
+          cp apply_patch.py v8/
+          cp patch.diff v8/
+          cp partition_versions.py v8/ || true
+
+      - name: Process versions (loop, with build failure tracking)
+        if: steps.partition.outputs.has_any == 'true'
         shell: bash
+        env:
+            ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
-          cd v8
-          if [ ! -f "$GITHUB_WORKSPACE/$PATCH_FILE" ]; then
-            echo "Missing patch file $PATCH_FILE"
-            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
-            echo "applied=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          cp "$GITHUB_WORKSPACE/$PATCH_FILE" .
-          cp "$GITHUB_WORKSPACE/apply_patch.py" .
-          python3 apply_patch.py --patch "$PATCH_FILE" --verbose --report apply_patch_report.txt
-          rc=$?
-          if [ $rc -ne 0 ]; then
-            echo "Patch application failed (rc=$rc)."
-            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
-            echo "applied=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          # 简单验证预期文件是否至少有一个修改
-          expected_changed=0
-          while read -r f; do
-            [ -z "$f" ] && continue
-            if git diff --name-only | grep -qx "$f"; then
-              expected_changed=1
-              break
-            fi
-          done < <(grep -E '^\+\+\+ b/' "$PATCH_FILE" | sed 's|+++ b/||' | sort -u)
-          if [ $expected_changed -eq 0 ]; then
-            echo "No expected patch file changed after apply; treat as failure."
-            echo "$VERSION" >> "$GITHUB_WORKSPACE/failed_versions.txt"
-            echo "applied=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          echo "applied=true" >> $GITHUB_OUTPUT
+          echo "Assigned versions: $ASSIGNED_JSON"
+          # 预创建结果文件（让实时写入后即便中途中断仍存在）
+          : > success_versions.txt
+          : > failed_versions.txt
+          : > failed_reasons.txt
+          python3 - <<'PY'
+import os, json, subprocess, shlex, sys, textwrap, platform, shutil, time
 
-      - name: Upload patch report
-        if: always()
+assigned = json.loads(os.environ.get("ASSIGNED_JSON","[]"))
+if not assigned:
+    print("No versions to process in loop.")
+    sys.exit(0)
+
+OS_NAME = "Windows" if platform.system().lower().startswith("win") else "Linux"
+
+def run(cmd, cwd=None, check=True, capture=False):
+    print(f"[RUN] {cmd}")
+    if capture:
+        result = subprocess.run(cmd, cwd=cwd, shell=True, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if check and result.returncode != 0:
+            raise RuntimeError(f"Command failed ({result.returncode}): {cmd}\n---- OUTPUT ----\n{result.stdout}")
+        return result
+    else:
+        rc = subprocess.run(cmd, cwd=cwd, shell=True).returncode
+        if check and rc != 0:
+            raise RuntimeError(f"Command failed ({rc}): {cmd}")
+        return rc
+
+def append_line(path, line):
+    with open(path,"a",encoding="utf-8") as f:
+        f.write(line.rstrip()+"\n")
+
+success_versions = []
+failed_versions = []
+
+for v in assigned:
+    log_file = f"build-log-{v}.txt"
+    print(f"\n==== Processing version {v} ====")
+    append_line(log_file, f"== Build log for {v} ==")
+    reason = None
+    try:
+        start_ts = time.time()
+        # 1. Checkout tag
+        append_line(log_file, "Checkout tag")
+        run(f"git -C v8 fetch --tags", check=True)
+        run(f"git -C v8 checkout {shlex.quote(v)}", check=True)
+
+        # 2. Sync DEPS for this tag + runhooks
+        append_line(log_file, "Sync DEPS")
+        run("gclient sync -D --no-history", check=True)
+        run("gclient runhooks", check=True)
+
+        # 3. Clean previous build directory
+        build_dir = f"out.gn/x64.release.{v.replace('.', '_')}"
+        run(f"rm -rf v8/{build_dir}", check=False)
+
+        # 4. Apply patch
+        append_line(log_file, "Apply patch")
+        rc = subprocess.run("python3 apply_patch.py --patch patch.diff --verbose --report apply_patch_report.txt",
+                            cwd="v8", shell=True).returncode
+        if rc != 0:
+            reason = "PATCH_FAIL"
+            raise RuntimeError(f"Patch apply failed rc={rc}")
+
+        # 5. Validate expected file changed
+        diff_out = subprocess.check_output("git -C v8 diff --name-only", shell=True, text=True)
+        expected_files = {
+            "src/d8/d8.cc","src/d8/d8.h","src/diagnostics/objects-printer.cc",
+            "src/objects/string.cc","src/snapshot/code-serializer.cc",
+            "src/snapshot/deserializer.cc"
+        }
+        if not any(f in diff_out.splitlines() for f in expected_files):
+            reason = "PATCH_NO_EFFECT"
+            raise RuntimeError("Patch applied but no target files modified")
+
+        # 6. Configure (v8gen)
+        append_line(log_file, "Configure (v8gen)")
+        gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false"
+        try:
+            run(f"python tools/dev/v8gen.py {build_dir} -- {gn_args}", cwd="v8", check=True)
+        except Exception as e:
+            reason = "CONFIG_FAIL"
+            raise
+
+        # 7. Build
+        append_line(log_file, "Build (ninja)")
+        try:
+            run(f"ninja -C {build_dir} d8", cwd="v8", check=True)
+        except Exception as e:
+            reason = "BUILD_FAIL"
+            raise
+
+        # 8. Collect artifact
+        append_line(log_file, "Collect artifact")
+        os.makedirs("artifacts", exist_ok=True)
+        tgt_dir = f"artifacts/d8-{v}-{OS_NAME}"
+        os.makedirs(tgt_dir, exist_ok=True)
+        binary_name = "d8.exe" if OS_NAME == "Windows" else "d8"
+        built_bin = os.path.join("v8", build_dir, binary_name)
+        if not os.path.exists(built_bin):
+            reason = "MISSING_BINARY"
+            raise RuntimeError("Built binary missing")
+        shutil.copy2(built_bin, os.path.join(tgt_dir, binary_name))
+        report_src = os.path.join("v8", "apply_patch_report.txt")
+        if os.path.exists(report_src):
+            shutil.copy2(report_src, os.path.join(tgt_dir, "apply_patch_report.txt"))
+
+        # 9. Success
+        success_versions.append(v)
+        append_line("success_versions.txt", v)
+        append_line(log_file, f"SUCCESS finished in {time.time()-start_ts:.1f}s")
+        print(f"==== Version {v} SUCCESS ====")
+
+    except Exception as e:
+        if reason is None:
+            reason = "OTHER_FAIL"
+        failed_versions.append(v)
+        append_line("failed_versions.txt", v)
+        append_line("failed_reasons.txt", f"{v} {reason}")
+        append_line(log_file, f"FAIL ({reason}): {e}")
+        print(f"==== Version {v} FAILED ({reason}) ====")
+    finally:
+        # Always revert modifications for next version
+        subprocess.run("git -C v8 checkout .", shell=True)
+        # (Optionally could also delete build_dir on failure)
+PY
+
+      - name: Upload batch artifacts
+        if: steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: patch-report-${{ matrix.version }}-${{ runner.os }}
-          path: v8/apply_patch_report.txt
+          name: build-batch-${{ matrix.os }}-slot${{ matrix.slot }}
+          path: |
+            artifacts/**
+            success_versions.txt
+            failed_versions.txt
+            failed_reasons.txt
+            build-log-*.txt
           retention-days: 7
-
-      # -------- Build --------
-      - name: Configure & build (Linux)
-        if: runner.os == 'Linux' && steps.apply.outputs.applied == 'true'
-        shell: bash
-        run: |
-          set -eux
-          cd v8
-          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false
-          ninja -C out.gn/x64.release d8
-
-      - name: Configure & build (Windows)
-        if: runner.os == 'Windows' && steps.apply.outputs.applied == 'true'
-        shell: pwsh
-        run: |
-          cd v8
-          python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false
-          ninja -C out.gn/x64.release d8
-
-      # -------- Artifacts --------
-      - name: Package artifact
-        if: steps.apply.outputs.applied == 'true'
-        shell: bash
-        run: |
-          set -e
-          mkdir -p artifact
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            cp v8/out.gn/x64.release/d8.exe artifact/
-          else
-            cp v8/out.gn/x64.release/d8 artifact/
-          fi
-          ls -l artifact
-
-      - name: Upload artifact
-        if: steps.apply.outputs.applied == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: d8-${{ matrix.version }}-${{ runner.os }}
-          path: artifact/*
-          retention-days: 14
-
-      - name: Record failure (no patch)
-        if: steps.apply.outputs.applied != 'true'
-        run: echo "Skipping build for $VERSION on ${{ runner.os }} because patch not applied."
 
   aggregate-and-release:
     name: Aggregate & release
@@ -234,115 +294,143 @@ jobs:
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
-      - name: Checkout infra repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Download artifacts
+      - name: Download all batch artifacts
         uses: actions/download-artifact@v4
         with:
           path: downloaded
 
-      - name: Install jq & gh
+      - name: Install tools
         run: |
-            sudo apt-get update
-            sudo apt-get install -y jq
-            gh --version || true
+          sudo apt-get update
+          sudo apt-get install -y jq
+          gh --version || true
 
-      - name: Ensure JSON tracking
+      - name: Merge success & failed lists
         run: |
+          set -e
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
-          echo "version.json:"; cat public/version.json
-          echo "failed.json:"; cat public/failed.json
+          touch _all_success.txt _all_failed.txt _all_failed_reasons.txt
+          find downloaded -type f -name success_versions.txt -exec cat {} \; >> _all_success.txt || true
+            # 失败版本
+          find downloaded -type f -name failed_versions.txt -exec cat {} \; >> _all_failed.txt || true
+            # 失败原因（可选，不影响列表逻辑）
+          find downloaded -type f -name failed_reasons.txt -exec cat {} \; >> _all_failed_reasons.txt || true
+          sort -u -o _all_success.txt _all_success.txt
+          sort -u -o _all_failed.txt _all_failed.txt
+          echo "Success versions:"; cat _all_success.txt || true
+          echo "Failed versions:"; cat _all_failed.txt || true
+          echo "Failed reasons:"; cat _all_failed_reasons.txt || true
+          # 更新 failed.json
+          while read -r v; do
+            [ -z "$v" ] && continue
+            jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
+              jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
+          done < _all_failed.txt
 
-      - name: Merge failed versions
+      - name: Reconstruct per-version artifact dirs
         run: |
           set -e
-          if [ -f failed_versions.txt ]; then
-            sort -u failed_versions.txt > _failed_collected.txt
-            while read -r v; do
-              [ -z "$v" ] && continue
-              jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
-                jq --arg v "$v" '. + [$v]' public/failed.json > public/failed.tmp && mv public/failed.tmp public/failed.json
-            done < _failed_collected.txt
-          fi
-          echo "failed.json after merge:"; cat public/failed.json
+          mkdir -p stage
+          find downloaded -type f -name d8 -o -name d8.exe | while read -r bin; do
+            base=$(basename "$(dirname "$bin")")  # d8-<version>-OS
+            ver="${base#d8-}"
+            if echo "$base" | grep -q "\-Linux$"; then
+              ver="${ver%-Linux}"
+              tgt="stage/d8-${ver}-Linux"
+              mkdir -p "$tgt"
+              cp "$bin" "$tgt/d8"
+              rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
+            elif echo "$base" | grep -q "\-Windows$"; then
+              ver="${ver%-Windows}"
+              tgt="stage/d8-${ver}-Windows"
+              mkdir -p "$tgt"
+              cp "$bin" "$tgt/d8.exe"
+              rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
+            fi
+          done
+          echo "Stage structure:"
+          find stage -maxdepth 2 -type f -print
 
       - name: Create releases & update version.json
         env:
-          VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+          ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          UPDATED=false
-          echo "$VERSIONS" | jq -r '.[]' | while read -r v; do
+          [ -f public/version.json ] || echo "[]" > public/version.json
+          updated=false
+          for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
             [ -z "$v" ] && continue
-            LIN_DIR="downloaded/d8-${v}-Linux"
-            WIN_DIR="downloaded/d8-${v}-Windows"
-            if [ ! -d "$LIN_DIR" ] || [ ! -d "$WIN_DIR" ]; then
-              echo "Skip $v (missing one platform artifact)."
+            # 需要两个平台都成功才发布
+            L="stage/d8-${v}-Linux/d8"
+            W="stage/d8-${v}-Windows/d8.exe"
+            if [ ! -f "$L" ] || [ ! -f "$W" ]; then
+              echo "Skip release for $v (missing one platform artifact)."
               continue
             fi
             mkdir -p "public/$v"
-            cp "$LIN_DIR"/d8 "public/$v/d8-linux"
-            cp "$WIN_DIR"/d8.exe "public/$v/d8-windows.exe"
+            cp "$L" "public/$v/d8-linux"
+            cp "$W" "public/$v/d8-windows.exe"
             if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v exists."
+              echo "Release $v already exists."
             else
               gh release create "$v" \
                 "public/$v/d8-linux" \
                 "public/$v/d8-windows.exe" \
                 --title "$v" \
-                --notes "Patched d8 for V8 $v (semantic fuzzy patch)."
+                --notes "Patched d8 for V8 $v (multi-version worker batch)."
             fi
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
-              jq --arg v "$v" '. + [$v]' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
-              UPDATED=true
+              jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
+              updated=true
             fi
           done
-          if [ "$UPDATED" = true ]; then
-            # 排序：支持 3/4 段版本（补零到 4 段再比较）
-            jq '[.[]] | sort_by( (split(".") + ["0","0","0","0"])[0:4] | map(tonumber) )' public/version.json > public/version.json.tmp && mv public/version.json.tmp public/version.json
+          if [ "$updated" = true ]; then
+            jq '[.[]] | sort_by((split(".")+["0","0","0","0"])[0:4]|map(tonumber))' public/version.json > public/.tmp && mv public/.tmp public/version.json
           fi
-          echo "Final version.json:"; cat public/version.json
-          echo "Final failed.json:"; cat public/failed.json
+          echo "version.json:"; cat public/version.json
+          echo "failed.json:";  cat public/failed.json
 
-      - name: Commit & push public/
+      - name: Commit & push tracking
         run: |
           if git diff --quiet -- public; then
-            echo "No changes in public/."
+            echo "No tracking changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-            # 跳过再次触发（如你不想跳过，可移除 [skip ci]）
-          git commit -m "Update public (patched d8 versions batch) [skip ci]"
+          git commit -m "Update tracking (batch workers) [skip ci]"
           git push
 
   trigger-next-batch:
     name: Trigger next batch if leftovers
-    needs: aggregate-and-release
+    needs: [aggregate-and-release]
     if: needs.aggregate-and-release.outputs.leftover_total != '' && needs.aggregate-and-release.outputs.leftover_total != '0'
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger next workflow run
+      - name: Dispatch next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_MAX: ${{ env.MAX_PER_RUN }}
         run: |
-          echo "Leftover versions exist -> triggering another batch."
+          echo "Triggering next batch..."
           REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
           if [ -z "$REF" ]; then
-            REF=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" \
+            REF=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
               https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
           fi
           curl -s -X POST \
-            -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches \
             -d "{\"ref\":\"${REF}\",\"inputs\":{\"max_per_run\":\"${NEXT_MAX}\"}}"
           echo "Next batch dispatched."

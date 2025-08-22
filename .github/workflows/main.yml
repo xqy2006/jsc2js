@@ -63,53 +63,69 @@ jobs:
     env:
       VERSION: ${{ matrix.version }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare depot_tools (Linux)
+      - name: Prepare (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          set -e
-            # 系统依赖
+          set -eux
           sudo apt-get update
           sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
-          # depot_tools
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" >> $GITHUB_PATH
+          echo "PATH after depot_tools: $PATH"
           python --version
-          which fetch || echo "fetch not found in PATH yet (PATH=$PATH)"
+          gclient --version || true
 
-      - name: Prepare depot_tools (Windows)
+      - name: Prepare (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           chcp 65001
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "PYTHONUTF8=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PYTHONIOENCODING=UTF-8" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PYTHONUTF8=1"           | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            # 关闭自动 toolchain，否则会走 CIPD 额外路径
+          echo "DEPOT_TOOLS_WIN_TOOLCHAIN=0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "GYP_MSVS_VERSION=2022"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
+          gclient --version || echo "gclient not yet in PATH"
 
-      - name: Fetch & checkout V8
+      - name: Sync V8 source + deps (gclient)
         shell: bash
         run: |
-          set -e
-          # 使用 fetch 获取完整依赖（不直接 git clone）
-          mkdir v8root
-          cd v8root
-          fetch v8 --nohooks
+          set -eux
+          # 确保 depot_tools 在 PATH
+          echo "Using python: $(which python || true)"
+          echo "Using gclient: $(which gclient || true)"
+
+          # 1. 生成 .gclient（unmanaged 以便我们手动 checkout tag）
+          gclient config --name v8 --unmanaged https://chromium.googlesource.com/v8/v8.git
+
+          # 2. 初次同步主体仓库（不跑 hooks，避免先生成/下载不需要的东西）
+          gclient sync --nohooks -D --with_branch_heads --with_tags
+
+          # 3. 切换到指定 tag
           cd v8
           git fetch --tags
-          git checkout "$VERSION"
-          # 同步依赖
+          git checkout "${VERSION}"
+
+          # 4. 再次同步，拉取该 tag 对应 DEPS 的第三方依赖与 CIPD 包
+          cd ..
           gclient sync -D --with_branch_heads --with_tags
-          # 运行 hooks（生成 gn/ninja 配置等）
+
+          # 5. 运行 hooks（生成 gn, ninja 配置相关脚本、下载 gn_binary 等）
           gclient runhooks
-          # 回到 workspace 根，以后步骤仍假定在 v8root/v8
-          cd "$GITHUB_WORKSPACE"
-          ln -s v8root/v8 v8
+
+          # 6. 建立统一路径（后续步骤假定存在 ./v8）
+          test -d v8 || ln -s ./v8 v8 || true
+
+          echo "V8 HEAD:"
+          git -C v8 log -1 --oneline
 
       - name: Apply patch (semantic fuzzy Python)
         id: apply
@@ -128,11 +144,19 @@ jobs:
           fi
           echo "applied=true" >> $GITHUB_OUTPUT
 
+      - name: Upload patch report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patch-report-${{ matrix.version }}-${{ runner.os }}
+          path: v8/apply_patch_report.txt
+          retention-days: 7
+
       - name: Configure & build (Linux)
         if: runner.os == 'Linux' && steps.apply.outputs.applied == 'true'
         shell: bash
         run: |
-          set -e
+          set -eux
           cd v8
           python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true
           ninja -C out.gn/x64.release d8
@@ -141,6 +165,7 @@ jobs:
         if: runner.os == 'Windows' && steps.apply.outputs.applied == 'true'
         shell: pwsh
         run: |
+          Set-PSDebug -Trace 0
           cd v8
           python tools/dev/v8gen.py x64.release -- v8_enable_disassembler=true v8_enable_object_print=true
           ninja -C out.gn/x64.release d8
@@ -168,9 +193,7 @@ jobs:
 
       - name: Record failure (no patch)
         if: steps.apply.outputs.applied != 'true'
-        shell: bash
-        run: |
-          echo "Patch not applied for $VERSION on ${{ runner.os }}"
+        run: echo "Skipping build for $VERSION on ${{ runner.os }} because patch not applied."
 
   aggregate-and-release:
     name: Aggregate & release

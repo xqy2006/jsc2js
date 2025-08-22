@@ -228,7 +228,7 @@ index 68262ec5caf..154fef2e2ae 100644
    if (IsJSObject(*this, cage_base)) {
      HeapStringAllocator allocator;
      StringStream accumulator(&allocator);
-@@ -3258,14 +3296,24 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
+@@ -3258,7 +3296,12 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
        break;
      case FIXED_ARRAY_TYPE:
        os << "<FixedArray[" << Cast<FixedArray>(*this)->length() << "]>";
@@ -236,6 +236,8 @@ index 68262ec5caf..154fef2e2ae 100644
 +      Cast<FixedArray>(*this)->FixedArrayPrint(os);
 +      os << "\nEnd FixedArray\n";
        break;
++}
++@@ -3266,7 +3311,12 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
      case OBJECT_BOILERPLATE_DESCRIPTION_TYPE:
        os << "<ObjectBoilerplateDescription["
           << Cast<ObjectBoilerplateDescription>(*this)->capacity() << "]>";
@@ -244,6 +246,7 @@ index 68262ec5caf..154fef2e2ae 100644
 +          ->ObjectBoilerplateDescriptionPrint(os);
 +      os << "\nEnd ObjectBoilerplateDescription\n";
        break;
++@@ -3275,7 +3325,12 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
      case FIXED_DOUBLE_ARRAY_TYPE:
        os << "<FixedDoubleArray[" << Cast<FixedDoubleArray>(*this)->length()
           << "]>";

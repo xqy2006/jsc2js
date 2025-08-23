@@ -1,6 +1,6 @@
 # jsc2js
 
-简体中文 | [English](#english)
+[简体中文](#jsc2js) | [English](#english)
 
 ---
 
@@ -83,9 +83,11 @@ View8 需要：
 - V8 官方项目与文档 (Chromium / v8.dev)
 
 
+---
+
 # English
 
-简体中文 | [English](#english)
+[简体中文](#jsc2js) | [English](#english)
 
 ---
 

@@ -259,11 +259,11 @@ def main():
 
     root = os.path.abspath(args.root)
     patch_path = os.path.abspath(args.patch)
-
+    proc = run("git reset --hard", cwd=root)
     if not os.path.isfile(patch_path):
         print(f"[ERROR] Patch file not found: {patch_path}", file=sys.stderr)
         return 2
-
+    
     with open(patch_path, 'r', encoding='utf-8', errors='ignore') as f:
         original_patch_text = f.read()
 

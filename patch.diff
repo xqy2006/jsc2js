@@ -8,7 +8,7 @@ index 1c37e97a380..cc1c3e48cfc 100644
  
 +
 +
-+#include "src/objects/script-options.h"
++
 +#include "src/objects/script.h"
 +#include <iostream>
 +

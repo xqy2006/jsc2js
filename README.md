@@ -22,8 +22,8 @@
 前往 Releases 页面，选择与你的目标 `.jsc` 生成环境 **相同的 V8 版本号**。 （如果没有找到，请发起 Issue ） 
 
 每个版本下提供：
-- `d8`：Linux 64-bit 可执行文件
-- `d8.exe`：Windows 64-bit 可执行文件
+- `d8-linux`：Linux 64-bit 可执行文件
+- `d8-windows.exe`：Windows 64-bit 可执行文件
 
 ### 2. 将 `.jsc` 转成字节码文本
 
@@ -110,8 +110,8 @@ The repository contains two major parts:
 Go to the Releases page and choose the V8 version that is **identical to** the one that produced your target `.jsc`. (Open an Issue if the version you need is missing.)
 
 Each release provides:
-- `d8`: Linux 64‑bit executable
-- `d8.exe`: Windows 64‑bit executable
+- `d8-linux`: Linux 64‑bit executable
+- `d8-windows.exe`: Windows 64‑bit executable
 
 ### 2. Convert `.jsc` into a bytecode text listing
 

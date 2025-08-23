@@ -95,7 +95,7 @@ index 1c37e97a380..cc1c3e48cfc 100644
 +    v8::internal::ScriptDetails script_details;
 +    maybe_fun = v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, script_details);
 +#else
-+    v8::internal::ScriptOriginOptions origin_options;
++    v8::ScriptOriginOptions origin_options;
 +    maybe_fun = v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, origin_options);
 +#endif
 +    

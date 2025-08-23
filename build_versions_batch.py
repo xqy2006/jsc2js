@@ -110,6 +110,7 @@ def main():
 
     for ver in versions:
         log(f"========== START {ver} ==========")
+        run("git -C v8 reset --hard", check=False)
         sanitized = ver.replace(".", "_")
         try:
             # Ensure tag

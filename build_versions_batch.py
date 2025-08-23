@@ -117,7 +117,7 @@ def main():
             run("git -C v8 fetch --tags --quiet", check=True)
             run(f"git -C v8 checkout {ver}", check=True)
             # Sync + hooks
-            run("gclient sync -D", check=True)
+            run("gclient sync -D --no-history", check=True)
             run("gclient runhooks", check=True)
 
             work_dir = Path("v8/out.gn/x64.release")

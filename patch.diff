@@ -8,14 +8,10 @@ index 1c37e97a380..cc1c3e48cfc 100644
  
 +
 +
-+
-+
-+
-+
++#include "src/objects/script-options.h"
 +#include "src/objects/script.h"
 +#include <iostream>
 +
-+// 修正后的 Disassemble 函数
 +static void Disassemble(v8::internal::Isolate* isolate, 
 +                        v8::internal::Tagged<v8::internal::BytecodeArray> bytecode, 
 +                        std::unordered_set<uintptr_t>& visited,
@@ -32,7 +28,6 @@ index 1c37e97a380..cc1c3e48cfc 100644
 +  }
 +  visited.insert(key);
 +
-+  // 使用 V8 的 PrintF 替代 std::cout，并添加 \n 和 fflush
 +  for (int i = 0; i < depth; ++i) v8::internal::PrintF("  ");
 +  //v8::internal::PrintF("Disassembling BytecodeArray at: %p\n", reinterpret_cast<void*>(bytecode.ptr()));
 +  //fflush(stdout);
@@ -95,9 +90,14 @@ index 1c37e97a380..cc1c3e48cfc 100644
 +    auto source = isolate->factory()
 +                      ->NewStringFromUtf8(base::CStrVector("source"))
 +                      .ToHandleChecked();
++v8::internal::MaybeHandle<v8::internal::SharedFunctionInfo> maybe_fun;
++#if (V8_MAJOR_VERSION > 12) || (V8_MAJOR_VERSION == 12 && V8_MINOR_VERSION >= 6)
 +    v8::internal::ScriptDetails script_details;
-+    v8::internal::MaybeHandle<v8::internal::SharedFunctionInfo> maybe_fun =
-+        v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, script_details);
++    maybe_fun = v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, script_details);
++#else
++    v8::internal::ScriptOriginOptions origin_options;
++    maybe_fun = v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, origin_options);
++#endif
 +    
 +    v8::internal::Handle<v8::internal::SharedFunctionInfo> fun;
 +    if (!maybe_fun.ToHandle(&fun)) {

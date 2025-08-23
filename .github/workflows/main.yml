@@ -117,7 +117,7 @@ jobs:
         run: |
           set -eux
           gclient config --name v8 --unmanaged https://github.com/v8/v8.git
-          gclient sync --nohooks -D
+          gclient sync --nohooks -D --no-history
           gclient runhooks
 
       - name: Copy helper scripts

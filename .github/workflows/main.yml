@@ -67,7 +67,7 @@ jobs:
 
       - name: Write versions.json
         run: |
-            echo '${{ env.ALL_VERSIONS }}' > versions.json
+          echo '${{ env.ALL_VERSIONS }}' > versions.json
 
       - name: Partition versions
         id: partition
@@ -135,6 +135,29 @@ jobs:
           python3 build_versions_batch.py || true
           echo "Batch processing complete (errors captured in failed_versions.txt)."
 
+      - name: Collect snapshot blobs
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          set -e
+          # 期望 build_versions_batch.py 已把 d8 复制到 artifacts/d8-<ver>-<OS>/ 下面
+            # 我们现在为每个目录尝试放入 snapshot_blob.bin
+          find artifacts -maxdepth 2 -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
+            dir=$(dirname "$bin")
+            if [ -f "$dir/snapshot_blob.bin" ]; then
+              echo "Already has snapshot_blob.bin in $dir"
+              continue
+            fi
+            # 尝试在 v8/out 下寻找最新的 snapshot_blob.bin
+            cand=$(find v8 -type f -name snapshot_blob.bin 2>/dev/null | sort -r | head -n1 || true)
+            if [ -n "$cand" ]; then
+              cp "$cand" "$dir/snapshot_blob.bin" || true
+              echo "Copied snapshot_blob.bin to $dir"
+            else
+              echo "WARN: No snapshot_blob.bin found to copy for $dir"
+            fi
+          done
+
       - name: Upload batch artifacts
         if: steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
@@ -163,7 +186,8 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq
+            # 增加 zip
+          sudo apt-get install -y jq zip
           gh --version || true
       - name: Merge success & failed
         run: |
@@ -184,7 +208,8 @@ jobs:
         run: |
           set -e
           mkdir -p stage
-          find downloaded -type f -name d8 -o -name d8.exe | while read -r bin; do
+          # 查找 d8 / d8.exe，并同时尝试带出 snapshot_blob.bin
+          find downloaded -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
             base=$(basename "$(dirname "$bin")")
             ver="${base#d8-}"
             if echo "$base" | grep -q "\-Linux$"; then
@@ -193,6 +218,7 @@ jobs:
               mkdir -p "$tgt"
               cp "$bin" "$tgt/d8"
               rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
               [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
             elif echo "$base" | grep -q "\-Windows$"; then
               ver="${ver%-Windows}"
@@ -200,6 +226,7 @@ jobs:
               mkdir -p "$tgt"
               cp "$bin" "$tgt/d8.exe"
               rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
               [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
             fi
           done
@@ -212,23 +239,40 @@ jobs:
           [ -f public/version.json ] || echo "[]" > public/version.json
           updated=false
           for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
-            L="stage/d8-${v}-Linux/d8"
-            W="stage/d8-${v}-Windows/d8.exe"
-            if [ ! -f "$L" ] || [ ! -f "$W" ]; then
-              echo "Skip $v (missing artifact)."
+            LIN_DIR="stage/d8-${v}-Linux"
+            WIN_DIR="stage/d8-${v}-Windows"
+            LIN_BIN="${LIN_DIR}/d8"
+            LIN_SNAP="${LIN_DIR}/snapshot_blob.bin"
+            WIN_BIN="${WIN_DIR}/d8.exe"
+            WIN_SNAP="${WIN_DIR}/snapshot_blob.bin"
+            mkdir -p "public/$v"
+            ASSETS=()
+            # Linux 打包
+            if [ -f "$LIN_BIN" ] && [ -f "$LIN_SNAP" ]; then
+              tar_name="public/$v/d8-${v}-linux.tar.gz"
+              tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
+              ASSETS+=("$tar_name")
+            else
+              echo "Skip Linux package for $v (missing d8 or snapshot_blob.bin)."
+            fi
+            # Windows 打包
+            if [ -f "$WIN_BIN" ] && [ -f "$WIN_SNAP" ]; then
+              zip_name="public/$v/d8-${v}-windows.zip"
+              (cd "$WIN_DIR" && zip -9 "../$zip_name" d8.exe snapshot_blob.bin >/dev/null)
+              ASSETS+=("$zip_name")
+            else
+              echo "Skip Windows package for $v (missing d8.exe or snapshot_blob.bin)."
+            fi
+            if [ ${#ASSETS[@]} -eq 0 ]; then
+              echo "No complete artifacts for $v, skipping release asset upload."
               continue
             fi
-            mkdir -p "public/$v"
-            cp "$L" "public/$v/d8-linux"
-            cp "$W" "public/$v/d8-windows.exe"
+            notes="Patched d8 for V8 $v (includes d8 + snapshot_blob.bin)."
             if gh release view "$v" >/dev/null 2>&1; then
-              echo "Release $v exists."
+              echo "Release $v exists. Uploading / replacing assets..."
+              gh release upload "$v" "${ASSETS[@]}" --clobber
             else
-              gh release create "$v" \
-                "public/$v/d8-linux" \
-                "public/$v/d8-windows.exe" \
-                --title "$v" \
-                --notes "Patched d8 for V8 $v (multi-version batch)."
+              gh release create "$v" "${ASSETS[@]}" --title "$v" --notes "$notes"
             fi
             if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
@@ -245,7 +289,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
-          git commit -m "Update tracking (batch build) [skip ci]"
+          git commit -m "Update tracking (batch build) [skip ci]" || echo "No changes to commit."
           git push
 
   trigger-next-batch:

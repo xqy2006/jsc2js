@@ -1,8 +1,6 @@
 name: Build patched V8 d8 (6 reusable workers)
 
 on:
-  schedule:
-    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       max_per_run:

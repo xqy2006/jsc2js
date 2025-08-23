@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       max_per_run:
-        description: "本次最多处理多少个新版本（默认 20）"
+        description: "本次最多处理多少个新版本（默认 30）"
         required: false
         default: "30"
 
@@ -117,7 +117,7 @@ jobs:
         run: |
           set -eux
           gclient config --name v8 --unmanaged https://github.com/v8/v8.git
-          gclient sync --nohooks -D
+          gclient sync --nohooks -D --no-history
           gclient runhooks
 
       - name: Copy helper scripts

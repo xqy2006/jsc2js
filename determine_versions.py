@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-改造点：
-1. 先抓取 Node 官方 dist index，抽取所有 Node 发布记录中的 "v8" 字段，得到 Node 实际使用过的 V8 版本集合。
-2. 再与 V8 仓库现有 tag 求交集（可通过 REQUIRE_TAG_MATCH 控制是否强制必须存在 tag）。
-3. 仅对交集版本做 MIN_VERSION + 已处理/失败过滤 + CAP 截断，输出 versions。
-4. 维护一个 public/node_v8_map.json：记录每个 V8 版本对应的 Node 版本列表，便于溯源。
+根据 Node.js 与 Electron 的历史发布记录，提取它们曾使用过的 V8 版本，
+只针对这些版本（且满足 MIN_VERSION、未处理、未失败）进行构建批处理。
+
+环境变量：
+  MIN_VERSION        (默认为 12.0.1 或 workflow 里传入)
+  V8_REPO            (默认 https://github.com/v8/v8.git)
+  MAX_PER_RUN        (批次上限，默认为 20)
+  SOURCES            (逗号分隔: node, electron；默认 "node,electron")
+  GITHUB_OUTPUT      (GitHub Actions 传入，用于写输出)
 """
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.request
+import urllib.error
+from typing import List, Set, Iterable
 
-import json, os, re, subprocess, sys, urllib.request, urllib.error
-from typing import List, Dict, Set
-
-# 环境变量
 MIN_VERSION = os.environ.get("MIN_VERSION", "12.0.1").strip()
-REPO_URL = os.environ.get("V8_REPO", "https://chromium.googlesource.com/v8/v8.git")
-NODE_INDEX_URL = os.environ.get("NODE_INDEX_URL", "https://nodejs.org/dist/index.json").strip()
-REQUIRE_TAG_MATCH = os.environ.get("REQUIRE_TAG_MATCH", "true").lower() in ("1", "true", "yes", "on")
-
+REPO_URL = os.environ.get("V8_REPO", "https://github.com/v8/v8.git")
 DEFAULT_CAP = 20
 _raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
 try:
@@ -26,18 +31,22 @@ try:
 except ValueError:
     CAP = DEFAULT_CAP
 
-# 支持 3 或 4 段语义版本
+SOURCES_RAW = os.environ.get("SOURCES", "").strip() or "node,electron"
+SOURCES = {s.strip().lower() for s in SOURCES_RAW.split(",") if s.strip()}
+
+# 允许 3 或 4 段：12.0.1 或 12.0.267.36
 SEMVER34_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$")
-# Node dist index 里的 Node 版本形如 "v22.5.1"
-NODE_VER_RE = re.compile(r"^v\d+\.\d+\.\d+$")
 
 OUTPUT = os.environ.get("GITHUB_OUTPUT")
+
 
 def parse_version(v: str) -> List[int]:
     return [int(x) for x in v.split(".")]
 
+
 def pad_version(parts: List[int], length: int) -> List[int]:
     return parts + [0] * (length - len(parts))
+
 
 def version_ge(a: str, b: str) -> bool:
     pa = parse_version(a)
@@ -46,6 +55,7 @@ def version_ge(a: str, b: str) -> bool:
     pa = pad_version(pa, L)
     pb = pad_version(pb, L)
     return pa >= pb
+
 
 def load_list(path: str):
     if not os.path.exists(path):
@@ -57,93 +67,90 @@ def load_list(path: str):
     except Exception:
         return []
 
-def load_map(path: str) -> Dict[str, Set[str]]:
-    """
-    读取已有的 node_v8_map.json，转换为 { v8_version: set(node_versions) }
-    """
-    if not os.path.exists(path):
-        return {}
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        if isinstance(data, dict):
-            m = {}
-            for k, v in data.items():
-                if isinstance(v, list):
-                    m[k] = set(v)
-            return m
-    except Exception:
-        pass
-    return {}
 
-def fetch_node_index(url: str):
-    print(f"[determine_versions] Fetching Node index: {url}")
-    req = urllib.request.Request(url, headers={"User-Agent": "v8-patch-workflow/1.0"})
-    with urllib.request.urlopen(req, timeout=40) as resp:
-        if resp.status != 200:
-            raise RuntimeError(f"Fetch Node index failed: HTTP {resp.status}")
-        data = resp.read()
+def http_get_json(url: str):
     try:
-        arr = json.loads(data.decode("utf-8"))
-        if not isinstance(arr, list):
-            raise ValueError("Node index JSON is not a list")
-        return arr
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            if resp.status != 200:
+                print(f"[warn] GET {url} status={resp.status}", file=sys.stderr)
+                return None
+            data = resp.read()
+            return json.loads(data.decode("utf-8"))
+    except urllib.error.URLError as e:
+        print(f"[warn] GET {url} failed: {e}", file=sys.stderr)
+        return None
     except Exception as e:
-        raise RuntimeError(f"Parse Node index JSON failed: {e}") from e
+        print(f"[warn] GET {url} unknown error: {e}", file=sys.stderr)
+        return None
 
-def extract_v8_versions(node_index_list) -> (Dict[str, Set[str]], Set[str]):
+
+def fetch_node_v8_versions() -> Set[str]:
     """
-    返回:
-      node_v8_map: { v8_version: set(node_versions_using_it) }
-      v8_versions: set of v8_version
+    Node.js 官方 dist index:
+      https://nodejs.org/dist/index.json
+    每个对象里通常有 "v8": "11.8.172.17"
     """
-    node_v8_map: Dict[str, Set[str]] = {}
-    for entry in node_index_list:
-        if not isinstance(entry, dict):
-            continue
-        node_ver = entry.get("version")
-        v8_ver = entry.get("v8")
-        if not node_ver or not isinstance(node_ver, str):
-            continue
-        if not NODE_VER_RE.match(node_ver):
-            continue
-        if not v8_ver or not isinstance(v8_ver, str):
-            continue
-        # 只接受 3 或 4 段
-        if not SEMVER34_RE.match(v8_ver):
-            continue
-        node_v8_map.setdefault(v8_ver, set()).add(node_ver)
-    v8_versions = set(node_v8_map.keys())
-    return node_v8_map, v8_versions
+    url = "https://nodejs.org/dist/index.json"
+    data = http_get_json(url)
+    result = set()
+    if isinstance(data, list):
+        for itm in data:
+            if not isinstance(itm, dict):
+                continue
+            v8v = itm.get("v8")
+            if isinstance(v8v, str) and SEMVER34_RE.match(v8v):
+                result.add(v8v)
+    print(f"[info] Node releases parsed V8 versions: {len(result)}")
+    return result
 
-def fetch_v8_tags(repo_url: str) -> Set[str]:
-    print(f"[determine_versions] Fetching V8 tags: {repo_url}")
-    res = subprocess.run(
-        ["git", "ls-remote", "--tags", repo_url],
-        capture_output=True, text=True, check=True
-    )
-    tags = set()
-    for line in res.stdout.splitlines():
-        parts = line.strip().split()
-        if len(parts) != 2:
-            continue
-        ref = parts[1]
-        if not ref.startswith("refs/tags/"):
-            continue
-        tag = ref[len("refs/tags/"):]
-        # 去掉注释 tag^{}
-        tag = tag.split("^")[0]
-        if SEMVER34_RE.match(tag):
-            tags.add(tag)
-    print(f"[determine_versions] Total V8 tags matching semver(3/4) = {len(tags)}")
-    return tags
 
-def sort_key(v: str):
-    pv = parse_version(v)
-    return pv + ([0] * (4 - len(pv)))  # 补齐 4 段
+def fetch_electron_v8_versions() -> Set[str]:
+    """
+    Electron 可能的数据源：
+      1) https://releases.electronjs.org/releases.json (官方聚合)
+      2) https://raw.githubusercontent.com/electron/releases/master/lite.json
+    结构示例(以 lite.json)：
+      [
+        {"version":"v28.1.0","deps":{"v8":"11.8.172.17","node":"18.18.2","chrome":"118.0.5993.159"}}, ...
+      ]
+    """
+    urls = [
+        "https://releases.electronjs.org/releases.json",
+        "https://raw.githubusercontent.com/electron/releases/master/lite.json",
+    ]
+    result = set()
+    for u in urls:
+        data = http_get_json(u)
+        if not data:
+            continue
+        if isinstance(data, list):
+            for itm in data:
+                if not isinstance(itm, dict):
+                    continue
+                # 可能在顶层或 itm['deps']['v8']
+                v8v = None
+                if "v8" in itm and isinstance(itm["v8"], str):
+                    v8v = itm["v8"]
+                else:
+                    deps = itm.get("deps")
+                    if isinstance(deps, dict):
+                        v8v = deps.get("v8")
+                if isinstance(v8v, str) and SEMVER34_RE.match(v8v):
+                    result.add(v8v)
+        # 如果第一个源已经拿到不少，后面仍继续合并（防止缺失）
+    print(f"[info] Electron releases parsed V8 versions: {len(result)}")
+    return result
+
+
+def sort_versions(versions: Iterable[str]) -> List[str]:
+    def sort_key(v: str):
+        parts = parse_version(v)
+        return parts + [0] * (4 - len(parts))
+    return sorted(set(versions), key=sort_key)
+
 
 def main():
-    print(f"[determine_versions] MODE=Node-used-V8 MIN_VERSION={MIN_VERSION} CAP={CAP} REQUIRE_TAG_MATCH={REQUIRE_TAG_MATCH}")
+    print(f"[determine_versions] MIN_VERSION={MIN_VERSION} CAP={CAP} SOURCES={','.join(sorted(SOURCES))}")
 
     os.makedirs("public", exist_ok=True)
     processed = load_list("public/version.json")
@@ -151,77 +158,83 @@ def main():
     processed_set = set(processed)
     failed_set = set(failed)
 
-    # 读取已有映射
-    existing_map = load_map("public/node_v8_map.json")
+    # Step 1: 获取 Node / Electron 使用过的 V8 版本集合
+    candidate_set: Set[str] = set()
+    if "node" in SOURCES:
+        candidate_set |= fetch_node_v8_versions()
+    if "electron" in SOURCES:
+        candidate_set |= fetch_electron_v8_versions()
 
-    # 1. 抓取 Node index
-    try:
-        node_index = fetch_node_index(NODE_INDEX_URL)
-    except Exception as e:
-        print(f"[determine_versions] ERROR fetching Node index: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    node_v8_map_new, node_used_v8_versions = extract_v8_versions(node_index)
-    print(f"[determine_versions] Node index extracted V8 versions count = {len(node_used_v8_versions)}")
-
-    # 合并老的映射（避免覆盖）
-    for v8v, node_set in node_v8_map_new.items():
-        if v8v not in existing_map:
-            existing_map[v8v] = set()
-        existing_map[v8v].update(node_set)
-
-    # 2. 获取 V8 仓库 tags
-    try:
-        v8_tags = fetch_v8_tags(REPO_URL)
-    except Exception as e:
-        print(f"[determine_versions] ERROR fetching V8 tags: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    if REQUIRE_TAG_MATCH:
-        candidate_all = node_used_v8_versions & v8_tags
+    # 过滤非法格式
+    candidate_set = {v for v in candidate_set if SEMVER34_RE.match(v)}
+    if not candidate_set:
+        print("[warn] 没有从指定来源获取到任何候选 V8 版本，直接退出。")
+        batch = []
+        leftover = 0
     else:
-        # 不要求 tag 存在（极少场景），理论上还是建议 REQUIRE_TAG_MATCH=true
-        candidate_all = node_used_v8_versions
-    print(f"[determine_versions] Candidate (Node-used ∩ V8 tags) count = {len(candidate_all)}")
+        # Step 2: 获取 v8 仓库的所有 tag，求交集
+        try:
+            res = subprocess.run(
+                ["git", "ls-remote", "--tags", REPO_URL],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            remote_tags = set()
+            for line in res.stdout.splitlines():
+                parts = line.strip().split()
+                if len(parts) != 2:
+                    continue
+                ref = parts[1]
+                if not ref.startswith("refs/tags/"):
+                    continue
+                tag = ref[len("refs/tags/"):]
+                tag = tag.split("^")[0]
+                if SEMVER34_RE.match(tag):
+                    remote_tags.add(tag)
+        except subprocess.CalledProcessError as e:
+            print(f"[error] 获取远端 tags 失败: {e}", file=sys.stderr)
+            remote_tags = set()
 
-    # 3. 过滤 MIN_VERSION、过滤 processed/failed
-    filtered = [
-        v for v in candidate_all
-        if version_ge(v, MIN_VERSION) and v not in processed_set and v not in failed_set
-    ]
+        print(f"[info] Remote V8 tags count (semver 3/4): {len(remote_tags)}")
 
-    filtered_sorted = sorted(filtered, key=sort_key)
-    batch = filtered_sorted[:CAP]
-    leftover = max(0, len(filtered_sorted) - len(batch))
+        existing_candidates = candidate_set & remote_tags
+        missing = candidate_set - remote_tags
+        if missing:
+            print(f"[info] 跳过 {len(missing)} 个在 Node/Electron 中出现但远端无对应 tag 的版本(示例前 10): {list(sorted(missing))[:10]}")
+
+        # Step 3: 按 MIN_VERSION / processed / failed 过滤
+        filtered = [
+            v for v in existing_candidates
+            if version_ge(v, MIN_VERSION) and v not in processed_set and v not in failed_set
+        ]
+        filtered = sort_versions(filtered)
+
+        # Step 4: 拆分批次
+        batch = filtered[:CAP]
+        leftover = max(0, len(filtered) - len(batch))
+
+    include = []
+    for v in batch:
+        include.append({"os": "ubuntu-latest", "version": v})
+        include.append({"os": "windows-latest", "version": v})
 
     versions_json = json.dumps(batch, ensure_ascii=False, separators=(",", ":"))
+    matrix_json = json.dumps({"include": include}, ensure_ascii=False, separators=(",", ":"))
     has_versions = "true" if batch else "false"
 
-    print(f"[determine_versions] After filters: unprocessed_eligible={len(filtered_sorted)}, batch={len(batch)}, leftover={leftover}")
-    print("Batch versions:", batch)
-    print("Failed blacklist size:", len(failed_set))
+    print(f"候选来源总数(candidate_set)={len(candidate_set)} 经过 tag 交集后={len(candidate_set & remote_tags) if candidate_set else 0}")
+    print(f"最终可处理新版本(过滤 MIN_VERSION/processed/failed)={len(batch)} 剩余待后续处理={leftover}")
+    print("本批次版本列表:", batch)
+    print("失败黑名单大小:", len(failed_set))
 
-    # 4. 写 node_v8_map.json（持久化 set -> list 排序）
-    #    （只记录我们目前已在 node index 里看到的全部映射，不做 MIN_VERSION 限制）
-    final_map_serializable = {
-        v8v: sorted(list(node_versions), key=lambda s: [
-            int(x) for x in s.lstrip("v").split(".")
-        ])
-        for v8v, node_versions in existing_map.items()
-    }
-    try:
-        with open("public/node_v8_map.json", "w", encoding="utf-8") as f:
-            json.dump(final_map_serializable, f, ensure_ascii=False, indent=2)
-        print("[determine_versions] Updated public/node_v8_map.json")
-    except Exception as e:
-        print(f"[determine_versions] WARN: cannot write node_v8_map.json: {e}", file=sys.stderr)
-
-    # 5. 输出到 GITHUB_OUTPUT
     if OUTPUT:
         with open(OUTPUT, "a", encoding="utf-8") as out:
             out.write(f"versions={versions_json}\n")
+            out.write(f"matrix={matrix_json}\n")
             out.write(f"has_versions={has_versions}\n")
             out.write(f"leftover_total={leftover}\n")
+
 
 if __name__ == "__main__":
     try:

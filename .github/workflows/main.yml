@@ -19,7 +19,7 @@ concurrency:
 env:
   V8_REPO: https://github.com/v8/v8.git
   MIN_VERSION: 12.0.100
-  PATCH_FILE: patch.diff
+  # PATCH_FILE 现在在 build_versions_batch.py 内部根据版本决定
   EXPECTED_PATCH_FILE_COUNT: "6"
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}
   SLOTS_PER_OS: 6
@@ -123,6 +123,7 @@ jobs:
         run: |
           cp apply_patch.py v8/
           cp patch.diff v8/
+          cp patch_old.diff v8/
           cp partition_versions.py v8/ || true
 
       - name: Process versions batch
@@ -135,11 +136,6 @@ jobs:
           # 重要: 此脚本现在应负责将 d8 和正确的 snapshot_blob.bin 一起复制到 artifacts 目录
           python3 build_versions_batch.py || true
           echo "Batch processing complete (errors captured in failed_versions.txt)."
-
-      # REMOVED: 下面的步骤存在逻辑错误，已被删除。
-      # 正确的 snapshot_blob.bin 处理应在 build_versions_batch.py 内部完成。
-      # - name: Collect snapshot blobs
-      #   ...
 
       - name: Upload batch artifacts
         if: steps.partition.outputs.has_any == 'true'

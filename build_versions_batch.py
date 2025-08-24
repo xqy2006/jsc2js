@@ -145,7 +145,7 @@ def main():
                 raise RuntimeError(f"Missing patch file {patch_file_to_use}")
 
             rc = subprocess.run(
-                f"python3 {apply_script} --patch {patch_file_to_use} --verbose --report apply_patch_report.txt",
+                f"python3 {apply_script} --patch {patch_file_to_use} --verbose --second-try-ignore-whitespace --report apply_patch_report.txt",
                 cwd="v8", shell=True).returncode
             if rc != 0:
                 log(f"[PATCH] Failed for {ver}")

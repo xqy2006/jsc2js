@@ -8,7 +8,7 @@ For each version:
   - remove existing v8/out.gn/x64.release (unless KEEP_WORK_DIR=1)
   - run: python tools/dev/v8gen.py x64.release -- <args>
   - ninja -C out.gn/x64.release d8
-  - copy d8 binary to artifacts/d8-<version>-<OS>/
+  - copy d8 binary AND snapshot_blob.bin to artifacts/d8-<version>-<OS>/
   - backup directory:
        out.gn/x64.release  -->  out.gn/version_backups/x64.release.<sanitized_version>
     (sanitized_version = version with '.' replaced by '_')
@@ -141,13 +141,6 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            #changed = git_diff_files()
-            #if not (EXPECTED_FILES & changed):
-            #    log(f"[PATCH] No expected file changed for {ver}")
-            #    failed.append(ver)
-            #    run("git -C v8 checkout .", check=False)
-            #    continue
-
             # v8gen config
             gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false is_debug=false"
             run(f"python tools/dev/v8gen.py x64.release -- {gn_args}", cwd="v8", check=True)
@@ -155,18 +148,27 @@ def main():
             # Build
             run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)
 
-            # Collect artifact
+            # --- FIX: Collect artifact (d8 AND snapshot_blob.bin) ---
             bin_name = "d8.exe" if os_name == "Windows" else "d8"
-            built_bin = Path("v8/out.gn/x64.release") / bin_name
-            if not built_bin.exists():
-                log(f"[BUILD] Missing binary for {ver}")
+            build_output_dir = Path("v8/out.gn/x64.release")
+            built_bin = build_output_dir / bin_name
+            built_snapshot = build_output_dir / "snapshot_blob.bin"
+
+            # FIX: Check for both files
+            if not built_bin.exists() or not built_snapshot.exists():
+                log(f"[BUILD] Missing binary or snapshot for {ver}. d8 exists: {built_bin.exists()}, snapshot exists: {built_snapshot.exists()}")
                 failed.append(ver)
                 run("git -C v8 checkout .", check=False)
                 continue
 
             target_dir = artifacts_dir / f"d8-{ver}-{os_name}"
             target_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(built_bin, target_dir / bin_name)
+            
+            # FIX: Copy both files
+            log(f"Copying {built_bin.name} and {built_snapshot.name} to {target_dir}")
+            shutil.copy2(built_bin, target_dir / built_bin.name)
+            shutil.copy2(built_snapshot, target_dir / built_snapshot.name)
+            
             report_file = Path("v8/apply_patch_report.txt")
             if report_file.exists():
                 shutil.copy2(report_file, target_dir / "apply_patch_report.txt")

@@ -303,8 +303,6 @@ def main():
 
     # Build git apply command
     git_cmd = ["git"]
-    if args.force_no_autocrlf:
-        git_cmd += ["-c", "core.autocrlf=false"]
     git_cmd += ["apply", "--3way"]
 
     extra = args.git_apply_extra.strip()

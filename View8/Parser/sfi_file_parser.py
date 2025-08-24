@@ -205,7 +205,7 @@ def log_error(message: str, context: str = ""):
 # --------------------------
 
 def parse_bytecode_line(line: str) -> Optional[CodeLine]:
-    m = re.search(r"^[^@]*@ +(\d+) : ([0-9a-fA-F ]+)\s+([A-Za-z_][A-Za-z0-9._]*(?:.*))$", line)
+    m = re.search(r"^[^@]*@ +(\d+) : ([0-9a-fA-F ]+?)\s+([A-Za-z_][A-Za-z0-9._]*(?:.*))$", line)
     if m:
         offset, opcode, inst = m.groups()
         try:

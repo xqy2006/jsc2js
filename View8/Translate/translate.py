@@ -48,9 +48,8 @@ class TranslateBytecode:
             # 跳过占位或注释（由解析器填充缺失偏移时写入）
             if not line.v8_instruction or line.v8_instruction.startswith("//"):
                 continue
-
             # 仅接受以字母/下划线开头的助记符，避免把寄存器等当作操作码
-            m = re.match(r"^([A-Za-z_][A-Za-z0-9._]*)\b(?:\s+(.*))?$", line.v8_instruction.strip())
+            m = re.match(r"^(?:(?:[0-9a-fA-F]{2}\s+)+)?([A-Za-z_][A-Za-z0-9._]*)\b(?:\s+(.*))?$", line.v8_instruction.strip())
             if not m:
                 continue
 

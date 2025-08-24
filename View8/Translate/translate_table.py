@@ -298,6 +298,31 @@ operands = {
 
 
 
+    "BitwiseAnd": lambda obj: f"ACCU = (ACCU & {obj.args[0]})",
+    "BitwiseOr": lambda obj: f"ACCU = (ACCU | {obj.args[0]})",
+    "BitwiseXor": lambda obj: f"ACCU = (ACCU ^ {obj.args[0]})",
+    "ShiftLeft": lambda obj: f"ACCU = (ACCU << {obj.args[0]})",
+    "ShiftRight": lambda obj: f"ACCU = (ACCU >> {obj.args[0]})",
+    "ShiftRightLogical": lambda obj: f"ACCU = (ACCU >>> {obj.args[0]})",
+
+    # Wide variants (same logic, for larger operands/feedback)
+    "Add.Wide": lambda obj: f"ACCU = (ACCU + {obj.args[0]})",
+    "Sub.Wide": lambda obj: f"ACCU = (ACCU - {obj.args[0]})",
+    "Mul.Wide": lambda obj: f"ACCU = (ACCU * {obj.args[0]})",
+    "Div.Wide": lambda obj: f"ACCU = (ACCU / {obj.args[0]})",
+    "Mod.Wide": lambda obj: f"ACCU = (ACCU % {obj.args[0]})",
+    "Exp.Wide": lambda obj: f"ACCU = (ACCU ** {obj.args[0]})",
+    "BitwiseAnd.Wide": lambda obj: f"ACCU = (ACCU & {obj.args[0]})",
+    "BitwiseOr.Wide": lambda obj: f"ACCU = (ACCU | {obj.args[0]})",
+    "BitwiseXor.Wide": lambda obj: f"ACCU = (ACCU ^ {obj.args[0]})",
+    "ShiftLeft.Wide": lambda obj: f"ACCU = (ACCU << {obj.args[0]})",
+    "ShiftRight.Wide": lambda obj: f"ACCU = (ACCU >> {obj.args[0]})",
+    "ShiftRightLogical.Wide": lambda obj: f"ACCU = (ACCU >>> {obj.args[0]})",
+
+    # Smi Wide/ExtraWide (already suggested, but ensure for & 0xFF)
+    "BitwiseAndSmi.Wide": lambda obj: f"ACCU = (ACCU & {obj.args[0][1:-1]})",
+    "BitwiseAndSmi.ExtraWide": lambda obj: f"ACCU = (ACCU & {obj.args[0][1:-1]})",
+    # Add similar for other Smi ops if needed (e.g., "AddSmi.Wide": lambda obj: f"ACCU = (ACCU + {obj.args[0][1:-1]})",)
 
 
 

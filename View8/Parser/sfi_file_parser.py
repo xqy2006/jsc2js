@@ -47,12 +47,12 @@ def read_file_with_best_encoding(file_path: str) -> List[str]:
 
 
 def normalize_addr(addr_str: str) -> Optional[int]:
+    s = addr_str.strip().lower().removeprefix("0x")
+    if not s:
+        return 0  # Handle all-zero addresses
     try:
-        s = addr_str.strip()
-        if not s.startswith("0x"):
-            return None
         return int(s, 16)
-    except Exception:
+    except ValueError:
         return None
 
 
@@ -68,7 +68,7 @@ def collect_fixed_arrays(file_path: str):
     i = 0
     N = len(lines)
 
-    rx_addr = re.compile(r'^\s*(0x[0-9a-fA-F]+):\s*\[FixedArray\]')
+    rx_addr = re.compile(r'^\s*((?:0x)?[0-9a-fA-F]+):\s*\[FixedArray\]')
     rx_len = re.compile(r'^\s*-\s*length:\s*(\d+)\s*$')
     rx_single = re.compile(r'^\s*(\d+)\s*:\s*(-?\d+)\s*$')
     rx_range = re.compile(r'^\s*(\d+)\s*-\s*(\d+)\s*:\s*(-?\d+)\s*$')

@@ -294,6 +294,33 @@ operands = {
     "ShiftLeftLogicalSmi": lambda obj: f"ACCU = (ACCU <<< {obj.args[0][1:-1]})",
     "ShiftLeftSmi": lambda obj: f"ACCU = (ACCU << {obj.args[0][1:-1]})",
 
+
+
+
+
+
+
+
+
+    "LdaSmi.ExtraWide": lambda obj: f"ACCU = {obj.args[0][1:-1]}",
+    "AddSmi.ExtraWide": lambda obj: f"ACCU = (ACCU + {obj.args[0][1:-1]})",
+    "SubSmi.ExtraWide": lambda obj: f"ACCU = (ACCU - {obj.args[0][1:-1]})",
+    "MulSmi.ExtraWide": lambda obj: f"ACCU = (ACCU * {obj.args[0][1:-1]})",
+    "DivSmi.ExtraWide": lambda obj: f"ACCU = (ACCU \\ {obj.args[0][1:-1]})",
+    "ModSmi.ExtraWide": lambda obj: f"ACCU = (ACCU % {obj.args[0][1:-1]})",
+    "BitwiseAndSmi.ExtraWide": lambda obj: f"ACCU = (ACCU & {obj.args[0][1:-1]})",
+    "BitwiseOrSmi.ExtraWide": lambda obj: f"ACCU = (ACCU | {obj.args[0][1:-1]})",
+    "BitwiseXorSmi.ExtraWide": lambda obj: f"ACCU = (ACCU ^ {obj.args[0][1:-1]})",
+    "ShiftLeftSmi.ExtraWide": lambda obj: f"ACCU = (ACCU << {obj.args[0][1:-1]})",
+    "ShiftRightSmi.ExtraWide": lambda obj: f"ACCU = (ACCU >> {obj.args[0][1:-1]})",
+    "ShiftRightLogicalSmi.ExtraWide": lambda obj: f"ACCU = (ACCU >>> {obj.args[0][1:-1]})",
+
+
+
+
+
+
+
     ##################
     # throw operands #
     ##################

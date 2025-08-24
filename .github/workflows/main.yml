@@ -64,7 +64,9 @@ jobs:
       - name: Checkout infra repo
         uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-
+      - name: Configure Git to use LF line endings
+        run: git config --global core.autocrlf false
+        
       - name: Write versions.json
         run: |
           echo '${{ env.ALL_VERSIONS }}' > versions.json

@@ -19,7 +19,6 @@ For each version:
 
 Env vars:
   ASSIGNED_JSON         JSON array of versions
-  PATCH_FILE_NAME       (default patch.diff)
   APPLY_SCRIPT_NAME     (default apply_patch.py)
   BACKUP_BASE           (default: out.gn/version_backups)
   BACKUP_COMPRESS       "1" to compress backups
@@ -82,7 +81,6 @@ def compress_backup(path: Path):
 
 def main():
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
-    patch_file = os.environ.get("PATCH_FILE_NAME", "patch.diff")
     apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
     backup_base = Path(os.environ.get("BACKUP_BASE", "v8/out.gn/version_backups"))
     compress = os.environ.get("BACKUP_COMPRESS", "0") == "1"
@@ -124,16 +122,30 @@ def main():
             if not keep_work_dir:
                 shutil.rmtree(work_dir, ignore_errors=True)
 
+            # --- MODIFICATION START: Dynamically select patch file ---
+            try:
+                major_str, minor_str, _, _ = ver.split('.')
+                major, minor = int(major_str), int(minor_str)
+                if major > 12 or (major == 12 and minor >= 6):
+                    patch_file_to_use = "patch.diff"
+                else:
+                    patch_file_to_use = "patch_old.diff"
+                log(f"Selected patch file for version {ver}: {patch_file_to_use}")
+            except (ValueError, IndexError):
+                log(f"[ERROR] Could not parse version string: {ver}. Defaulting to patch.diff")
+                patch_file_to_use = "patch.diff"
+            # --- MODIFICATION END ---
+
             # Apply patch
             apply_path = Path("v8") / apply_script
-            patch_path = Path("v8") / patch_file
+            patch_path = Path("v8") / patch_file_to_use
             if not apply_path.exists():
                 raise RuntimeError(f"Missing apply script {apply_script}")
             if not patch_path.exists():
-                raise RuntimeError(f"Missing patch file {patch_file}")
+                raise RuntimeError(f"Missing patch file {patch_file_to_use}")
 
             rc = subprocess.run(
-                f"python3 {apply_script} --patch {patch_file} --verbose --report apply_patch_report.txt",
+                f"python3 {apply_script} --patch {patch_file_to_use} --verbose --report apply_patch_report.txt",
                 cwd="v8", shell=True).returncode
             if rc != 0:
                 log(f"[PATCH] Failed for {ver}")

@@ -140,15 +140,12 @@ jobs:
         shell: bash
         run: |
           set -e
-          # 期望 build_versions_batch.py 已把 d8 复制到 artifacts/d8-<ver>-<OS>/ 下面
-            # 我们现在为每个目录尝试放入 snapshot_blob.bin
           find artifacts -maxdepth 2 -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
             dir=$(dirname "$bin")
             if [ -f "$dir/snapshot_blob.bin" ]; then
               echo "Already has snapshot_blob.bin in $dir"
               continue
             fi
-            # 尝试在 v8/out 下寻找最新的 snapshot_blob.bin
             cand=$(find v8 -type f -name snapshot_blob.bin 2>/dev/null | sort -r | head -n1 || true)
             if [ -n "$cand" ]; then
               cp "$cand" "$dir/snapshot_blob.bin" || true
@@ -176,22 +173,36 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # 某些工具用 GH_TOKEN
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
+
       - name: Download all batch artifacts
         uses: actions/download-artifact@v4
         with:
           path: downloaded
+
       - name: Install tools
         run: |
-          sudo apt-get update
-            # 增加 zip
-          sudo apt-get install -y jq zip
-          gh --version || true
+            set -eux
+            sudo apt-get update
+            sudo apt-get install -y jq zip tar
+            if ! command -v gh >/dev/null 2>&1; then
+              echo "Installing gh CLI..."
+              type -p curl >/dev/null || (sudo apt-get update && sudo apt-get install -y curl)
+              curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+              sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y gh
+            fi
+            gh --version
+
       - name: Merge success & failed
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
@@ -201,23 +212,23 @@ jobs:
           sort -u -o _all_failed.txt _all_failed.txt || true
           while read -r v; do
             [ -z "$v" ] && continue
-            jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
+            jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null 2>&1 || \
               jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
           done < _all_failed.txt
+
       - name: Reconstruct per-version dirs
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p stage
-          # 查找 d8 / d8.exe，并同时尝试带出 snapshot_blob.bin
           find downloaded -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
             base=$(basename "$(dirname "$bin")")
             ver="${base#d8-}"
+            rep_dir=$(dirname "$bin")
             if echo "$base" | grep -q "\-Linux$"; then
               ver="${ver%-Linux}"
               tgt="stage/d8-${ver}-Linux"
               mkdir -p "$tgt"
               cp "$bin" "$tgt/d8"
-              rep_dir=$(dirname "$bin")
               [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
               [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
             elif echo "$base" | grep -q "\-Windows$"; then
@@ -225,20 +236,65 @@ jobs:
               tgt="stage/d8-${ver}-Windows"
               mkdir -p "$tgt"
               cp "$bin" "$tgt/d8.exe"
-              rep_dir=$(dirname "$bin")
               [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
               [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
             fi
           done
+
       - name: Create releases & update version.json
         env:
           ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRACE: "1"   # 如不需要详细 trace 可改为 0
         run: |
-          set -e
+          #!/usr/bin/env bash
+          set -euo pipefail
+          [ "${TRACE:-0}" = "1" ] && set -x
+          trap 'rc=$?; echo "ERROR rc=$rc at line $LINENO (cmd: $BASH_COMMAND)" >&2; echo "--- ls stage ---"; ls -R stage 2>/dev/null | head -500; echo "--- ls public ---"; ls -R public 2>/dev/null | head -500; exit $rc' ERR
+
+          if ! command -v gh >/dev/null; then
+            echo "gh CLI not found"; exit 1
+          fi
+          mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
+          [ -f public/failed.json ]  || echo "[]" > public/failed.json
+
+          # 函数：打印文件大小
+            size_of() {
+              if [ -f "$1" ]; then
+                if command -v stat >/dev/null 2>&1; then
+                  stat -c '%n %s bytes' "$1" 2>/dev/null || stat "$1"
+                else
+                  wc -c "$1"
+                fi
+              fi
+            }
+
+          gh_retry () {
+            local max=3 delay=5 attempt=1
+            # 用 "$@" 形式以支持带参数命令
+            while true; do
+              echo "Attempt $attempt/$max: $*"
+              if "$@"; then
+                return 0
+              fi
+              rc=$?
+              if [ $attempt -ge $max ]; then
+                echo "Command failed after $attempt attempts, rc=$rc: $*" >&2
+                return $rc
+              fi
+              attempt=$((attempt+1))
+              sleep $delay
+            done
+          }
+
           updated=false
-          for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
+          # 遍历版本
+          echo "${ALL_VERSIONS:-[]}" | jq -r '.[]' | while read -r v; do
+            [ -z "$v" ] && continue
+            echo "---- Processing version $v ----"
+
             LIN_DIR="stage/d8-${v}-Linux"
             WIN_DIR="stage/d8-${v}-Windows"
             LIN_BIN="${LIN_DIR}/d8"
@@ -246,51 +302,86 @@ jobs:
             WIN_BIN="${WIN_DIR}/d8.exe"
             WIN_SNAP="${WIN_DIR}/snapshot_blob.bin"
             mkdir -p "public/$v"
+
+            echo "Linux dir: $LIN_DIR"
+            [ -d "$LIN_DIR" ] && ls -l "$LIN_DIR" || echo "(no Linux dir)"
+            echo "Windows dir: $WIN_DIR"
+            [ -d "$WIN_DIR" ] && ls -l "$WIN_DIR" || echo "(no Windows dir)"
+
             ASSETS=()
+
             # Linux 打包
             if [ -f "$LIN_BIN" ] && [ -f "$LIN_SNAP" ]; then
+              size_of "$LIN_BIN"
+              size_of "$LIN_SNAP"
               tar_name="public/$v/d8-${v}-linux.tar.gz"
               tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
+              # 如需包含 patch 报告可解注：
+              # if [ -f "$LIN_DIR/apply_patch_report.txt" ]; then
+              #   tar -C "$LIN_DIR" -rzf "$tar_name" apply_patch_report.txt
+              # fi
               ASSETS+=("$tar_name")
+              echo "Created Linux package: $tar_name"
             else
               echo "Skip Linux package for $v (missing d8 or snapshot_blob.bin)."
             fi
-            # Windows 打包
+
+            # Windows 打包（修复：不用 cd + 相对路径混乱；使用 -j 去除目录结构）
             if [ -f "$WIN_BIN" ] && [ -f "$WIN_SNAP" ]; then
+              size_of "$WIN_BIN"
+              size_of "$WIN_SNAP"
               zip_name="public/$v/d8-${v}-windows.zip"
-              (cd "$WIN_DIR" && zip -9 "../$zip_name" d8.exe snapshot_blob.bin >/dev/null)
+              # -j: 不要保留目录层级
+              zip -9 -j "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
+              # 如需 patch 报告也进 zip：
+              # [ -f "$WIN_DIR/apply_patch_report.txt" ] && zip -9 -j "$zip_name" "$WIN_DIR/apply_patch_report.txt" >/dev/null
               ASSETS+=("$zip_name")
+              echo "Created Windows package: $zip_name"
             else
               echo "Skip Windows package for $v (missing d8.exe or snapshot_blob.bin)."
             fi
+
             if [ ${#ASSETS[@]} -eq 0 ]; then
               echo "No complete artifacts for $v, skipping release asset upload."
               continue
             fi
+
             notes="Patched d8 for V8 $v (includes d8 + snapshot_blob.bin)."
             if gh release view "$v" >/dev/null 2>&1; then
               echo "Release $v exists. Uploading / replacing assets..."
-              gh release upload "$v" "${ASSETS[@]}" --clobber
+              gh_retry gh release upload "$v" "${ASSETS[@]}" --clobber
             else
-              gh release create "$v" "${ASSETS[@]}" --title "$v" --notes "$notes"
+              echo "Creating new release $v with assets: ${ASSETS[*]}"
+              gh_retry gh release create "$v" "${ASSETS[@]}" --title "$v" --notes "$notes"
             fi
-            if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null; then
+
+            # 更新 version.json
+            if ! jq -e --arg v "$v" '.[] | select(. == $v)' public/version.json >/dev/null 2>&1; then
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
               updated=true
             fi
           done
+
+          # 排序（如果有变化）
           if [ "$updated" = true ]; then
-            jq '[.[]] | sort_by((split(".")+["0","0","0","0"])[0:4]|map(tonumber))' public/version.json > public/.tmp && mv public/.tmp public/version.json
+            tmp_sort=$(mktemp)
+            jq '[.[]] | sort_by((split(".")+["0","0","0","0"])[0:4]|map(tonumber))' public/version.json > "$tmp_sort" && mv "$tmp_sort" public/version.json
           fi
+
           echo "version.json:"; cat public/version.json
-          echo "failed.json:";  cat public/failed.json
+          echo "failed.json:";  cat public/failed.json || true
+
+          echo "List current releases (first 50):"
+          gh release list --limit 50 || true
+
       - name: Commit & push tracking
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public
           git commit -m "Update tracking (batch build) [skip ci]" || echo "No changes to commit."
-          git push
+          git push || echo "Push skipped / failed (maybe no changes)."
 
   trigger-next-batch:
     name: Trigger next batch
@@ -303,14 +394,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_MAX: ${{ env.MAX_PER_RUN }}
         run: |
+          set -euo pipefail
           REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
           if [ -z "$REF" ]; then
             REF=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-              https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}" | jq -r '.default_branch')
           fi
+          echo "Triggering next batch on ref=$REF max_per_run=${NEXT_MAX}"
           curl -s -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/main.yml/dispatches" \
             -d "{\"ref\":\"${REF}\",\"inputs\":{\"max_per_run\":\"${NEXT_MAX}\"}}"
           echo "Next batch dispatched."

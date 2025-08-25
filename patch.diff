@@ -218,13 +218,13 @@ index 68262ec5caf..154fef2e2ae 100644
      os << accumulator.ToCString().get();
      return;
    }
-+  if (map(cage_base)->instance_type() == ASM_WASM_DATA_TYPE) {
-+    os << "<ArrayBoilerplateDescription> ";
-+    Cast<ArrayBoilerplateDescription>(*this)
-+        ->constant_elements()
-+        ->HeapObjectShortPrint(os);
-+    return;
-+  }
++
++
++
++
++
++
++
    if (IsJSObject(*this, cage_base)) {
      HeapStringAllocator allocator;
      StringStream accumulator(&allocator);

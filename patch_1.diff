@@ -9,8 +9,8 @@ index 1c37e97a380..cc1c3e48cfc 100644
 +
 +
 +
-+
-+
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wshadow"
 +
 +// 在 d8.cc 文件顶部，如果还没包含的话
 +#include <iostream>

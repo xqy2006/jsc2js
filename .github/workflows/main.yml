@@ -125,7 +125,6 @@ jobs:
         run: |
           cp apply_patch.py v8/
           cp patch.diff v8/
-          cp patch_1.diff v8/
           cp patch_old.diff v8/
           cp partition_versions.py v8/ || true
 

@@ -99,7 +99,7 @@ index 1c37e97a380..cc1c3e48cfc 100644
 +    v8::internal::MaybeDirectHandle<v8::internal::SharedFunctionInfo> maybe_fun =
 +        v8::internal::CodeSerializer::Deserialize(isolate, &cached_data, source, script_details);
 +    
-+    v8::internal::Handle<v8::internal::SharedFunctionInfo> fun;
++    v8::internal::DirectHandle<v8::internal::SharedFunctionInfo> fun;
 +    if (!maybe_fun.ToHandle(&fun)) {
 +      args.GetIsolate()->ThrowException(v8::Exception::Error(
 +          v8::String::NewFromUtf8(args.GetIsolate(), "Deserialize failed, possibly version mismatch or invalid .jsc file").ToLocalChecked()));

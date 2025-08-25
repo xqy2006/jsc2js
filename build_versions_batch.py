@@ -124,16 +124,22 @@ def main():
 
             # --- MODIFICATION START: Dynamically select patch file ---
             try:
-                major_str, minor_str, _, _ = ver.split('.')
-                major, minor = int(major_str), int(minor_str)
-                if major > 12 or (major == 12 and minor >= 6):
-                    patch_file_to_use = "patch.diff"
-                else:
-                    patch_file_to_use = "patch_old.diff"
-                log(f"Selected patch file for version {ver}: {patch_file_to_use}")
-            except (ValueError, IndexError):
-                log(f"[ERROR] Could not parse version string: {ver}. Defaulting to patch.diff")
-                patch_file_to_use = "patch.diff"
+              # Split version string into parts and convert major/minor to integers
+              version_parts = ver.split('.')
+              major = int(version_parts[0])
+              minor = int(version_parts[1])
+          
+              # Check if version is greater than or equal to 12.6
+              if major > 12 or (major == 12 and minor >= 6):
+                  patch_file_to_use = "patch.diff"
+              else:
+                  patch_file_to_use = "patch_old.diff"
+              log(f"Selected patch file for version {ver}: {patch_file_to_use}")
+          
+          except (ValueError, IndexError) as e:
+              # Handle cases where version string is malformed (e.g., "12" or "a.b.c")
+              log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to patch.diff")
+              patch_file_to_use = "patch.diff"
             # --- MODIFICATION END ---
 
             # Apply patch

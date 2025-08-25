@@ -201,7 +201,7 @@ def main():
         existing_candidates = candidate_set & remote_tags
         missing = candidate_set - remote_tags
         if missing:
-            print(f"[info] 跳过 {len(missing)} 个在 Node/Electron 中出现但远端无对应 tag 的版本(示例前 10): {list(sorted(missing))[:10]}")
+            print(f"[info] 跳过 {len(missing)} 个在 Node/Electron 中出现但远端无对应 tag 的版本: {list(sorted(missing))}")
 
         # Step 3: 按 MIN_VERSION / processed / failed 过滤
         filtered = [

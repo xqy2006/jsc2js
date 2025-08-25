@@ -128,9 +128,13 @@ def main():
                 version_parts = ver.split('.')
                 major = int(version_parts[0])
                 minor = int(version_parts[1])
+                minor_2 = int(version_parts[2])
                 # Check if version is greater than or equal to 12.6
                 if major > 12 or (major == 12 and minor >= 6):
-                    patch_file_to_use = "patch.diff"
+                    if major > 13 or (major == 13 and minor > 2) or (major == 13 and minor == 2 and minor_2 >= 135):
+                        patch_file_to_use = "patch_1.diff"
+                    else:  
+                        patch_file_to_use = "patch.diff"
                 else:
                     patch_file_to_use = "patch_old.diff"
                 log(f"Selected patch file for version {ver}: {patch_file_to_use}")

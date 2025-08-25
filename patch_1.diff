@@ -184,8 +184,8 @@ index 68262ec5caf..154fef2e2ae 100644
  
  void HeapObject::HeapObjectShortPrint(std::ostream& os) {
    PtrComprCageBase cage_base = GetPtrComprCageBase();
-+
-+  // --- START OF OUR MODIFICATION (FINAL VERSION) ---
++  #pragma GCC diagnostic push
++  #pragma GCC diagnostic ignored "-Wshadow"
 +  Isolate* isolate = nullptr;
 +  if (!GetIsolateFromHeapObject(*this, &isolate) || isolate == nullptr) {
 +    os << "<unknown>";

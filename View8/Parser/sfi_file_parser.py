@@ -471,7 +471,16 @@ def parse_register_count(line: str) -> int:
 
 
 def parse_address(line: str) -> str:
-    return parse("{}: [{}] in {}", line)[0]
+    # Try the full format first
+    res = parse("{}: [{}] in {}", line)
+    if res:
+        return res[0]
+    # Fallback to shorter format without "in {}"
+    res = parse("{}: [{}]", line)
+    if res:
+        return res[0]
+    # If neither matches, raise an error for debugging
+    raise ValueError(f"Invalid address line format: {line}")
 
 
 # --------------------------

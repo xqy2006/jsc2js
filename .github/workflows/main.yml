@@ -1,13 +1,14 @@
 name: Build patched V8 d8 (6 reusable workers)
 
 on:
+  schedule:
+    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       max_per_run:
-        description: "本次最多处理多少个新版本（默认 30）"
+        description: "本次最多处理多少个新版本（默认 24）"
         required: false
-        default: "30"
-
+        default: "24"
 permissions:
   contents: write
   actions: write

@@ -62,7 +62,7 @@ View8 需要：
 ## 说明
 
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
-- 由于没有node环境，所有node函数都将被标注为`<unknown>`
+- 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
   1. 再次核对版本；
   2. 若仍有异常，请提起 Issue
@@ -150,7 +150,7 @@ View8 requires:
 ## Notes
 
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
-- Because there is no Node.js runtime environment here, all Node‑specific functions will be labeled as `<unknown>`.
+- Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:
   1. Re‑check the version alignment.
   2. If still incorrect, open an Issue.

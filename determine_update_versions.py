@@ -3,6 +3,7 @@
 """
 从 public/update_needed.json 读取需要用 v2 补丁重新构建的版本列表，
 按批次输出。不联网，不扫描新版本。
+倒序：从最新版本开始处理。
 
 环境变量：
   MAX_PER_RUN        (批次上限，默认为 20)
@@ -29,11 +30,12 @@ def parse_version(v: str) -> List[int]:
     return [int(x) for x in v.split(".")]
 
 
-def sort_versions(versions: list) -> list:
+def sort_versions_desc(versions: list) -> list:
+    """按版本号从大到小排序（最新版本在前）"""
     def sort_key(v: str):
         parts = parse_version(v)
         return parts + [0] * (4 - len(parts))
-    return sorted(set(versions), key=sort_key)
+    return sorted(set(versions), key=sort_key, reverse=True)
 
 
 def load_list(path: str):
@@ -58,7 +60,7 @@ def main():
         batch = []
         leftover = 0
     else:
-        filtered = sort_versions(needed)
+        filtered = sort_versions_desc(needed)
         batch = filtered[:CAP]
         leftover = max(0, len(filtered) - len(batch))
 

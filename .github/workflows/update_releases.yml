@@ -1,0 +1,345 @@
+name: Update existing releases with v2 patches
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_per_run:
+        description: "本次最多处理多少个版本"
+        required: false
+        default: "24"
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: update-patched-v8
+  cancel-in-progress: false
+
+env:
+  V8_REPO: https://github.com/v8/v8.git
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '24' }}
+  SLOTS_PER_OS: 6
+
+jobs:
+  determine-versions:
+    name: Determine versions to update
+    runs-on: ubuntu-latest
+    outputs:
+      versions_json: ${{ steps.determine.outputs.versions }}
+      has_versions: ${{ steps.determine.outputs.has_versions }}
+      leftover_total: ${{ steps.determine.outputs.leftover_total }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Ensure tracking JSON
+        run: |
+          mkdir -p public
+          [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
+      - name: Determine versions
+        id: determine
+        run: python3 determine_update_versions.py
+
+  build:
+    name: Build slot ${{ matrix.slot }} / ${{ matrix.os }}
+    needs: determine-versions
+    if: needs.determine-versions.outputs.has_versions == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        slot: [0,1,2,3,4,5]
+    env:
+      ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+      SLOT_INDEX: ${{ matrix.slot }}
+      SLOTS_PER_OS: 6
+      DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
+      GYP_MSVS_VERSION: "2022"
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Configure Git to use LF line endings
+        run: git config --global core.autocrlf false
+
+      - name: Write versions.json
+        run: |
+          echo '${{ env.ALL_VERSIONS }}' > versions.json
+
+      - name: Partition versions
+        id: partition
+        run: python3 partition_versions.py
+        env:
+          VERSIONS_JSON: ${{ env.ALL_VERSIONS }}
+          SLOT_INDEX: ${{ env.SLOT_INDEX }}
+          SLOTS_PER_OS: ${{ env.SLOTS_PER_OS }}
+
+      - name: No versions shortcut
+        if: steps.partition.outputs.has_any == 'false'
+        run: echo "This slot has no assigned versions."
+
+      - name: Prepare (Linux)
+        if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          export PATH="$PWD/depot_tools:$PATH"
+          echo "$PWD/depot_tools" >> $GITHUB_PATH
+          python --version
+          gclient --version
+
+      - name: Prepare (Windows)
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          chcp 65001
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          $env:PATH = "$PWD\depot_tools;" + $env:PATH
+          "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          python --version
+          gclient --version
+
+      - name: Initial sync (GitHub main repo)
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          set -eux
+          gclient config --name v8 --unmanaged https://github.com/v8/v8.git
+          gclient sync --nohooks -D --no-history
+          gclient runhooks
+
+      - name: Copy helper scripts
+        if: steps.partition.outputs.has_any == 'true'
+        run: |
+          cp apply_patch.py v8/
+          cp patch.diff v8/
+          cp patch_1.diff v8/
+          cp patch_old.diff v8/
+          cp patch_v2.diff v8/
+          cp patch_1_v2.diff v8/
+          cp patch_old_v2.diff v8/
+          cp partition_versions.py v8/ || true
+
+      - name: Process versions batch
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: |
+          set -e
+          python3 build_versions_batch.py || true
+          echo "Batch processing complete (errors captured in failed_versions.txt)."
+
+      - name: Upload batch artifacts
+        if: steps.partition.outputs.has_any == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-batch-${{ matrix.os }}-slot${{ matrix.slot }}
+          path: |
+            artifacts/**
+            success_versions.txt
+            failed_versions.txt
+          retention-days: 7
+
+  aggregate-and-release:
+    name: Aggregate & update releases
+    needs: [determine-versions, build]
+    if: needs.determine-versions.outputs.has_versions == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Download all batch artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq zip
+          gh --version || true
+      - name: Merge success & failed
+        run: |
+          set -e
+          mkdir -p public
+          [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
+          find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
+          find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
+          sort -u -o _all_success.txt _all_success.txt || true
+          sort -u -o _all_failed.txt _all_failed.txt || true
+      - name: Reconstruct per-version dirs
+        run: |
+          set -e
+          mkdir -p stage
+          find downloaded -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
+            base=$(basename "$(dirname "$bin")")
+            ver="${base#d8-}"
+            if echo "$base" | grep -q "\-Linux$"; then
+              ver="${ver%-Linux}"
+              tgt="stage/d8-${ver}-Linux"
+              mkdir -p "$tgt"
+              cp "$bin" "$tgt/d8"
+              rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
+              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
+            elif echo "$base" | grep -q "\-Windows$"; then
+              ver="${ver%-Windows}"
+              tgt="stage/d8-${ver}-Windows"
+              mkdir -p "$tgt"
+              cp "$bin" "$tgt/d8.exe"
+              rep_dir=$(dirname "$bin")
+              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
+              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
+            fi
+          done
+      - name: Update releases (rename old assets with -old suffix, upload new v2 assets)
+        env:
+          ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
+          updated=false
+
+          for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
+            LIN_DIR="stage/d8-${v}-Linux"
+            WIN_DIR="stage/d8-${v}-Windows"
+            LIN_BIN="${LIN_DIR}/d8"
+            LIN_SNAP="${LIN_DIR}/snapshot_blob.bin"
+            WIN_BIN="${WIN_DIR}/d8.exe"
+            WIN_SNAP="${WIN_DIR}/snapshot_blob.bin"
+
+            mkdir -p "public/$v"
+            NEW_ASSETS=()
+
+            if [ -f "$LIN_BIN" ] && [ -f "$LIN_SNAP" ]; then
+              tar_name="public/$v/d8-${v}-linux.tar.gz"
+              tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
+              NEW_ASSETS+=("$tar_name")
+            else
+              echo "Skip Linux package for $v (missing d8 or snapshot_blob.bin)."
+            fi
+
+            if [ -f "$WIN_BIN" ] && [ -f "$WIN_SNAP" ]; then
+              zip_name="public/$v/d8-${v}-windows.zip"
+              zip -j -9 "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
+              NEW_ASSETS+=("$zip_name")
+            else
+              echo "Skip Windows package for $v (missing d8.exe or snapshot_blob.bin)."
+            fi
+
+            if [ ${#NEW_ASSETS[@]} -eq 0 ]; then
+              echo "No complete artifacts for $v, skipping release update."
+              continue
+            fi
+
+            notes="Patched d8 for V8 $v (v2 patch, includes d8 + snapshot_blob.bin)."
+
+            # 处理 release：重命名旧 assets 加 -old 后缀，上传新的
+            if gh release view "$v" >/dev/null 2>&1; then
+              echo "Release $v exists. Renaming old assets with -old suffix..."
+
+              # 获取当前 release 的所有 asset 名称
+              existing_assets=$(gh release view "$v" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
+              # 下载并重命名旧资产
+              mkdir -p "old_assets_tmp"
+              for asset_name in $existing_assets; do
+                # 只处理非 -old 的资产（避免重复重命名）
+                if echo "$asset_name" | grep -q "\-old\."; then
+                  echo "  Skipping already renamed asset: $asset_name"
+                  continue
+                fi
+
+                echo "  Downloading old asset: $asset_name"
+                gh release download "$v" --pattern "$asset_name" --dir "old_assets_tmp" --clobber 2>/dev/null || {
+                  echo "  Failed to download $asset_name, skipping rename."
+                  continue
+                }
+
+                # 构造 -old 文件名
+                # d8-12.0.157-linux.tar.gz -> d8-12.0.157-linux-old.tar.gz
+                # d8-12.0.157-windows.zip -> d8-12.0.157-windows-old.zip
+                if echo "$asset_name" | grep -q "\.tar\.gz$"; then
+                  old_name="${asset_name%.tar.gz}-old.tar.gz"
+                elif echo "$asset_name" | grep -q "\.zip$"; then
+                  old_name="${asset_name%.zip}-old.zip"
+                else
+                  old_name="${asset_name}-old"
+                fi
+
+                echo "  Renaming: $asset_name -> $old_name"
+                mv "old_assets_tmp/$asset_name" "old_assets_tmp/$old_name"
+
+                # 上传重命名后的旧资产
+                gh release upload "$v" "old_assets_tmp/$old_name" --clobber 2>/dev/null || true
+
+                # 删除原名资产（腾出名字给新的）
+                gh release delete-asset "$v" "$asset_name" --yes 2>/dev/null || true
+              done
+              rm -rf "old_assets_tmp"
+
+              # 上传新的 v2 资产（使用原始文件名）
+              echo "  Uploading new v2 assets for $v..."
+              gh release upload "$v" "${NEW_ASSETS[@]}" --clobber
+
+              # 更新 release notes
+              gh release edit "$v" --notes "$notes" 2>/dev/null || true
+            else
+              echo "Release $v does not exist. Creating tag and new release..."
+              if ! git rev-parse -q --verify "refs/tags/$v"; then
+                git tag "$v" -m "Release for V8 version $v (v2 patch)"
+                git push origin "$v"
+              fi
+              gh release create "$v" "${NEW_ASSETS[@]}" --title "$v" --notes "$notes"
+            fi
+
+            # 从 update_needed.json 中移除已成功更新的版本
+            jq --arg v "$v" 'map(select(. != $v))' public/update_needed.json > public/.tmp && mv public/.tmp public/update_needed.json
+            updated=true
+            echo "=== Successfully updated release for $v ==="
+          done
+
+          echo "update_needed.json (remaining):"; cat public/update_needed.json
+      - name: Commit & push tracking
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public
+          git commit -m "Update tracking (v2 rebuild) [skip ci]" || echo "No changes to commit."
+          git push
+
+  trigger-next-batch:
+    name: Trigger next batch
+    needs: [aggregate-and-release]
+    if: needs.aggregate-and-release.outputs.leftover_total != '' && needs.aggregate-and-release.outputs.leftover_total != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch next
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT_MAX: ${{ env.MAX_PER_RUN }}
+        run: |
+          REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
+          if [ -z "$REF" ]; then
+            REF=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+              https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
+          fi
+          curl -s -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/update_releases.yml/dispatches \
+            -d "{\"ref\":\"${REF}\",\"inputs\":{\"max_per_run\":\"${NEXT_MAX}\"}}"
+          echo "Next update batch dispatched."

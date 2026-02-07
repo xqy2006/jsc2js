@@ -4,6 +4,9 @@
 从 public/update_needed.json 读取需要用 v2 补丁重新构建的版本列表，
 按批次输出。支持分片模式用于多 workflow 并行。
 
+分片逻辑：先按 max_per_run 切成等大的块，再由 shard_index 选取对应的块。
+这保证每个 shard 分到的版本数 <= max_per_run，不会有版本被跳过。
+
 环境变量：
   MAX_PER_RUN        (每个 workflow 处理的版本数上限，默认 6)
   SHARD_INDEX        (分片索引，从 0 开始，默认 0)
@@ -62,28 +65,41 @@ def main():
         print("[info] update_needed.json 为空或不存在，无需更新。")
         batch = []
         leftover = 0
+        total_remaining = 0
     else:
         filtered = sort_versions(needed)
+        total_remaining = len(filtered)
 
-        # 分片：将整个列表均匀切给各个 shard
-        if SHARD_TOTAL > 1:
-            from math import ceil
-            chunk_size = ceil(len(filtered) / SHARD_TOTAL)
-            start = SHARD_INDEX * chunk_size
-            end = min(len(filtered), start + chunk_size)
-            shard_versions = filtered[start:end] if start < len(filtered) else []
-            print(f"[shard] total={len(filtered)} chunk_size={chunk_size} shard[{SHARD_INDEX}]={len(shard_versions)} versions")
+        # 核心修复：以 CAP (max_per_run) 为块大小进行分片
+        # 将整个列表切成每块 CAP 个版本，然后 shard_index 选取对应的块
+        # 这样每个 shard 拿到的版本数 <= CAP，绝不会超出处理能力
+        #
+        # 示例：216 个版本，CAP=12，SHARD_TOTAL=15
+        #   总共可切成 ceil(216/12) = 18 块
+        #   shard 0 → 块 0 (版本 0-11)
+        #   shard 1 → 块 1 (版本 12-23)
+        #   ...
+        #   shard 14 → 块 14 (版本 168-179)
+        #   块 15、16、17 这次不处理（leftover）
+
+        start = SHARD_INDEX * CAP
+        end = min(total_remaining, start + CAP)
+
+        if start >= total_remaining:
+            batch = []
         else:
-            shard_versions = filtered
+            batch = filtered[start:end]
 
-        # 从本分片中取批次
-        batch = shard_versions[:CAP]
-        leftover = max(0, len(shard_versions) - len(batch))
+        # leftover = 所有 shard 处理完后还剩多少版本
+        total_handled = min(total_remaining, SHARD_TOTAL * CAP)
+        leftover = max(0, total_remaining - total_handled)
 
     versions_json = json.dumps(batch, ensure_ascii=False, separators=(",", ":"))
     has_versions = "true" if batch else "false"
 
-    print(f"待更新版本总数={len(needed)} 本分片={len(shard_versions) if needed else 0} 本批次={len(batch)} 剩余={leftover}")
+    print(f"待更新版本总数={total_remaining} 本分片[{SHARD_INDEX}]={len(batch)}个 "
+          f"范围=[{SHARD_INDEX * CAP}:{SHARD_INDEX * CAP + len(batch)}) "
+          f"全部shard处理后剩余={leftover}")
     print("本批次版本列表:", batch)
 
     if OUTPUT:

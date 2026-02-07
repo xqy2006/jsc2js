@@ -1,0 +1,219 @@
+name: "[Cleanup] Remove -old assets from releases"
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "仅检查，不实际删除（true/false）"
+        required: false
+        default: "true"
+      batch_size:
+        description: "每批处理多少个版本（默认 50）"
+        required: false
+        default: "50"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    name: Remove -old assets from all releases
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          gh --version
+
+      - name: Verify all releases are updated and clean up
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'true' }}
+          BATCH_SIZE: ${{ github.event.inputs.batch_size || '50' }}
+        run: |
+          set -e
+
+          if [ ! -f public/version.json ]; then
+            echo "❌ public/version.json not found!"
+            exit 1
+          fi
+
+          # 读取所有版本
+          versions=$(jq -r '.[]' public/version.json)
+          total=$(echo "$versions" | wc -l)
+          echo "Total versions in version.json: $total"
+          echo ""
+
+          # ============================================
+          # 第一阶段：检查所有 release 是否都已更新
+          # ============================================
+          echo "=========================================="
+          echo "Phase 1: Verify all releases have been updated"
+          echo "=========================================="
+
+          not_updated=()
+          missing_release=()
+          no_assets=()
+          updated=()
+          check_count=0
+
+          for v in $versions; do
+            check_count=$((check_count + 1))
+
+            # rate limit: 每 50 个暂停一下
+            if [ $((check_count % 50)) -eq 0 ]; then
+              echo "  [rate-limit] Pausing 5s after $check_count checks..."
+              sleep 5
+            fi
+
+            # 检查 release 是否存在
+            if ! gh release view "$v" >/dev/null 2>&1; then
+              echo "  [$check_count/$total] $v — ⚠️  release does not exist"
+              missing_release+=("$v")
+              continue
+            fi
+
+            # 获取所有 asset 名称
+            assets=$(gh release view "$v" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
+            if [ -z "$assets" ]; then
+              echo "  [$check_count/$total] $v — ⚠️  release exists but has no assets"
+              no_assets+=("$v")
+              continue
+            fi
+
+            # 检查是否有 -old 资产（说明已被更新过）
+            has_old=false
+            if echo "$assets" | grep -q "\-old\."; then
+              has_old=true
+            fi
+
+            # 检查是否有新的（非 -old）资产
+            has_new=false
+            for a in $assets; do
+              if ! echo "$a" | grep -q "\-old\."; then
+                has_new=true
+                break
+              fi
+            done
+
+            if [ "$has_old" = true ] && [ "$has_new" = true ]; then
+              echo "  [$check_count/$total] $v — ✅ updated (has both old and new assets)"
+              updated+=("$v")
+            elif [ "$has_old" = true ] && [ "$has_new" = false ]; then
+              echo "  [$check_count/$total] $v — ❌ BROKEN: only has -old assets, no new assets!"
+              not_updated+=("$v")
+            else
+              echo "  [$check_count/$total] $v — ❌ not updated (no -old assets found)"
+              not_updated+=("$v")
+            fi
+          done
+
+          echo ""
+          echo "=========================================="
+          echo "Phase 1 Summary"
+          echo "=========================================="
+          echo "  ✅ Updated (has -old + new assets): ${#updated[@]}"
+          echo "  ❌ Not updated:                     ${#not_updated[@]}"
+          echo "  ⚠️  Missing release:                ${#missing_release[@]}"
+          echo "  ⚠️  No assets:                      ${#no_assets[@]}"
+          echo ""
+
+          if [ ${#not_updated[@]} -gt 0 ]; then
+            echo "❌ The following versions have NOT been updated yet:"
+            printf '  - %s\n' "${not_updated[@]}"
+            echo ""
+          fi
+
+          if [ ${#missing_release[@]} -gt 0 ]; then
+            echo "⚠️  The following versions have no release:"
+            printf '  - %s\n' "${missing_release[@]}"
+            echo ""
+          fi
+
+          if [ ${#no_assets[@]} -gt 0 ]; then
+            echo "⚠️  The following versions have empty releases:"
+            printf '  - %s\n' "${no_assets[@]}"
+            echo ""
+          fi
+
+          # 如果有未更新的版本，中止清理
+          if [ ${#not_updated[@]} -gt 0 ]; then
+            echo "============================================================"
+            echo "❌ ABORT: ${#not_updated[@]} versions are not yet updated."
+            echo "   Please run the update workflow first to update all versions."
+            echo "   No -old assets will be deleted."
+            echo "============================================================"
+            exit 1
+          fi
+
+          echo "✅ All ${#updated[@]} releases have been updated with v2 patches."
+          echo ""
+
+          # ============================================
+          # 第二阶段：删除 -old 资产
+          # ============================================
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "=========================================="
+            echo "Phase 2: DRY RUN — listing -old assets that would be deleted"
+            echo "=========================================="
+          else
+            echo "=========================================="
+            echo "Phase 2: Deleting -old assets from all releases"
+            echo "=========================================="
+          fi
+
+          deleted_total=0
+          processed=0
+
+          for v in "${updated[@]}"; do
+            processed=$((processed + 1))
+
+            # rate limit
+            if [ $((processed % 30)) -eq 0 ]; then
+              echo "  [rate-limit] Pausing 3s after $processed versions..."
+              sleep 3
+            fi
+
+            assets=$(gh release view "$v" --json assets --jq '.assets[].name' 2>/dev/null || true)
+            old_assets=()
+
+            for a in $assets; do
+              if echo "$a" | grep -q "\-old\."; then
+                old_assets+=("$a")
+              fi
+            done
+
+            if [ ${#old_assets[@]} -eq 0 ]; then
+              continue
+            fi
+
+            for old_asset in "${old_assets[@]}"; do
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "  [DRY RUN] Would delete: $v / $old_asset"
+              else
+                echo "  Deleting: $v / $old_asset"
+                if gh release delete-asset "$v" "$old_asset" --yes 2>/dev/null; then
+                  deleted_total=$((deleted_total + 1))
+                else
+                  echo "    ⚠️  Failed to delete $old_asset from $v"
+                fi
+              fi
+            done
+          done
+
+          echo ""
+          echo "=========================================="
+          echo "Phase 2 Summary"
+          echo "=========================================="
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "  🔍 DRY RUN mode — no assets were actually deleted."
+            echo "  To actually delete, re-run with dry_run=false"
+          else
+            echo "  🗑️  Total -old assets deleted: $deleted_total"
+          fi
+          echo "  Done."

@@ -47,7 +47,7 @@ jobs:
           REF="${GITHUB_REF_NAME:-main}"
 
           # 计算实际需要多少个 worker
-          # 每个 worker 处理 PER_WORKER 个版本
+          # 每个 worker 处理 PER_WORKER 个版本，用 ceil(remaining / per_worker) 计算需要的总块数
           needed_workers=$(( (REMAINING + PER_WORKER - 1) / PER_WORKER ))
           if [ "$needed_workers" -gt "$PARALLEL" ]; then
             actual_workers=$PARALLEL
@@ -55,13 +55,23 @@ jobs:
             actual_workers=$needed_workers
           fi
 
+          echo "=============================="
           echo "Total remaining: $REMAINING"
           echo "Versions per worker: $PER_WORKER"
           echo "Max parallel workers: $PARALLEL"
+          echo "Needed workers (ceil): $needed_workers"
           echo "Actual workers to dispatch: $actual_workers"
+          echo "Total versions this round: $(( actual_workers * PER_WORKER < REMAINING ? actual_workers * PER_WORKER : REMAINING ))"
+          echo "=============================="
 
           for i in $(seq 0 $((actual_workers - 1))); do
-            echo "Dispatching worker shard $i / $actual_workers ..."
+            start=$(( i * PER_WORKER ))
+            end=$(( start + PER_WORKER ))
+            if [ "$end" -gt "$REMAINING" ]; then
+              end=$REMAINING
+            fi
+            count=$(( end - start ))
+            echo "Dispatching worker shard $i: versions [$start, $end) = $count versions"
             curl -s -X POST \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
@@ -71,7 +81,12 @@ jobs:
             sleep 1
           done
 
+          echo ""
           echo "All $actual_workers workers dispatched."
+          if [ "$needed_workers" -gt "$actual_workers" ]; then
+            leftover=$(( REMAINING - actual_workers * PER_WORKER ))
+            echo "⚠️  $leftover versions remain unhandled. Re-run dispatcher after this round completes."
+          fi
 
       - name: No versions remaining
         if: steps.check.outputs.remaining == '0'

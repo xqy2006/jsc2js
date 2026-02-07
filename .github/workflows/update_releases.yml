@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-2022]
         slot: [0,1,2,3,4,5]
     env:
       ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}

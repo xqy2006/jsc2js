@@ -30,12 +30,11 @@ def parse_version(v: str) -> List[int]:
     return [int(x) for x in v.split(".")]
 
 
-def sort_versions_desc(versions: list) -> list:
-    """按版本号从大到小排序（最新版本在前）"""
+def sort_versions(versions: list) -> list:
     def sort_key(v: str):
         parts = parse_version(v)
         return parts + [0] * (4 - len(parts))
-    return sorted(set(versions), key=sort_key, reverse=True)
+    return sorted(set(versions), key=sort_key)
 
 
 def load_list(path: str):
@@ -60,7 +59,7 @@ def main():
         batch = []
         leftover = 0
     else:
-        filtered = sort_versions_desc(needed)
+        filtered = sort_versions(needed)
         batch = filtered[:CAP]
         leftover = max(0, len(filtered) - len(batch))
 

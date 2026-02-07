@@ -164,7 +164,7 @@ def main():
 
             # v8gen config
             gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false is_debug=false"
-            run(f"python tools/dev/v8gen.py x64.release -- {gn_args}", cwd="v8", check=True)
+            run(f"python tools/dev/v8gen.py x64.release -vv -- {gn_args}", cwd="v8", check=True)
 
             # Build
             run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)

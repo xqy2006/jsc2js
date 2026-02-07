@@ -1,0 +1,137 @@
+name: Sync update_needed.json with release status
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-update-status
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Check releases & sync update_needed.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Pull latest
+        run: |
+          git pull --rebase origin main || git pull --ff-only origin main || true
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          gh --version
+
+      - name: Scan releases and rebuild update_needed.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          [ -f public/version.json ] || { echo "public/version.json not found!"; exit 1; }
+          [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
+
+          echo "=== Scanning all versions in version.json ==="
+
+          # 读取所有已发布的版本
+          all_versions=$(jq -r '.[]' public/version.json)
+          total=$(echo "$all_versions" | wc -l)
+          echo "Total versions to check: $total"
+
+          # 结果文件
+          > _still_needs_update.txt
+          > _already_updated.txt
+          > _no_release.txt
+
+          count=0
+          for v in $all_versions; do
+            count=$((count + 1))
+
+            # 限流：每 50 个版本暂停 5 秒，避免 API rate limit
+            if [ $((count % 50)) -eq 0 ]; then
+              echo "  [rate-limit] Pausing 5s after $count checks..."
+              sleep 5
+            fi
+
+            # 检查 release 是否存在
+            if ! gh release view "$v" >/dev/null 2>&1; then
+              echo "  [$count/$total] $v — no release found"
+              echo "$v" >> _no_release.txt
+              # 没有 release 的版本不需要更新（可能从未成功构建）
+              continue
+            fi
+
+            # 获取该 release 的所有 asset 名称
+            asset_names=$(gh release view "$v" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
+            if [ -z "$asset_names" ]; then
+              echo "  [$count/$total] $v — release exists but no assets"
+              echo "$v" >> _still_needs_update.txt
+              continue
+            fi
+
+            # 检查是否有 -old 资产（说明已经用 v2 补丁更新过了）
+            has_old=false
+            for asset in $asset_names; do
+              if echo "$asset" | grep -q "\-old\."; then
+                has_old=true
+                break
+              fi
+            done
+
+            if [ "$has_old" = true ]; then
+              echo "  [$count/$total] $v — ✅ already updated (has -old assets)"
+              echo "$v" >> _already_updated.txt
+            else
+              echo "  [$count/$total] $v — ❌ needs update (no -old assets)"
+              echo "$v" >> _still_needs_update.txt
+            fi
+          done
+
+          echo ""
+          echo "=== Scan Summary ==="
+          echo "Already updated: $(wc -l < _already_updated.txt)"
+          echo "Still needs update: $(wc -l < _still_needs_update.txt)"
+          echo "No release found: $(wc -l < _no_release.txt)"
+
+          # 用扫描结果重建 update_needed.json
+          # 使用 python 来排序（与其他脚本一致的排序逻辑）
+          python3 -c "
+          import json, sys
+
+          def sort_key(v):
+              parts = [int(x) for x in v.split('.')]
+              return parts + [0] * (4 - len(parts))
+
+          with open('_still_needs_update.txt', 'r') as f:
+              versions = [line.strip() for line in f if line.strip()]
+
+          versions = sorted(set(versions), key=sort_key)
+
+          with open('public/update_needed.json', 'w') as f:
+              json.dump(versions, f, indent=2, ensure_ascii=False)
+              f.write('\n')
+
+          print(f'Wrote {len(versions)} versions to update_needed.json')
+          "
+
+          echo ""
+          echo "=== New update_needed.json ==="
+          cat public/update_needed.json
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/update_needed.json
+          git diff --cached --quiet && { echo "No changes to commit."; exit 0; }
+          git commit -m "Sync update_needed.json with release status [skip ci]"
+          git push

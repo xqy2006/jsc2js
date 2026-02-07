@@ -1,28 +1,35 @@
-name: Update existing releases with v2 patches
+name: "[Worker] Update releases with v2 patches"
 
 on:
   workflow_dispatch:
     inputs:
+      shard_index:
+        description: "分片索引 (0-based)"
+        required: true
+        default: "0"
+      shard_total:
+        description: "总分片数"
+        required: true
+        default: "1"
       max_per_run:
-        description: "本次最多处理多少个版本"
+        description: "本 worker 最多处理多少个版本"
         required: false
-        default: "24"
+        default: "6"
+
 permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: update-patched-v8
-  cancel-in-progress: false
+# 不设 concurrency，允许多个 worker 并行运行
 
 env:
   V8_REPO: https://github.com/v8/v8.git
-  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '24' }}
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '6' }}
   SLOTS_PER_OS: 6
 
 jobs:
   determine-versions:
-    name: Determine versions to update
+    name: "Shard ${{ github.event.inputs.shard_index }}/${{ github.event.inputs.shard_total }} — Determine versions"
     runs-on: ubuntu-latest
     outputs:
       versions_json: ${{ steps.determine.outputs.versions }}
@@ -35,12 +42,15 @@ jobs:
         run: |
           mkdir -p public
           [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
-      - name: Determine versions
+      - name: Determine versions for this shard
         id: determine
+        env:
+          SHARD_INDEX: ${{ github.event.inputs.shard_index }}
+          SHARD_TOTAL: ${{ github.event.inputs.shard_total }}
         run: python3 determine_update_versions.py
 
   build:
-    name: Build slot ${{ matrix.slot }} / ${{ matrix.os }}
+    name: "Shard ${{ github.event.inputs.shard_index }} — Slot ${{ matrix.slot }} / ${{ matrix.os }}"
     needs: determine-versions
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ${{ matrix.os }}
@@ -141,7 +151,7 @@ jobs:
         if: steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: update-batch-${{ matrix.os }}-slot${{ matrix.slot }}
+          name: update-shard${{ github.event.inputs.shard_index }}-${{ matrix.os }}-slot${{ matrix.slot }}
           path: |
             artifacts/**
             success_versions.txt
@@ -149,15 +159,16 @@ jobs:
           retention-days: 7
 
   aggregate-and-release:
-    name: Aggregate & update releases
+    name: "Shard ${{ github.event.inputs.shard_index }} — Aggregate & update releases"
     needs: [determine-versions, build]
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
-    outputs:
-      leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
+      - name: Pull latest tracking files
+        run: |
+          git pull --rebase origin main || git pull --ff-only origin main || true
       - name: Download all batch artifacts
         uses: actions/download-artifact@v4
         with:
@@ -210,8 +221,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # 重新 pull 以获取其他 worker 可能已提交的更新
+          git pull --rebase origin main || git pull --ff-only origin main || true
+
           [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
-          updated=false
 
           for v in $(echo "${ALL_VERSIONS}" | jq -r '.[]'); do
             LIN_DIR="stage/d8-${v}-Linux"
@@ -247,17 +260,12 @@ jobs:
 
             notes="Patched d8 for V8 $v (v2 patch, includes d8 + snapshot_blob.bin)."
 
-            # 处理 release：重命名旧 assets 加 -old 后缀，上传新的
             if gh release view "$v" >/dev/null 2>&1; then
               echo "Release $v exists. Renaming old assets with -old suffix..."
-
-              # 获取当前 release 的所有 asset 名称
               existing_assets=$(gh release view "$v" --json assets --jq '.assets[].name' 2>/dev/null || true)
 
-              # 下载并重命名旧资产
               mkdir -p "old_assets_tmp"
               for asset_name in $existing_assets; do
-                # 只处理非 -old 的资产（避免重复重命名）
                 if echo "$asset_name" | grep -q "\-old\."; then
                   echo "  Skipping already renamed asset: $asset_name"
                   continue
@@ -269,9 +277,6 @@ jobs:
                   continue
                 }
 
-                # 构造 -old 文件名
-                # d8-12.0.157-linux.tar.gz -> d8-12.0.157-linux-old.tar.gz
-                # d8-12.0.157-windows.zip -> d8-12.0.157-windows-old.zip
                 if echo "$asset_name" | grep -q "\.tar\.gz$"; then
                   old_name="${asset_name%.tar.gz}-old.tar.gz"
                 elif echo "$asset_name" | grep -q "\.zip$"; then
@@ -282,20 +287,13 @@ jobs:
 
                 echo "  Renaming: $asset_name -> $old_name"
                 mv "old_assets_tmp/$asset_name" "old_assets_tmp/$old_name"
-
-                # 上传重命名后的旧资产
                 gh release upload "$v" "old_assets_tmp/$old_name" --clobber 2>/dev/null || true
-
-                # 删除原名资产（腾出名字给新的）
                 gh release delete-asset "$v" "$asset_name" --yes 2>/dev/null || true
               done
               rm -rf "old_assets_tmp"
 
-              # 上传新的 v2 资产（使用原始文件名）
               echo "  Uploading new v2 assets for $v..."
               gh release upload "$v" "${NEW_ASSETS[@]}" --clobber
-
-              # 更新 release notes
               gh release edit "$v" --notes "$notes" 2>/dev/null || true
             else
               echo "Release $v does not exist. Creating tag and new release..."
@@ -306,9 +304,9 @@ jobs:
               gh release create "$v" "${NEW_ASSETS[@]}" --title "$v" --notes "$notes"
             fi
 
-            # 从 update_needed.json 中移除已成功更新的版本
+            # 原子地从 update_needed.json 中移除（先 pull 避免冲突）
+            git pull --rebase origin main || git pull --ff-only origin main || true
             jq --arg v "$v" 'map(select(. != $v))' public/update_needed.json > public/.tmp && mv public/.tmp public/update_needed.json
-            updated=true
             echo "=== Successfully updated release for $v ==="
           done
 
@@ -317,29 +315,16 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public
-          git commit -m "Update tracking (v2 rebuild) [skip ci]" || echo "No changes to commit."
-          git push
-
-  trigger-next-batch:
-    name: Trigger next batch
-    needs: [aggregate-and-release]
-    if: needs.aggregate-and-release.outputs.leftover_total != '' && needs.aggregate-and-release.outputs.leftover_total != '0'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch next
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NEXT_MAX: ${{ env.MAX_PER_RUN }}
-        run: |
-          REF="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
-          if [ -z "$REF" ]; then
-            REF=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-              https://api.github.com/repos/${GITHUB_REPOSITORY} | jq -r '.default_branch')
-          fi
-          curl -s -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/update_releases.yml/dispatches \
-            -d "{\"ref\":\"${REF}\",\"inputs\":{\"max_per_run\":\"${NEXT_MAX}\"}}"
-          echo "Next update batch dispatched."
+          # 循环重试 push，处理多 worker 并发提交冲突
+          for attempt in 1 2 3 4 5; do
+            git add public
+            git diff --cached --quiet && { echo "No changes to commit."; break; }
+            git commit -m "Update tracking (v2 rebuild shard ${{ github.event.inputs.shard_index }}) [skip ci]" || true
+            if git push; then
+              echo "Push succeeded on attempt $attempt."
+              break
+            else
+              echo "Push failed (attempt $attempt), pulling and retrying..."
+              git pull --rebase origin main || git pull --ff-only origin main || true
+            fi
+          done

@@ -132,11 +132,11 @@ def main():
                 # Check if version is greater than or equal to 12.6
                 if major > 12 or (major == 12 and minor >= 6):
                     if major > 13 or (major == 13 and minor > 2) or (major == 13 and minor == 2 and minor_2 >= 135):
-                        patch_file_to_use = "patch_1_v2.diff"
+                        patch_file_to_use = "patch_1_v3.diff"
                     else:  
-                        patch_file_to_use = "patch_v2.diff"
+                        patch_file_to_use = "patch_v3.diff"
                 else:
-                    patch_file_to_use = "patch_old_v2.diff"
+                    patch_file_to_use = "patch_old_v3.diff"
                 log(f"Selected patch file for version {ver}: {patch_file_to_use}")
             
             except (ValueError, IndexError) as e:

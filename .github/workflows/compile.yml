@@ -91,7 +91,7 @@ jobs:
           ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
         run: |
           set -e
-          python3 build_versions_batch.py || true
+          python3 build_versions_batch_v3.py || true
           echo "Single-version build finished (see failed_versions.txt if any)."
 
       - name: Upload artifacts

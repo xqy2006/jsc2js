@@ -364,7 +364,7 @@ index 23463d26b63..304d323029d 100644
  }
  
 diff --git a/src/snapshot/deserializer.cc b/src/snapshot/deserializer.cc
-index b68a4fdd1d5..bc928182f0b 100644
+index b68a4fdd1d5..5a780a2a21a 100644
 --- a/src/snapshot/deserializer.cc
 +++ b/src/snapshot/deserializer.cc
 @@ -265,7 +265,7 @@ Deserializer<IsolateT>::Deserializer(IsolateT* isolate,
@@ -376,7 +376,22 @@ index b68a4fdd1d5..bc928182f0b 100644
  }
  
  template <typename IsolateT>
-@@ -658,6 +658,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
+@@ -650,6 +650,14 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
+   const int size_in_tagged = source_.GetUint30();
+   const int size_in_bytes = size_in_tagged * kTaggedSize;
+ 
++  // Guard against invalid size (stream desync during JSC deserialization).
++  if (deserializing_user_code() && size_in_tagged <= 0) {
++    Handle<HeapObject> fallback(
++        ReadOnlyRoots(isolate()).undefined_value(), isolate());
++    back_refs_.push_back(fallback);
++    return fallback;
++  }
++
+   // The map can't be a forward ref. If you want the map to be a forward ref,
+   // then you're probably serializing the meta-map, in which case you want to
+   // use the kNewContextlessMetaMap/kNewContextfulMetaMap bytecode.
+@@ -658,6 +666,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
  
    AllocationType allocation = SpaceToAllocation(space);
  
@@ -389,7 +404,7 @@ index b68a4fdd1d5..bc928182f0b 100644
    // When sharing a string table, all in-place internalizable and internalized
    // strings internalized strings are allocated in the shared heap.
    //
-@@ -765,8 +771,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadMetaMap(SnapshotSpace space) {
+@@ -765,8 +779,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadMetaMap(SnapshotSpace space) {
    const int size_in_bytes = Map::kSize;
    const int size_in_tagged = size_in_bytes / kTaggedSize;
  
@@ -403,7 +418,7 @@ index b68a4fdd1d5..bc928182f0b 100644
    raw_obj->set_map_after_allocation(Map::unchecked_cast(raw_obj));
    MemsetTagged(raw_obj->RawField(kTaggedSize),
                 Smi::uninitialized_deserialization_value(), size_in_tagged - 1);
-@@ -972,6 +982,14 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
+@@ -972,6 +990,14 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
    uint32_t chunk_offset = source_.GetUint30();
  
    ReadOnlySpace* read_only_space = isolate()->heap()->read_only_space();

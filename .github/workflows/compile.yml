@@ -13,23 +13,23 @@ permissions:
   actions: write
 
 concurrency:
-  group: patch-single-${{ github.event.inputs.version }}
+  group: patch-single-${{ inputs.version }}
   cancel-in-progress: false
 
 env:
   V8_REPO: https://github.com/v8/v8.git
-  VERSION: ${{ github.event.inputs.version }}
+  VERSION: ${{ inputs.version }}
 
 jobs:
   build:
-    name: Build ${{ matrix.os }} - ${{ env.VERSION }}
+    name: Build ${{ matrix.os }} - ${{ inputs.version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
     env:
-      ASSIGNED_JSON: ${{ format('["{0}"]', env.VERSION) }}
+      ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       GYP_MSVS_VERSION: "2022"
     steps:
@@ -91,14 +91,13 @@ jobs:
           ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
         run: |
           set -e
-          # build_versions_batch.py 会根据版本自动选择补丁文件并复制 d8 + snapshot_blob.bin 到 artifacts
           python3 build_versions_batch.py || true
           echo "Single-version build finished (see failed_versions.txt if any)."
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: d8-${{ env.VERSION }}-${{ matrix.os }}
+          name: d8-${{ inputs.version }}-${{ matrix.os }}
           path: |
             artifacts/**
             success_versions.txt

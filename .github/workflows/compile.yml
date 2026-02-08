@@ -1,0 +1,106 @@
+name: "Patch & build single V8 d8 (Linux + Windows)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "V8 tag to build (e.g. 12.0.267.5)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: patch-single-${{ github.event.inputs.version }}
+  cancel-in-progress: false
+
+env:
+  V8_REPO: https://github.com/v8/v8.git
+  VERSION: ${{ github.event.inputs.version }}
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} - ${{ env.VERSION }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      ASSIGNED_JSON: ${{ format('["{0}"]', env.VERSION) }}
+      DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
+      GYP_MSVS_VERSION: "2022"
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git to use LF line endings
+        run: git config --global core.autocrlf false
+
+      - name: Prepare (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "$PWD/depot_tools" >> $GITHUB_PATH
+          export PATH="$PWD/depot_tools:$PATH"
+          python --version
+          gclient --version
+
+      - name: Prepare (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          chcp 65001
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          $env:PATH = "$PWD\depot_tools;" + $env:PATH
+          "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          python --version
+          gclient --version
+
+      - name: Initial sync (V8)
+        shell: bash
+        run: |
+          set -eux
+          gclient config --name v8 --unmanaged $V8_REPO
+          gclient sync --nohooks -D --no-history
+          gclient runhooks
+
+      - name: Copy helper scripts & patches
+        run: |
+          cp apply_patch.py v8/
+          cp patch_v3.diff v8/
+          cp patch_1_v3.diff v8/
+          cp patch_old_v3.diff v8/
+          cp partition_versions.py v8/ || true
+
+      - name: Build d8 with patch
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
+        run: |
+          set -e
+          # build_versions_batch.py 会根据版本自动选择补丁文件并复制 d8 + snapshot_blob.bin 到 artifacts
+          python3 build_versions_batch.py || true
+          echo "Single-version build finished (see failed_versions.txt if any)."
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: d8-${{ env.VERSION }}-${{ matrix.os }}
+          path: |
+            artifacts/**
+            success_versions.txt
+            failed_versions.txt
+          retention-days: 14

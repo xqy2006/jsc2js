@@ -364,7 +364,7 @@ index 23463d26b63..304d323029d 100644
  }
  
 diff --git a/src/snapshot/deserializer.cc b/src/snapshot/deserializer.cc
-index b68a4fdd1d5..23aaa2329fc 100644
+index b68a4fdd1d5..1d998f0d85a 100644
 --- a/src/snapshot/deserializer.cc
 +++ b/src/snapshot/deserializer.cc
 @@ -265,7 +265,7 @@ Deserializer<IsolateT>::Deserializer(IsolateT* isolate,
@@ -376,7 +376,39 @@ index b68a4fdd1d5..23aaa2329fc 100644
  }
  
  template <typename IsolateT>
-@@ -650,6 +650,14 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
+@@ -303,7 +303,11 @@ void Deserializer<IsolateT>::VisitRootPointers(Root root,
+ template <typename IsolateT>
+ void Deserializer<IsolateT>::Synchronize(VisitorSynchronization::SyncTag tag) {
+   static const uint8_t expected = kSynchronize;
+-  CHECK_EQ(expected, source_.Get());
++  if (deserializing_user_code()) {
++    source_.Get();  // consume but don't check
++  } else {
++    CHECK_EQ(expected, source_.Get());
++  }
+ }
+ 
+ template <typename IsolateT>
+@@ -624,9 +628,15 @@ Handle<HeapObject> Deserializer<IsolateT>::GetBackReferencedObject() {
+ template <typename IsolateT>
+ Handle<HeapObject> Deserializer<IsolateT>::ReadObject() {
+   Handle<HeapObject> ret;
+-  CHECK_EQ(ReadSingleBytecodeData(
+-               source_.Get(), SlotAccessorForHandle<IsolateT>(&ret, isolate())),
+-           1);
++  int result = ReadSingleBytecodeData(
++      source_.Get(), SlotAccessorForHandle<IsolateT>(&ret, isolate()));
++  if (deserializing_user_code()) {
++    if (result != 1 || ret.is_null()) {
++      ret = handle(ReadOnlyRoots(isolate()).undefined_value(), isolate());
++    }
++  } else {
++    CHECK_EQ(result, 1);
++  }
+   return ret;
+ }
+ 
+@@ -650,6 +660,14 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
    const int size_in_tagged = source_.GetUint30();
    const int size_in_bytes = size_in_tagged * kTaggedSize;
  
@@ -391,7 +423,7 @@ index b68a4fdd1d5..23aaa2329fc 100644
    // The map can't be a forward ref. If you want the map to be a forward ref,
    // then you're probably serializing the meta-map, in which case you want to
    // use the kNewContextlessMetaMap/kNewContextfulMetaMap bytecode.
-@@ -657,6 +665,11 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
+@@ -657,6 +675,11 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
    Handle<Map> map = Handle<Map>::cast(ReadObject());
  
    AllocationType allocation = SpaceToAllocation(space);
@@ -403,7 +435,7 @@ index b68a4fdd1d5..23aaa2329fc 100644
  
    // When sharing a string table, all in-place internalizable and internalized
    // strings internalized strings are allocated in the shared heap.
-@@ -765,8 +778,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadMetaMap(SnapshotSpace space) {
+@@ -765,8 +788,12 @@ Handle<HeapObject> Deserializer<IsolateT>::ReadMetaMap(SnapshotSpace space) {
    const int size_in_bytes = Map::kSize;
    const int size_in_tagged = size_in_bytes / kTaggedSize;
  
@@ -417,7 +449,55 @@ index b68a4fdd1d5..23aaa2329fc 100644
    raw_obj->set_map_after_allocation(Map::unchecked_cast(raw_obj));
    MemsetTagged(raw_obj->RawField(kTaggedSize),
                 Smi::uninitialized_deserialization_value(), size_in_tagged - 1);
-@@ -972,6 +989,14 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
+@@ -788,7 +815,8 @@ template <typename IsolateT>
+ template <typename SlotAccessor>
+ int Deserializer<IsolateT>::ReadRepeatedObject(SlotAccessor slot_accessor,
+                                                int repeat_count) {
+-  CHECK_LE(2, repeat_count);
++  CHECK_IMPLIES(!deserializing_user_code(), 2 <= repeat_count);
++  if (deserializing_user_code() && repeat_count < 2) repeat_count = 2;
+ 
+   Handle<HeapObject> heap_object = ReadObject();
+   DCHECK(!Heap::InYoungGeneration(*heap_object));
+@@ -843,7 +871,7 @@ void Deserializer<IsolateT>::ReadData(Handle<HeapObject> object,
+     current += ReadSingleBytecodeData(
+         data, SlotAccessorForHeapObject::ForSlotIndex(object, current));
+   }
+-  CHECK_EQ(current, end_slot_index);
++  CHECK_IMPLIES(!deserializing_user_code(), current == end_slot_index);
+ }
+ 
+ template <typename IsolateT>
+@@ -854,7 +882,7 @@ void Deserializer<IsolateT>::ReadData(FullMaybeObjectSlot start,
+     uint8_t data = source_.Get();
+     current += ReadSingleBytecodeData(data, SlotAccessorForRootSlots(current));
+   }
+-  CHECK_EQ(current, end);
++  CHECK_IMPLIES(!deserializing_user_code(), current == end);
+ }
+ 
+ template <typename IsolateT>
+@@ -893,6 +921,7 @@ int Deserializer<IsolateT>::ReadSingleBytecodeData(uint8_t data,
+     case kSynchronize:
+       //  If we get here then that indicates that you have a mismatch between
+       //  the number of GC roots when serializing and deserializing.
++      if (deserializing_user_code()) return 0;
+       UNREACHABLE();
+     case kVariableRawData:
+       return ReadVariableRawData(data, slot_accessor);
+@@ -935,6 +964,11 @@ int Deserializer<IsolateT>::ReadSingleBytecodeData(uint8_t data,
+   // The above switch, including UNUSED_SERIALIZER_BYTE_CODES, covers all
+   // possible bytecodes; but, clang doesn't realize this, so we have an explicit
+   // UNREACHABLE here too.
++  if (deserializing_user_code()) {
++    // Stream desync during JSC deserialization — write undefined fallback.
++    Tagged<HeapObject> fallback = ReadOnlyRoots(isolate()).undefined_value();
++    return slot_accessor.Write(fallback, HeapObjectReferenceType::STRONG, 0);
++  }
+   UNREACHABLE();
+ }
+ 
+@@ -972,6 +1006,14 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
    uint32_t chunk_offset = source_.GetUint30();
  
    ReadOnlySpace* read_only_space = isolate()->heap()->read_only_space();

@@ -125,9 +125,9 @@ jobs:
         if: steps.partition.outputs.has_any == 'true'
         run: |
           cp apply_patch.py v8/
-          cp patch.diff v8/
-          cp patch_1.diff v8/
-          cp patch_old.diff v8/
+          cp patch_v2.diff v8/
+          cp patch_1_v2.diff v8/
+          cp patch_old_v2.diff v8/
           cp partition_versions.py v8/ || true
 
       - name: Process versions batch

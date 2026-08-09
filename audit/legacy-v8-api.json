@@ -10,14 +10,14 @@
   },
   "summary": {
     "versions": 369,
-    "families": 17,
+    "families": 16,
     "ok": 369,
     "incompatible": 0,
     "fetch_errors": 0
   },
   "families": [
     {
-      "family": "42a75cdfdec1",
+      "family": "e8560d758174",
       "count": 4,
       "first": "5.1.281.47",
       "last": "5.2.361.43",
@@ -34,7 +34,7 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": false,
         "has_object_deserializer": false,
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "family": "d19f7d6df4df",
+      "family": "bdd28b29e3c6",
       "count": 3,
       "first": "5.3.332.37",
       "last": "5.3.332.47",
@@ -62,7 +62,7 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
@@ -73,40 +73,12 @@
       ]
     },
     {
-      "family": "86999f508e99",
-      "count": 5,
-      "first": "5.4.500.31",
-      "last": "5.6.326.50",
-      "representatives": [
-        "5.4.500.31",
-        "5.6.326.50"
-      ],
-      "api": {
-        "layout": "flat-d8",
-        "cache_type": "ScriptData",
-        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
-        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
-        "has_origin_options": false,
-        "has_cached_script": false,
-        "sanity_style": "inline",
-        "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
-        "flags_style": "FLAG_",
-        "string_show_details": true,
-        "has_object_deserializer": false,
-        "has_v8gen": true
-      },
-      "statuses": [
-        "ok"
-      ]
-    },
-    {
       "family": "5672a998aa2a",
-      "count": 5,
-      "first": "5.8.283.38",
+      "count": 10,
+      "first": "5.4.500.31",
       "last": "6.1.534.42",
       "representatives": [
-        "5.8.283.38",
+        "5.4.500.31",
         "6.1.534.42"
       ],
       "api": {
@@ -520,13 +492,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": false,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "42a75cdfdec1",
+      "family": "e8560d758174",
       "source_fingerprint": "4d7e3ed50f449494",
       "errors": []
     },
@@ -556,13 +528,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": false,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "42a75cdfdec1",
+      "family": "e8560d758174",
       "source_fingerprint": "4d7e3ed50f449494",
       "errors": []
     },
@@ -592,13 +564,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": false,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "42a75cdfdec1",
+      "family": "e8560d758174",
       "source_fingerprint": "4d7e3ed50f449494",
       "errors": []
     },
@@ -628,13 +600,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": false,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "42a75cdfdec1",
+      "family": "e8560d758174",
       "source_fingerprint": "d9a5965140ba624a",
       "errors": []
     },
@@ -664,13 +636,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "d19f7d6df4df",
+      "family": "bdd28b29e3c6",
       "source_fingerprint": "b6424cfc461d8420",
       "errors": []
     },
@@ -700,13 +672,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "d19f7d6df4df",
+      "family": "bdd28b29e3c6",
       "source_fingerprint": "b6424cfc461d8420",
       "errors": []
     },
@@ -736,13 +708,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": false
       },
-      "family": "d19f7d6df4df",
+      "family": "bdd28b29e3c6",
       "source_fingerprint": "bf691658ea857a2a",
       "errors": []
     },
@@ -772,13 +744,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": true
       },
-      "family": "86999f508e99",
+      "family": "5672a998aa2a",
       "source_fingerprint": "faaecf51a14885a0",
       "errors": []
     },
@@ -808,13 +780,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": true
       },
-      "family": "86999f508e99",
+      "family": "5672a998aa2a",
       "source_fingerprint": "faaecf51a14885a0",
       "errors": []
     },
@@ -844,13 +816,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": true
       },
-      "family": "86999f508e99",
+      "family": "5672a998aa2a",
       "source_fingerprint": "faaecf51a14885a0",
       "errors": []
     },
@@ -880,13 +852,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": true
       },
-      "family": "86999f508e99",
+      "family": "5672a998aa2a",
       "source_fingerprint": "f60f9f8180c0a34e",
       "errors": []
     },
@@ -916,13 +888,13 @@
         "has_cached_script": false,
         "sanity_style": "inline",
         "object_style": "raw-pointer",
-        "bytecode_accessor": "get",
+        "bytecode_accessor": "field",
         "flags_style": "FLAG_",
         "string_show_details": true,
         "has_object_deserializer": false,
         "has_v8gen": true
       },
-      "family": "86999f508e99",
+      "family": "5672a998aa2a",
       "source_fingerprint": "65a783beca82d263",
       "errors": []
     },

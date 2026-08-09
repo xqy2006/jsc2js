@@ -32,6 +32,7 @@ import determine_versions  # noqa: E402
 from patches.legacy.apply_legacy_patch import (  # noqa: E402
     PatchError,
     fixed_array_object_style,
+    shared_function_info_bytecode_accessor,
 )
 
 
@@ -263,16 +264,11 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
         object_style = "unknown"
         errors.append("unknown:fixed-array-get")
 
-    if re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_h):
-        bytecode_accessor = "field"
-    elif re.search(
-        r"\bGetBytecodeArray\s*\(\s*(?:Local)?Isolate(?:T)?\s*\*", sfi_h
-    ):
-        bytecode_accessor = "get-isolate"
-    elif re.search(r"\bGetBytecodeArray\s*\(", sfi_h):
-        bytecode_accessor = "get"
-    else:
+    try:
+        bytecode_accessor = shared_function_info_bytecode_accessor(sfi_h)
+    except PatchError:
         bytecode_accessor = "unknown"
+        errors.append("unknown:sfi-bytecode-accessor")
 
     if not any(token in joined for token in ("BytecodeArray", "bytecode_array")):
         errors.append("missing:bytecode-array")

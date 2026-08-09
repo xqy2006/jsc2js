@@ -5,6 +5,7 @@ from patches.legacy.apply_legacy_patch import (
     PatchError,
     fixed_array_object_style,
     patch_serializer,
+    shared_function_info_bytecode_accessor,
 )
 
 
@@ -53,6 +54,22 @@ class FixedArrayObjectStyleTest(unittest.TestCase):
                 self.assertIn("JSC2JS_VERSION_HASH_BYPASS", patched)
                 self.assertIn("JSC2JS_FLAGS_HASH_BYPASS", patched)
                 self.assertIn("CHECKSUM_MISMATCH", patched)
+
+    def test_scopes_old_bytecode_accessor_to_shared_function_info(self):
+        header = """
+class AbstractCode {
+ public:
+  inline BytecodeArray* GetBytecodeArray();
+};
+class SharedFunctionInfo: public HeapObject {
+ public:
+  inline bool HasBytecodeArray();
+  inline BytecodeArray* bytecode_array();
+};
+"""
+        self.assertEqual(
+            shared_function_info_bytecode_accessor(header), "field"
+        )
 
 
 if __name__ == "__main__":

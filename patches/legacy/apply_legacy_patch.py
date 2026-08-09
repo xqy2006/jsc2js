@@ -131,6 +131,31 @@ def fixed_array_object_style(header: str) -> str:
     raise PatchError("unknown FixedArray::get return type")
 
 
+def shared_function_info_bytecode_accessor(header: str) -> str:
+    """Classify the accessor declared by SharedFunctionInfo itself."""
+    declaration = re.search(
+        r"\bclass\s+(?:V8_EXPORT_PRIVATE\s+)?SharedFunctionInfo\b[^;{]*\{",
+        header,
+    )
+    if not declaration:
+        raise PatchError("SharedFunctionInfo class declaration is missing")
+    opening = header.find("{", declaration.start())
+    closing = _matching_brace(header, opening)
+    body = header[opening + 1 : closing]
+
+    if re.search(r"\bbytecode_array\s*\(\s*\)", body):
+        return "field"
+    if re.search(
+        r"\bGetBytecodeArray\s*\(\s*(?:template\s*<[^>]+>\s*)?"
+        r"(?:Local)?Isolate(?:T)?\s*\*",
+        body,
+    ):
+        return "get-isolate"
+    if re.search(r"\bGetBytecodeArray\s*\(", body):
+        return "get"
+    raise PatchError("SharedFunctionInfo bytecode accessor is missing")
+
+
 def detect_features(sources: dict[str, str]) -> Features:
     d8_path, d8 = _select(sources, D8_CC_PATHS, "Shell::CreateGlobalTemplate")
     _, printer = _select(
@@ -145,14 +170,7 @@ def detect_features(sources: dict[str, str]) -> Features:
 
     sfi_sources = "\n".join(sources.get(path, "") for path in SFI_PATHS)
     _, fixed_array = _select(sources, FIXED_ARRAY_PATHS, "FixedArray")
-    field_bytecode_accessor = bool(
-        re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_sources)
-    )
-    get_bytecode_accessor = bool(
-        re.search(r"\bGetBytecodeArray\s*\(", sfi_sources)
-    )
-    if not field_bytecode_accessor and not get_bytecode_accessor:
-        raise PatchError("SharedFunctionInfo bytecode accessor is missing")
+    bytecode_accessor = shared_function_info_bytecode_accessor(sfi_sources)
 
     if "AlignedCachedData" in signature:
         cache_type = "AlignedCachedData"
@@ -173,29 +191,6 @@ def detect_features(sources: dict[str, str]) -> Features:
         sanity_style = "split"
 
     object_style = fixed_array_object_style(fixed_array)
-
-    bytecode_needs_isolate = bool(
-        re.search(
-            r"\bGetBytecodeArray\s*\(\s*(?:template\s*<[^>]+>\s*)?"
-            r"(?:Local)?Isolate(?:T)?\s*\*",
-            sfi_sources,
-        )
-        or re.search(
-            r"\bGetBytecodeArray\s*\(\s*IsolateT\s*\*", sfi_sources
-        )
-    )
-
-    # V8 5.x has a monolithic objects.h where AbstractCode::GetBytecodeArray
-    # coexists with SharedFunctionInfo::bytecode_array. Prefer the exact SFI
-    # field getter when present instead of matching the unrelated class.
-    if field_bytecode_accessor:
-        bytecode_accessor = "field"
-    elif bytecode_needs_isolate:
-        bytecode_accessor = "get-isolate"
-    elif get_bytecode_accessor:
-        bytecode_accessor = "get"
-    else:
-        raise PatchError("SharedFunctionInfo bytecode accessor is missing")
 
     return Features(
         layout="split-d8" if d8_path == "src/d8/d8.cc" else "flat-d8",
@@ -454,7 +449,12 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
 def patch_d8_cc(text: str, features: Features) -> str:
     if PATCH_MARKER in text:
         return text
-    for include in ('"src/snapshot/code-serializer.h"', "<iostream>", "<vector>"):
+    for include in (
+        '"src/snapshot/code-serializer.h"',
+        "<iostream>",
+        "<memory>",
+        "<vector>",
+    ):
         text = _ensure_include(text, include)
 
     read_chars_match = re.search(

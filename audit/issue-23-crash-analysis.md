@@ -92,10 +92,11 @@ printed at most once.
 
 ## Validation coverage
 
-- Source/API audit: 369 exact Node/Electron V8 tags, 17 API families,
+- Source/API audit: 369 exact Node/Electron V8 tags, 16 API families,
   369 compatible and zero fetch failures.
 - Semantic patch replay: 369/369 exact tags; exactly four V8 source files
-  change for each tag, and no deserializer file changes.
+  change for each tag across 14 patch templates, and no deserializer file
+  changes.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   six Windows generator/toolchain templates, and an exact per-tag toolset selection
   (72 v141, 159 v142, 138 current); all templates are recognized

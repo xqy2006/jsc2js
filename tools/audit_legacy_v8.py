@@ -32,6 +32,7 @@ import determine_versions  # noqa: E402
 from patches.legacy.apply_legacy_patch import (  # noqa: E402
     PatchError,
     fixed_array_object_style,
+    object_type_predicate_style,
     shared_function_info_bytecode_accessor,
 )
 
@@ -62,6 +63,10 @@ SOURCE_CANDIDATES = {
         "src/objects/fixed-array.h",
         "src/objects.h",
     ),
+    "objects_h": (
+        "src/objects/objects.h",
+        "src/objects.h",
+    ),
     "serializer_h": ("src/snapshot/code-serializer.h",),
     "serializer_cc": ("src/snapshot/code-serializer.cc",),
     "deserializer_cc": ("src/snapshot/deserializer.cc",),
@@ -77,6 +82,7 @@ SOURCE_MARKERS = {
     "string": "String::StringShortPrint",
     "sfi_h": "BytecodeArray",
     "fixed_array_h": "FixedArray",
+    "objects_h": "class Object",
     "serializer_h": "CodeSerializer",
     "serializer_cc": "CodeSerializer::Deserialize",
     # Older branches use a non-template Deserializer, newer ones use
@@ -215,6 +221,7 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
         "heap",
         "string",
         "fixed_array_h",
+        "objects_h",
         "serializer_h",
         "serializer_cc",
         "deserializer_cc",
@@ -231,6 +238,7 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
     serializer_cc = sources.get("serializer_cc", "")
     sfi_h = sources.get("sfi_h", "")
     fixed_array_h = sources.get("fixed_array_h", "")
+    objects_h = sources.get("objects_h", "")
 
     deserialize_signature = extract_signature(
         serializer_h, "Deserialize(", terminator=";"
@@ -265,6 +273,12 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
         errors.append("unknown:fixed-array-get")
 
     try:
+        predicate_style = object_type_predicate_style(objects_h)
+    except PatchError:
+        predicate_style = "unknown"
+        errors.append("unknown:object-predicate")
+
+    try:
         bytecode_accessor = shared_function_info_bytecode_accessor(sfi_h)
     except PatchError:
         bytecode_accessor = "unknown"
@@ -292,6 +306,7 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
         "has_cached_script": "maybe_cached_script" in deserialize_signature,
         "sanity_style": sanity_style,
         "object_style": object_style,
+        "object_predicate_style": predicate_style,
         "bytecode_accessor": bytecode_accessor,
         "flags_style": "v8_flags" if "v8_flags." in serializer_cc else "FLAG_",
         "string_show_details": "StringShortPrint(StringStream* accumulator, bool"
@@ -373,8 +388,8 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         boundary_note,
         "",
-        "| Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |",
-        "|---|---:|---:|---|---|---|---|---|",
+        "| Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects | Predicate |",
+        "|---|---:|---:|---|---|---|---|---|---|",
     ]
     for family in payload["families"]:
         api = family.get("api") or {}
@@ -383,7 +398,7 @@ def write_markdown(path: Path, payload: dict) -> None:
             signature = signature[:87] + "..."
         lines.append(
             "| `{family}` | {first}–{last} | {count} | {layout} | {cache} | "
-            "`{signature}` | {sanity} | {objects} |".format(
+            "`{signature}` | {sanity} | {objects} | {predicate} |".format(
                 family=family["family"],
                 first=family["first"],
                 last=family["last"],
@@ -393,6 +408,7 @@ def write_markdown(path: Path, payload: dict) -> None:
                 signature=signature,
                 sanity=api.get("sanity_style", ""),
                 objects=api.get("object_style", ""),
+                predicate=api.get("object_predicate_style", ""),
             )
         )
     lines.extend(

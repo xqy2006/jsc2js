@@ -3,7 +3,9 @@ import unittest
 from patches.legacy.apply_legacy_patch import (
     Features,
     PatchError,
+    _type_traversal,
     fixed_array_object_style,
+    object_type_predicate_style,
     patch_serializer,
     shared_function_info_bytecode_accessor,
 )
@@ -33,6 +35,7 @@ class FixedArrayObjectStyleTest(unittest.TestCase):
             cached_script=False,
             sanity_style="inline",
             object_style="raw-pointer",
+            object_predicate_style="member",
             bytecode_accessor="get",
             utf8_value_needs_isolate=False,
             read_chars_needs_isolate=False,
@@ -54,6 +57,38 @@ class FixedArrayObjectStyleTest(unittest.TestCase):
                 self.assertIn("JSC2JS_VERSION_HASH_BYPASS", patched)
                 self.assertIn("JSC2JS_FLAGS_HASH_BYPASS", patched)
                 self.assertIn("CHECKSUM_MISMATCH", patched)
+
+    def test_classifies_the_v11_8_static_object_predicate_boundary(self):
+        self.assertEqual(
+            object_type_predicate_style(
+                "class Object { EXPORT_DECL_STATIC_VERIFIER(Object) };"
+            ),
+            "free",
+        )
+        self.assertEqual(
+            object_type_predicate_style(
+                "class Object { EXPORT_DECL_VERIFIER(Object) };"
+            ),
+            "member",
+        )
+
+    def test_value_object_uses_free_predicate_with_static_object_api(self):
+        features = Features(
+            layout="split-d8",
+            cache_type="AlignedCachedData",
+            origin_options=True,
+            cached_script=True,
+            sanity_style="split-readonly-checksum",
+            object_style="value",
+            object_predicate_style="free",
+            bytecode_accessor="get-isolate",
+            utf8_value_needs_isolate=True,
+            read_chars_needs_isolate=True,
+            flags_style="v8-flags",
+        )
+        traversal = _type_traversal(features)
+        self.assertIn("i::IsSharedFunctionInfo(object)", traversal)
+        self.assertNotIn("object.IsSharedFunctionInfo()", traversal)
 
     def test_scopes_old_bytecode_accessor_to_shared_function_info(self):
         header = """

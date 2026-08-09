@@ -44,6 +44,10 @@ FIXED_ARRAY_PATHS = (
     "src/objects/fixed-array.h",
     "src/objects.h",
 )
+OBJECTS_H_PATHS = (
+    "src/objects/objects.h",
+    "src/objects.h",
+)
 SERIALIZER_H = "src/snapshot/code-serializer.h"
 SERIALIZER_CC = "src/snapshot/code-serializer.cc"
 
@@ -72,6 +76,7 @@ class Features:
     cached_script: bool
     sanity_style: str
     object_style: str
+    object_predicate_style: str
     bytecode_accessor: str
     utf8_value_needs_isolate: bool
     read_chars_needs_isolate: bool
@@ -93,6 +98,7 @@ class Features:
                 cached_script,
                 self.sanity_style,
                 self.object_style,
+                self.object_predicate_style,
                 self.bytecode_accessor,
                 utf8,
                 read_chars,
@@ -151,6 +157,21 @@ def fixed_array_object_style(header: str) -> str:
     raise PatchError("unknown FixedArray::get return type")
 
 
+def object_type_predicate_style(header: str) -> str:
+    """Classify Object type checks from the exact Object declaration.
+
+    V8 11.8 made Object's generated verifier/static API explicit and removed
+    value-style calls such as ``object.IsSharedFunctionInfo()``.  The free
+    predicate remains ``IsSharedFunctionInfo(object)``.  Older declarations do
+    not have the static-verifier marker and retain the member predicate API.
+    """
+    if "EXPORT_DECL_STATIC_VERIFIER(Object)" in header:
+        return "free"
+    if "class Object" in header:
+        return "member"
+    raise PatchError("Object class declaration is missing")
+
+
 def shared_function_info_bytecode_accessor(header: str) -> str:
     """Classify the accessor declared by SharedFunctionInfo itself."""
     declaration = re.search(
@@ -190,6 +211,7 @@ def detect_features(sources: dict[str, str]) -> Features:
 
     sfi_sources = "\n".join(sources.get(path, "") for path in SFI_PATHS)
     _, fixed_array = _select(sources, FIXED_ARRAY_PATHS, "FixedArray")
+    _, objects_header = _select(sources, OBJECTS_H_PATHS, "class Object")
     bytecode_accessor = shared_function_info_bytecode_accessor(sfi_sources)
 
     if "AlignedCachedData" in signature:
@@ -219,6 +241,7 @@ def detect_features(sources: dict[str, str]) -> Features:
         cached_script="maybe_cached_script" in signature,
         sanity_style=sanity_style,
         object_style=object_style,
+        object_predicate_style=object_type_predicate_style(objects_header),
         bytecode_accessor=bytecode_accessor,
         utf8_value_needs_isolate=bool(
             re.search(r"String::Utf8Value\s+\w+\s*\(\s*isolate\s*,", d8)
@@ -348,16 +371,19 @@ def _type_traversal(features: Features) -> str:
             i::handle(i::SharedFunctionInfo::cast(object), isolate));
       }"""
     if features.object_style == "tagged":
-        return """      auto object = constants->get(index);
-      if (i::IsSharedFunctionInfo(object)) {
+        declaration = "auto object = constants->get(index);"
+    else:
+        declaration = "i::Object object = constants->get(index);"
+    predicate = (
+        "i::IsSharedFunctionInfo(object)"
+        if features.object_predicate_style == "free"
+        else "object.IsSharedFunctionInfo()"
+    )
+    return f"""      {declaration}
+      if ({predicate}) {{
         pending.push_back(
             i::handle(i::SharedFunctionInfo::cast(object), isolate));
-      }"""
-    return """      i::Object object = constants->get(index);
-      if (object.IsSharedFunctionInfo()) {
-        pending.push_back(
-            i::handle(i::SharedFunctionInfo::cast(object), isolate));
-      }"""
+      }}"""
 
 
 def _loadjsc_definition(features: Features) -> str:
@@ -649,6 +675,7 @@ def load_tree(root: Path) -> dict[str, str]:
         + STRING_PATHS
         + SFI_PATHS
         + FIXED_ARRAY_PATHS
+        + OBJECTS_H_PATHS
         + (SERIALIZER_H, SERIALIZER_CC)
     )
     return _read_existing(root, sorted(paths))

@@ -17,6 +17,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from patches.legacy.apply_legacy_patch import (  # noqa: E402
     FIXED_ARRAY_PATHS,
+    OBJECTS_H_PATHS,
     PATCH_MARKER,
     SERIALIZER_CC,
     SFI_PATHS,
@@ -54,6 +55,7 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
     paths = {path for path in record["paths"].values() if path}
     paths.update(SFI_PATHS)
     paths.update(FIXED_ARRAY_PATHS)
+    paths.update(OBJECTS_H_PATHS)
     sources: dict[str, str] = {}
     try:
         for path in paths:
@@ -66,6 +68,12 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
         )
         protections = upstream_protections(sources[SERIALIZER_CC])
         heap_path = record["paths"]["heap"]
+        if features.object_style == "raw-pointer":
+            expected_predicate = "object->IsSharedFunctionInfo()"
+        elif features.object_predicate_style == "free":
+            expected_predicate = "i::IsSharedFunctionInfo(object)"
+        else:
+            expected_predicate = "object.IsSharedFunctionInfo()"
         checks = {
             "loader_marker": PATCH_MARKER in transformed[d8_path],
             "cross_embedder_hashes_bypassed": all(
@@ -97,6 +105,9 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
                 == cpp_function(
                     transformed[heap_path], "HeapObject::HeapObjectShortPrint"
                 )
+            ),
+            "object_predicate_matches_exact_api": (
+                expected_predicate in transformed[d8_path]
             ),
             "expected_file_count": len(changed) == 4,
         }

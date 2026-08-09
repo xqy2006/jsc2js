@@ -108,10 +108,15 @@ printed at most once.
   [Actions run 31294051640](https://github.com/xqy2006/jsc2js/actions/runs/31294051640).
 
 The first CI pass with a source-hash-only bypass generated a real cache with
-Electron 22.3.27 and safely rejected it on both platforms instead of crashing:
+Electron 22.3.27 and safely rejected it on both platforms instead of crashing
+([run 31295635048](https://github.com/xqy2006/jsc2js/actions/runs/31295635048)):
 Electron reports `10.8.168.25-electron.0`, whose version and flags hashes differ
-from upstream V8 10.8.168.25. The final test therefore bypasses only those three
-embedder-dependent hashes and still requires the patched d8 to print at least
-one `SharedFunctionInfo` and exit normally. This synthetic cache exercises the
-matching runtime path but does not replace reproduction with the unavailable
-issue attachment.
+from upstream V8 10.8.168.25.
+
+The final test bypasses only those three embedder-dependent hashes. In
+[run 31297502040](https://github.com/xqy2006/jsc2js/actions/runs/31297502040),
+both Linux and Windows generated a 1,024-byte cache with Electron 22.3.27,
+parsed it with the patched upstream V8 10.8.168.25 d8, printed five complete
+`SharedFunctionInfo` sections, exited normally, and ended with
+`JSC2JS_VALID_CACHE_OK`. This synthetic cache exercises the matching runtime
+path but does not replace reproduction with the unavailable issue attachment.

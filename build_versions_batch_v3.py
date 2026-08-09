@@ -429,8 +429,8 @@ def main():
             hook_python = activate_legacy_hook_python(ver)
             if hook_python:
                 patch_gclient_hook_dispatch(hook_python)
-            run("gclient runhooks", check=True)
             configure_windows_legacy_toolset(ver)
+            run("gclient runhooks", check=True)
 
             work_dir = Path("v8/out.gn/x64.release")
             if not keep_work_dir:

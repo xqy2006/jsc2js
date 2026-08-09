@@ -1,11 +1,16 @@
-name: "Patch & build single V8 d8 (Linux + Windows)"
+name: "Patch & build V8 d8 (Linux + Windows)"
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "V8 tag to build (e.g. 12.0.267.5)"
+        description: "First V8 tag to build (e.g. 12.0.267.5)"
         required: true
+        type: string
+      versions_json:
+        description: "Optional JSON array of 1-5 tags; first must equal version"
+        required: false
+        default: ""
         type: string
       audit_only:
         description: "Upload only validation records, not d8 binaries"
@@ -35,7 +40,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-2022]
     env:
-      ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
+      ASSIGNED_JSON: ${{ inputs.versions_json || format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       SKIP_BACKUP: "1"
     steps:
@@ -51,38 +56,48 @@ jobs:
         id: compatibility
         shell: bash
         run: |
-          set -eu
-          IFS=. read -r major minor patch build <<< "$VERSION"
-          python2=false
-          vs_year=2022
-          toolset_prefix=
-          toolset_component=
-          if (( major < 9 )); then python2=true; fi
-          if (( major == 5 )); then
-            vs_year=2015
-            # The VS 2022 installer currently accepts VC.140 but does not lay
-            # out a selectable 14.00 toolset on hosted runners. V8 5.x has
-            # been compile-tested successfully with the installed v142 STL.
-            toolset_prefix=14.29
-            toolset_component=Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64
-          elif (( major == 6 )); then
-            vs_year=2017
-            toolset_prefix=14.16
-            toolset_component=Microsoft.VisualStudio.Component.VC.v141.x86.x64
-          elif (( major < 10 )); then
-            vs_year=2019
-            if (( major == 7 )); then
-              toolset_prefix=14.16
-              toolset_component=Microsoft.VisualStudio.Component.VC.v141.x86.x64
-            else
-              toolset_prefix=14.29
-              toolset_component=Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64
-            fi
-          fi
-          echo "python2=$python2" >> "$GITHUB_OUTPUT"
-          echo "vs_year=$vs_year" >> "$GITHUB_OUTPUT"
-          echo "toolset_prefix=$toolset_prefix" >> "$GITHUB_OUTPUT"
-          echo "toolset_component=$toolset_component" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+
+          versions = json.loads(os.environ["ASSIGNED_JSON"])
+          if not isinstance(versions, list) or not 1 <= len(versions) <= 5:
+              raise SystemExit("versions_json must be a JSON array of 1-5 tags")
+          if versions[0] != os.environ["VERSION"]:
+              raise SystemExit("the first versions_json tag must equal version")
+          if len(set(versions)) != len(versions):
+              raise SystemExit("versions_json must not contain duplicate tags")
+          pattern = re.compile(r"\d+\.\d+\.\d+(?:\.\d+)?\Z")
+          if any(not isinstance(version, str) or not pattern.fullmatch(version) for version in versions):
+              raise SystemExit("versions_json contains an invalid V8 tag")
+
+          majors = [int(version.split(".", 1)[0]) for version in versions]
+          first_major = majors[0]
+          if first_major == 5:
+              vs_year = 2015
+          elif first_major == 6:
+              vs_year = 2017
+          elif first_major < 10:
+              vs_year = 2019
+          else:
+              vs_year = 2022
+          values = {
+              "python2": any(major < 9 for major in majors),
+              "v141": any(6 <= major < 8 for major in majors),
+              # Hosted VS 2022 accepts VC.140 but exposes no selectable 14.00
+              # directory. V8 5.x is compile-tested with the v142 STL.
+              "v142": any(major == 5 or 8 <= major < 10 for major in majors),
+              "vs_year": vs_year,
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              for key, value in values.items():
+                  rendered = str(value).lower() if isinstance(value, bool) else value
+                  output.write(f"{key}={rendered}\n")
+          print(f"Validated {len(versions)} tag(s): {versions}")
+          print(values)
+          PY
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux'
@@ -166,33 +181,41 @@ jobs:
           "vs${compatYear}_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Output "Using VS at $vsPath through the V8 $compatYear compatibility path"
 
-      - name: Install the matching historical MSVC headers
-        if: runner.os == 'Windows' && steps.compatibility.outputs.toolset_component != ''
+      - name: Install required historical MSVC headers
+        if: runner.os == 'Windows' && (steps.compatibility.outputs.v141 == 'true' || steps.compatibility.outputs.v142 == 'true')
         shell: pwsh
         run: |
-          $prefix = "${{ steps.compatibility.outputs.toolset_prefix }}"
-          $component = "${{ steps.compatibility.outputs.toolset_component }}"
+          $specs = @()
+          if ("${{ steps.compatibility.outputs.v141 }}" -eq "true") {
+            $specs += @{ Prefix = "14.16"; Component = "Microsoft.VisualStudio.Component.VC.v141.x86.x64" }
+          }
+          if ("${{ steps.compatibility.outputs.v142 }}" -eq "true") {
+            $specs += @{ Prefix = "14.29"; Component = "Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64" }
+          }
           $toolsetsRoot = Join-Path $env:GYP_MSVS_OVERRIDE_PATH "VC\Tools\MSVC"
-          $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like "$prefix*" } |
-            Select-Object -First 1
-          if (-not $installed) {
+          $missing = @($specs | Where-Object {
+            $prefix = $_.Prefix
+            -not (Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1)
+          })
+          if ($missing.Count -gt 0) {
             $setup = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
             if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe was not found" }
-            $arguments = @(
-              "modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"",
-              "--add", $component, "--quiet", "--norestart"
-            )
+            $arguments = @("modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"")
+            foreach ($item in $missing) { $arguments += @("--add", $item.Component) }
+            $arguments += @("--quiet", "--norestart")
             $process = Start-Process $setup -Wait -PassThru -ArgumentList $arguments
             if ($process.ExitCode -notin @(0, 3010)) {
               throw "Visual Studio component install failed: $($process.ExitCode)"
             }
-            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
-              Where-Object { $_.Name -like "$prefix*" } |
-              Select-Object -First 1
           }
-          if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
-          Write-Output "Using historical MSVC toolset $($installed.Name)"
+          foreach ($item in $specs) {
+            $prefix = $item.Prefix
+            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1
+            if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
+            Write-Output "Available historical MSVC toolset $($installed.Name)"
+          }
 
       - name: Provide historical Windows SDK aliases
         if: runner.os == 'Windows'

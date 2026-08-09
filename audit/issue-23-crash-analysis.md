@@ -98,18 +98,24 @@ printed at most once.
   change for each tag across 14 patch templates, and no deserializer file
   changes.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
-  six Windows generator/toolchain templates, 231 historical-toolset tags with
-  a forwarded legacy vcvars entry point, and an exact per-tag toolset selection
-  (72 v141, 159 v142, 138 current). The Linux audit records three in-tree GYP
-  tags, the single pre-sysroot-hook V8 5.2 tag, and 365 sysroot-hook tags. It
-  also verifies the exact object-print argument name (3 GYP, 9 legacy GN, 357
-  current GN); all templates are recognized before CI starts.
+  161 DEPS-selected Chromium tools/clang revisions, six Windows
+  generator/toolchain templates, 231 historical-toolset tags with a forwarded
+  legacy vcvars entry point, and an exact per-tag toolset selection (72 v141,
+  159 v142, 138 current). The selected Visual Studio year is checked against
+  every exact `vs_toolchain.py`; for the 93 tags whose clang hook indexes a
+  keyed DIA DLL table, it is checked against that exact table as well. The
+  Linux audit records three in-tree GYP tags, the single pre-sysroot-hook V8
+  5.2 tag (hosted clang and lld), and 365 sysroot-hook tags. It also verifies
+  the exact object-print argument name (3 GYP, 9 legacy GN, 357 current GN);
+  all templates are recognized before CI starts.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with
   `JSC2JS_SAFE_REJECTION`.
 - V8 11.8.29 built successfully on Linux and Windows in
   [Actions run 31294051640](https://github.com/xqy2006/jsc2js/actions/runs/31294051640).
+- V8 11.8.171 built successfully on Linux and Windows in
+  [Actions run 31296954463](https://github.com/xqy2006/jsc2js/actions/runs/31296954463).
 
 The first CI pass with a source-hash-only bypass generated a real cache with
 Electron 22.3.27 and safely rejected it on both platforms instead of crashing

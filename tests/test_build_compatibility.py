@@ -179,7 +179,7 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn("use_sysroot = false", args)
             self.assertIn("clang_use_chrome_plugins = false", args)
             self.assertIn("treat_warnings_as_errors = false", args)
-            self.assertIn("use_gold = false", args)
+            self.assertNotIn("use_gold", args)
             self.assertIn("exec /usr/bin/clang", (bundled / "clang").read_text())
             self.assertIn(
                 "exec /usr/bin/clang++", (bundled / "clang++").read_text()

@@ -338,11 +338,13 @@ def configure_v8_52_linux_gn(
         )
         wrapper.chmod(0o755)
     log(f"Using hosted clang for V8 {version}: {clang}, {clangxx}")
+    # Do not set use_gold here. This build revision forwards an invoker value
+    # with that name inside clang_toolchain(), and old GN rejects a global arg
+    # that would clobber it before generation starts.
     return (
         "use_sysroot = false\n"
         "clang_use_chrome_plugins = false\n"
         "treat_warnings_as_errors = false\n"
-        "use_gold = false\n"
         "linux_use_bundled_binutils = false\n"
     )
 

@@ -114,7 +114,13 @@ printed at most once.
   complete result is tokenized, including both single-line and multi-line
   ATL/MFC assertion forms. The installed SDK argument is also required to stay
   ahead of the injected `-vcvars_ver` switch, preserving the exact upstream
-  vcvars argument order.
+  vcvars argument order. The replay also verifies that the original UM-library
+  and linker output statements remain present after the multi-line assertion
+  edit; this catches a syntactically valid but over-broad edit that would delete
+  unrelated setup code. There are 215 exact templates with a `vc_lib_um_path`
+  fallback anchor, of which the 208 historical-toolset tags actively receive a
+  checked `Lib/<version>/um/<arch>` fallback when vcvars does not report a UM
+  directory and `User32.Lib` exists there.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

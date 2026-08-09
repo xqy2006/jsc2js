@@ -53,6 +53,8 @@ class HostToolAuditTest(unittest.TestCase):
   if not target_store:
     assert vc_lib_atlmfc_path, ("missing ATL/MFC " +
                                 "from the installation")
+  vc_lib_um_path = ''
+  assert vc_lib_um_path
   return args
 """
         result = audit_setup_toolchain_patch(source)
@@ -60,6 +62,8 @@ class HostToolAuditTest(unittest.TestCase):
         self.assertTrue(result["checks"]["tokenizable"])
         self.assertTrue(result["checks"]["idempotent"])
         self.assertTrue(result["checks"]["sdk_precedes_vcvars_guard"])
+        self.assertTrue(result["checks"]["um_lib_fallback_complete"])
+        self.assertTrue(result["um_lib_fallback_anchor_present"])
 
     def test_extracts_visual_studio_years_from_exact_host_scripts(self):
         vs_toolchain = """

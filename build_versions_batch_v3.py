@@ -50,12 +50,18 @@ WINDOWS_TOOLCHAIN_ENV_RE = re.compile(
 )
 WINDOWS_ATLMFC_ASSERT_RE = re.compile(
     r"^(?P<indent>[ \t]+)assert vc_lib_atlmfc_path"
-    r"(?:,\s*\([^\r\n]*(?:\r?\n[ \t]+[^\r\n]*)*?\))?[ \t]*$",
+    r"(?:,[^\r\n]*\r?\n[ \t]+[^\r\n]*)?[ \t]*$",
+    re.MULTILINE,
+)
+WINDOWS_UM_LIB_OUTPUT_RE = re.compile(
+    r"^(?P<indent>[ \t]+)(?=(?:assert vc_lib_um_path|"
+    r"print(?:[ \t]*\(|[ \t]+)['\"]vc_lib_um_path))",
     re.MULTILINE,
 )
 WINDOWS_VCVARS_MARKER = "# JSC2JS_LEGACY_VCVARS_VERSION"
 WINDOWS_SDK_MARKER = "# JSC2JS_INSTALLED_WINDOWS_SDK"
 WINDOWS_ATLMFC_MARKER = "# JSC2JS_OPTIONAL_ATLMFC"
+WINDOWS_UM_LIB_MARKER = "# JSC2JS_INSTALLED_SDK_UM_LIB"
 
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
@@ -584,6 +590,28 @@ def patch_windows_setup_toolchain_source(source: str) -> str:
             "d8 does not link the optional ATL/MFC libraries"
         )
         source = source[: match.start()] + replacement + source[match.end() :]
+
+    if WINDOWS_UM_LIB_MARKER not in source and "vc_lib_um_path" in source:
+        matches = list(WINDOWS_UM_LIB_OUTPUT_RE.finditer(source))
+        if not matches:
+            raise RuntimeError(
+                "Unsupported setup_toolchain.py Windows SDK UM library layout"
+            )
+        match = matches[0]
+        indent = match.group("indent")
+        injection = (
+            f"{indent}{WINDOWS_UM_LIB_MARKER}\n"
+            f"{indent}jsc2js_sdk_version = "
+            "os.environ.get('JSC2JS_WINDOWS_SDK_VERSION')\n"
+            f"{indent}if not vc_lib_um_path and jsc2js_sdk_version:\n"
+            f"{indent}  jsc2js_um_lib_path = os.path.join(\n"
+            f"{indent}      win_sdk_path, 'Lib', jsc2js_sdk_version,\n"
+            f"{indent}      'um', target_cpu)\n"
+            f"{indent}  if os.path.isfile(os.path.join(\n"
+            f"{indent}      jsc2js_um_lib_path, 'User32.Lib')):\n"
+            f"{indent}    vc_lib_um_path = os.path.realpath(jsc2js_um_lib_path)\n"
+        )
+        source = source[: match.start()] + injection + source[match.start() :]
 
     return source
 

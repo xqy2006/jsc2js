@@ -222,6 +222,7 @@ class LegacyHookPythonTest(unittest.TestCase):
         self.assertNotIn("assert vc_lib_atlmfc_path", patched)
         self.assertNotIn("is not found, check if it's installed", patched)
         self.assertEqual(patched.count("JSC2JS_OPTIONAL_ATLMFC"), 1)
+        self.assertIn("return args", patched)
         self.assertEqual(builder.patch_windows_setup_toolchain_source(patched), patched)
 
     def test_installed_sdk_stays_before_the_vcvars_toolset_switch(self):
@@ -256,6 +257,44 @@ class LegacyHookPythonTest(unittest.TestCase):
                 "-vcvars_ver=14.16",
             ],
         )
+
+    def test_missing_um_lib_environment_uses_the_checked_sdk_directory(self):
+        original = """def load():
+  args = [script_path, cpu_arg]
+  variables = _LoadEnvFromBat(args)
+  return args
+
+def locate_um_lib():
+  win_sdk_path = sdk_root
+  target_cpu = 'x64'
+  vc_lib_um_path = ''
+  assert vc_lib_um_path
+  return vc_lib_um_path
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            sdk_root = Path(directory)
+            expected = sdk_root / "Lib/10.0.26100.0/um/x64"
+            expected.mkdir(parents=True)
+            (expected / "User32.Lib").touch()
+            namespace = {
+                "os": os,
+                "sdk_root": str(sdk_root),
+                "script_path": "vcvarsall.bat",
+                "cpu_arg": "amd64",
+                "_LoadEnvFromBat": lambda args: args,
+            }
+            patched = builder.patch_windows_setup_toolchain_source(original)
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "JSC2JS_VCVARS_VERSION": "14.16",
+                    "JSC2JS_WINDOWS_SDK_VERSION": "10.0.26100.0",
+                },
+                clear=True,
+            ):
+                exec(patched, namespace)
+                actual = namespace["locate_um_lib"]()
+            self.assertEqual(actual, str(expected.resolve()))
 
     def test_v8_52_linux_uses_hosted_clang_without_wheezy_sysroot(self):
         with tempfile.TemporaryDirectory() as directory:

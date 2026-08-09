@@ -28,6 +28,7 @@ from build_versions_batch_v3 import (  # noqa: E402
     WINDOWS_SDK_MARKER,
     WINDOWS_TOOLCHAIN_ARGS_RE,
     WINDOWS_TOOLCHAIN_ENV_RE,
+    WINDOWS_UM_LIB_MARKER,
     WINDOWS_VCVARS_MARKER,
     patch_windows_setup_toolchain_source,
     uses_in_tree_gyp,
@@ -167,6 +168,7 @@ def clang_supports_selected_toolset(toolset: str, release_version: str) -> bool:
 def audit_setup_toolchain_patch(source: str) -> dict:
     """Replay the production injection and validate its complete Python layout."""
     original_has_atlmfc_assert = "assert vc_lib_atlmfc_path" in source
+    um_lib_fallback_anchor_present = "vc_lib_um_path" in source
     try:
         patched = patch_windows_setup_toolchain_source(source)
         idempotent = patch_windows_setup_toolchain_source(patched) == patched
@@ -177,12 +179,32 @@ def audit_setup_toolchain_patch(source: str) -> dict:
         except (IndentationError, SyntaxError, tokenize.TokenError) as error:
             tokenizable = False
             token_error = f"{type(error).__name__}: {error}"
+        preserved_output_lines = {
+            line.rstrip()
+            for line in source.splitlines()
+            if "print" in line
+            and ("vc_lib_um_path" in line or "libpath_flags" in line)
+        }
+        patched_lines = {line.rstrip() for line in patched.splitlines()}
         checks = {
             "vcvars_marker_once": patched.count(WINDOWS_VCVARS_MARKER) == 1,
             "sdk_marker_once": patched.count(WINDOWS_SDK_MARKER) == 1,
             "sdk_precedes_vcvars_guard": (
                 "args.insert(jsc2js_vcvars_index, jsc2js_sdk_version)" in patched
             ),
+            "um_lib_fallback_complete": (
+                patched.count(WINDOWS_UM_LIB_MARKER)
+                == (1 if um_lib_fallback_anchor_present else 0)
+                and (
+                    not um_lib_fallback_anchor_present
+                    or (
+                        "win_sdk_path, 'Lib', jsc2js_sdk_version" in patched
+                        and "'um', target_cpu" in patched
+                        and "'User32.Lib'" in patched
+                    )
+                )
+            ),
+            "unrelated_outputs_preserved": preserved_output_lines <= patched_lines,
             "atlmfc_assertion_complete": (
                 "assert vc_lib_atlmfc_path" not in patched
                 and patched.count(WINDOWS_ATLMFC_MARKER)
@@ -194,12 +216,14 @@ def audit_setup_toolchain_patch(source: str) -> dict:
         return {
             "supported": all(checks.values()),
             "checks": checks,
+            "um_lib_fallback_anchor_present": um_lib_fallback_anchor_present,
             "error": token_error,
         }
     except RuntimeError as error:
         return {
             "supported": False,
             "checks": {},
+            "um_lib_fallback_anchor_present": um_lib_fallback_anchor_present,
             "error": str(error),
         }
 
@@ -398,6 +422,12 @@ def classify_version(
             "toolset_injection_supported": setup_patch_audit["supported"],
             "installed_sdk_injection_supported": len(environment_matches) == 1,
             "setup_toolchain_patch_checks": setup_patch_audit["checks"],
+            "setup_toolchain_um_lib_fallback_anchor_present": setup_patch_audit[
+                "um_lib_fallback_anchor_present"
+            ],
+            "setup_toolchain_um_lib_fallback_active": bool(
+                toolset_spec and setup_patch_audit["um_lib_fallback_anchor_present"]
+            ),
             "setup_toolchain_patch_error": setup_patch_audit["error"],
             "warnings_as_errors_build_arg_present": warning_policy_arg_present,
             "warnings_as_errors_build_arg_location": warning_policy_location,
@@ -429,6 +459,12 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         "External-GN tags preserving SDK-before-toolset argument order: "
         f"**{summary['setup_patch_sdk_ordering_tags']}**",
+        "",
+        "External-GN tags with an exact SDK UM-library fallback anchor: "
+        f"**{summary['setup_patch_um_lib_fallback_anchor_tags']}**",
+        "",
+        "Historical-toolset tags that actively receive that fallback: "
+        f"**{summary['setup_patch_um_lib_fallback_active_tags']}**",
         "",
         "Pinned clang releases recorded: "
         + ", ".join(
@@ -504,7 +540,12 @@ def write_markdown(path: Path, payload: dict) -> None:
             "continuation lines in multi-line ATL/MFC assertions before an "
             "Actions build starts. The replay also requires the installed SDK "
             "argument to remain ahead of the `-vcvars_ver` toolset switch, "
-            "matching the upstream vcvars template order.",
+            "matching the upstream vcvars template order. The replay preserves "
+            "the exact original UM-library and linker output statements, which "
+            "guards against an assertion edit consuming unrelated code. Active "
+            "historical-toolset templates that export `vc_lib_um_path` also "
+            "receive a checked fallback to the installed SDK's "
+            "`Lib/<version>/um/<arch>` directory if vcvars omits it.",
             "Every external-GN tag is also checked against its exact Chromium "
             "compiler configuration before CI disables warnings-as-errors on "
             "Windows. This keeps modern hosted MSVC diagnostics from becoming "
@@ -654,6 +695,14 @@ def main() -> int:
                         "sdk_precedes_vcvars_guard"
                     )
                 )
+                for result in results
+            ),
+            "setup_patch_um_lib_fallback_anchor_tags": sum(
+                bool(result.get("setup_toolchain_um_lib_fallback_anchor_present"))
+                for result in results
+            ),
+            "setup_patch_um_lib_fallback_active_tags": sum(
+                bool(result.get("setup_toolchain_um_lib_fallback_active"))
                 for result in results
             ),
             "toolset_counts": {

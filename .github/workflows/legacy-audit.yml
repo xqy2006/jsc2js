@@ -276,6 +276,7 @@ jobs:
           name: legacy-audit-${{ inputs.start_index }}-${{ matrix.os }}-slot${{ matrix.slot }}
           path: |
             artifacts/**/apply_patch_report.*
+            artifacts/**/build_error.txt
             artifacts/**/runtime_smoke.txt
             success_versions.txt
             failed_versions.txt

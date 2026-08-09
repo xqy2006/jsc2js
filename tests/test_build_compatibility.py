@@ -205,6 +205,27 @@ class LegacyHookPythonTest(unittest.TestCase):
         restored = [call.args[0][2] for call in run.call_args_list]
         self.assertEqual(restored, [str(v8_root), str(v8_root / "build")])
 
+    def test_failed_build_preserves_patch_report_and_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            v8_root = root / "v8"
+            v8_root.mkdir()
+            (v8_root / "apply_patch_report.json").write_text(
+                '{"success": true}\n', encoding="utf-8"
+            )
+            target = builder.collect_audit_records(
+                root / "artifacts",
+                "5.1.281.47",
+                "Windows",
+                "example failure",
+                v8_root,
+            )
+            self.assertTrue((target / "apply_patch_report.json").is_file())
+            self.assertEqual(
+                (target / "build_error.txt").read_text().strip(),
+                "example failure",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -294,6 +294,7 @@ jobs:
           name: audit-${{ inputs.version }}-${{ matrix.os }}
           path: |
             artifacts/**/apply_patch_report.*
+            artifacts/**/build_error.txt
             artifacts/**/runtime_smoke.txt
             artifacts/**/runtime_valid_cache_smoke.txt
             success_versions.txt

@@ -25,7 +25,7 @@ Env vars:
   KEEP_WORK_DIR         "1" to reuse existing x64.release directory (won't delete before rebuild)
   SKIP_BACKUP           "1" to skip copying the full build directory (validation workflows)
 """
-import json, os, platform, shutil, subprocess, sys
+import json, os, platform, shutil, subprocess, sys, traceback
 from pathlib import Path
 from datetime import datetime
 import re
@@ -82,6 +82,27 @@ def restore_version_worktrees(v8_root: Path = Path("v8")):
         completed = subprocess.run(["git", "-C", str(root), "checkout", "."])
         if completed.returncode != 0:
             log(f"WARNING: could not restore tracked files under {root}")
+
+
+def collect_audit_records(
+    artifacts_dir: Path,
+    version: str,
+    os_name: str,
+    error: str = "",
+    v8_root: Path = Path("v8"),
+) -> Path:
+    """Preserve patch reports and a traceback even when a batch tag fails."""
+    target_dir = artifacts_dir / f"d8-{version}-{os_name}"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("apply_patch_report.txt", "apply_patch_report.json"):
+        report = v8_root / name
+        if report.is_file():
+            shutil.copy2(report, target_dir / name)
+    if error:
+        (target_dir / "build_error.txt").write_text(
+            error.rstrip() + "\n", encoding="utf-8", newline="\n"
+        )
+    return target_dir
 
 
 def copytree(src: Path, dst: Path):
@@ -529,6 +550,8 @@ def main():
         log(f"========== START {ver} ==========")
         restore_version_worktrees()
         run("git -C v8 reset --hard", check=False)
+        for report_name in ("apply_patch_report.txt", "apply_patch_report.json"):
+            (Path("v8") / report_name).unlink(missing_ok=True)
         sanitized = ver.replace(".", "_")
         try:
             if not re.fullmatch(r"\d+\.\d+\.\d+(?:\.\d+)?", ver):
@@ -625,6 +648,12 @@ def main():
             if rc != 0:
                 log(f"[PATCH] Failed for {ver}")
                 failed.append(ver)
+                collect_audit_records(
+                    artifacts_dir,
+                    ver,
+                    os_name,
+                    "Patch application returned a non-zero exit code.",
+                )
                 restore_version_worktrees()
                 continue
 
@@ -661,6 +690,13 @@ def main():
             if not built_bin.exists() or not built_snapshot.exists():
                 log(f"[BUILD] Missing binary or snapshot for {ver}. d8 exists: {built_bin.exists()}, snapshot exists: {built_snapshot.exists()}")
                 failed.append(ver)
+                collect_audit_records(
+                    artifacts_dir,
+                    ver,
+                    os_name,
+                    "Build output was incomplete: "
+                    f"d8={built_bin.exists()} snapshot={built_snapshot.exists()}",
+                )
                 restore_version_worktrees()
                 continue
 
@@ -674,20 +710,13 @@ def main():
                         built_bin, Path(valid_cache).resolve()
                     )
 
-            target_dir = artifacts_dir / f"d8-{ver}-{os_name}"
-            target_dir.mkdir(parents=True, exist_ok=True)
+            target_dir = collect_audit_records(artifacts_dir, ver, os_name)
             
             # FIX: Copy both files
             log(f"Copying {built_bin.name} and {built_snapshot.name} to {target_dir}")
             shutil.copy2(built_bin, target_dir / built_bin.name)
             shutil.copy2(built_snapshot, target_dir / built_snapshot.name)
             
-            report_file = Path("v8/apply_patch_report.txt")
-            if report_file.exists():
-                shutil.copy2(report_file, target_dir / "apply_patch_report.txt")
-            legacy_report = Path("v8/apply_patch_report.json")
-            if legacy_report.exists():
-                shutil.copy2(legacy_report, target_dir / "apply_patch_report.json")
             if smoke_output:
                 (target_dir / "runtime_smoke.txt").write_text(
                     smoke_output, encoding="utf-8", newline="\n"
@@ -715,6 +744,12 @@ def main():
         except Exception as e:
             log(f"[ERROR] {ver} failed: {e}")
             failed.append(ver)
+            collect_audit_records(
+                artifacts_dir,
+                ver,
+                os_name,
+                traceback.format_exc(),
+            )
             restore_version_worktrees()
 
     write_list("success_versions.txt", success)

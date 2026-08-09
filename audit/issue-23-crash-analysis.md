@@ -128,6 +128,11 @@ printed at most once.
   tags (V8 8.1.197 through 8.4.191), the exact pinned clang hook consumes that
   logical year for a keyed DIA DLL lookup. Every replay is tokenized,
   idempotent, and required to preserve all original lines in order.
+- The exact hosted-VS/DIA regression range, V8 8.3.110.5 through 8.3.110.12,
+  completed all five tags on Linux and Windows in
+  [Actions run 31311301043](https://github.com/xqy2006/jsc2js/actions/runs/31311301043).
+  The Windows job crossed the previously failing pinned clang DIA hook and
+  completed the patched builds and smoke checks.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

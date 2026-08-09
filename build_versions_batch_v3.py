@@ -109,6 +109,26 @@ def run_legacy_rejection_smoke(built_bin: Path) -> str:
         )
     return output
 
+
+def configure_host_compatibility():
+    """Make historical LLVM binaries usable on current Linux runners."""
+    if not platform.system().lower().startswith("linux"):
+        return
+    try:
+        system_libstdcpp = subprocess.check_output(
+            ["g++", "-print-file-name=libstdc++.so.6"], text=True
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return
+    if not system_libstdcpp or system_libstdcpp == "libstdc++.so.6":
+        return
+    library_dir = str(Path(system_libstdcpp).resolve().parent)
+    current = os.environ.get("LD_LIBRARY_PATH", "")
+    os.environ["LD_LIBRARY_PATH"] = (
+        library_dir if not current else library_dir + os.pathsep + current
+    )
+    log(f"Preferring host libstdc++ for historical LLVM: {library_dir}")
+
 def main():
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
     apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
@@ -240,6 +260,7 @@ def main():
                 encoding="utf-8",
                 newline="\n",
             )
+            configure_host_compatibility()
             run("gn gen out.gn/x64.release", cwd="v8", check=True)
 
             # Build

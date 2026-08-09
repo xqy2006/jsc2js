@@ -32,7 +32,6 @@ jobs:
     env:
       ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
-      GYP_MSVS_VERSION: "2022"
       SKIP_BACKUP: "1"
     steps:
       - name: Checkout infra repo
@@ -42,6 +41,23 @@ jobs:
 
       - name: Configure Git to use LF line endings
         run: git config --global core.autocrlf false
+
+      - name: Classify legacy host-tool requirements
+        id: compatibility
+        shell: bash
+        run: |
+          set -eu
+          IFS=. read -r major minor patch build <<< "$VERSION"
+          python2=false
+          vs_year=2022
+          if (( major < 9 )); then python2=true; fi
+          if (( major <= 6 )); then
+            vs_year=2017
+          elif (( major < 10 )); then
+            vs_year=2019
+          fi
+          echo "python2=$python2" >> "$GITHUB_OUTPUT"
+          echo "vs_year=$vs_year" >> "$GITHUB_OUTPUT"
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux'
@@ -67,35 +83,58 @@ jobs:
           "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
           gclient --version
 
-      - name: Fix Windows SDK path for V8 10.8
+      - name: Record Python 3 executable
+        shell: bash
+        run: echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
+
+      - name: Install Python 2 for historical V8 hooks
+        if: steps.compatibility.outputs.python2 == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "2.7"
+
+      - name: Map installed Visual Studio to the legacy toolchain name
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # V8 10.8's setup_toolchain.py expects SDK 10.0.20348.0 but
-          # windows-2022 has a newer version. Find the actual installed SDK
-          # and create a junction so the old path resolves.
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) { throw "Visual Studio with the C++ toolchain was not found" }
+          $compatYear = "${{ steps.compatibility.outputs.vs_year }}"
+          "GYP_MSVS_VERSION=$compatYear" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_OVERRIDE_PATH=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "vs${compatYear}_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Output "Using VS at $vsPath through the V8 $compatYear compatibility path"
+
+      - name: Provide historical Windows SDK aliases
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
           $sdkBase = "C:\Program Files (x86)\Windows Kits\10"
           $installed = Get-ChildItem "$sdkBase\Include" -Directory | Where-Object { $_.Name -match '^10\.' } | Sort-Object Name -Descending | Select-Object -First 1
           if (-not $installed) { Write-Output "No SDK found"; exit 1 }
           $actualVer = $installed.Name
           Write-Output "Installed SDK: $actualVer"
-          # Check if 10.0.20348.0 already exists
-          $oldPath = "$sdkBase\Include\10.0.20348.0"
-          if (-not (Test-Path $oldPath)) {
-            Write-Output "Creating junction: $oldPath -> $($installed.FullName)"
-            cmd /c mklink /J "$oldPath" "$($installed.FullName)"
-            # Also junction the Lib path
-            $oldLib = "$sdkBase\Lib\10.0.20348.0"
-            $actualLib = "$sdkBase\Lib\$actualVer"
-            if ((Test-Path $actualLib) -and -not (Test-Path $oldLib)) {
-              cmd /c mklink /J "$oldLib" "$actualLib"
+
+          $legacyVersions = @(
+            "10.0.14393.0", "10.0.15063.0", "10.0.16299.0",
+            "10.0.17134.0", "10.0.17763.0", "10.0.18362.0",
+            "10.0.19041.0", "10.0.20348.0", "10.0.22000.0",
+            "10.0.22621.0"
+          )
+          foreach ($legacyVersion in $legacyVersions) {
+            foreach ($section in @("Include", "Lib", "Bin", "UnionMetadata", "References")) {
+              $actual = Join-Path (Join-Path $sdkBase $section) $actualVer
+              $alias = Join-Path (Join-Path $sdkBase $section) $legacyVersion
+              if ((Test-Path $actual) -and -not (Test-Path $alias)) {
+                Write-Output "Creating SDK junction: $alias -> $actual"
+                cmd /c mklink /J "$alias" "$actual"
+                if ($LASTEXITCODE -ne 0) { throw "Failed to create $alias" }
+              }
             }
-          } else {
-            Write-Output "10.0.20348.0 already exists"
           }
 
       - name: Seed the requested V8 tag
@@ -114,7 +153,7 @@ jobs:
           ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
         run: |
           set -e
-          python3 build_versions_batch_v3.py
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Single-version build finished (see failed_versions.txt if any)."
 
       - name: Upload artifacts

@@ -379,6 +379,30 @@ def object_print_gn_arg(v8_root: Path = Path("v8")) -> str:
     return "v8_enable_object_print = true\n"
 
 
+def windows_warning_policy_gn_arg(v8_root: Path = Path("v8")) -> str:
+    """Disable upstream /WX when a modern hosted MSVC builds legacy V8."""
+    if not platform.system().lower().startswith("win"):
+        return ""
+    compiler_configs = (
+        v8_root / "build/config/compiler/BUILD.gn",
+        v8_root / "build/config/compiler/compiler.gni",
+    )
+    sources = [
+        path.read_text(encoding="utf-8", errors="replace")
+        for path in compiler_configs
+        if path.is_file()
+    ]
+    if not any(
+        re.search(r"(?m)^\s*treat_warnings_as_errors\s*=", source)
+        for source in sources
+    ):
+        raise RuntimeError(
+            "The exact Chromium build revision does not declare "
+            "treat_warnings_as_errors"
+        )
+    return "treat_warnings_as_errors = false\n"
+
+
 def configure_in_tree_gyp(version: str) -> bool:
     """Select V8 5.1's native GYP/Ninja generator, or clear stale batch state."""
     if not uses_in_tree_gyp(version):
@@ -749,6 +773,7 @@ def main():
                     "v8_enable_disassembler = true\n"
                     + object_print_gn_arg(Path("v8"))
                     + linux_legacy_gn_args
+                    + windows_warning_policy_gn_arg(Path("v8"))
                     + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
                     encoding="utf-8",
                     newline="\n",

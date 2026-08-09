@@ -14,6 +14,10 @@ Linux host modes: `hosted-clang-in-tree-gyp` **3**, `hosted-clang-lld-without-sy
 
 Object-print build arguments: `gyp:v8_object_print` **3**, `v8_enable_object_print` **357**, `v8_object_print` **9**
 
+External-GN tags with exact `treat_warnings_as_errors` support: **366**
+
+Warning-policy declaration locations: `config/compiler/BUILD.gn` **135**, `config/compiler/compiler.gni` **231**
+
 Selected Visual Studio compatibility years: `2015` **14**, `2017` **72**, `2019` **145**, `2022` **138**
 
 | Template | First V8 | Last V8 | Tags | Toolsets |
@@ -26,4 +30,5 @@ Selected Visual Studio compatibility years: `2015` **14**, `2017` **72**, `2019`
 | `args = [script_path, cpu_arg, ]` | 8.6.125 | 11.9.169.4 | 233 | current, v142 |
 
 V8 5.1 is audited against its in-tree GYP/Ninja generator and imports the selected hosted `vcvarsall` environment directly. V8 5.2 predates the Linux sysroot hook, so CI disables the missing Wheezy sysroot and routes the pinned clang and gold paths to the hosted compiler and lld. Every later exact tag must match one `vcvarsall` argument template and one environment-capture call, so CI can select both the historical MSVC headers and the SDK version actually installed on the runner. The build selects v142 for V8 5.x and 8.x–9.x, v141 for 6.x–7.x, and the current toolset for 10.x–11.x. For every tag where a historical toolset is selected and the pinned setup script retains the legacy path, CI provides a forwarding `VC/vcvarsall.bat` entry point. The exact Chromium build and tools/clang revisions are also checked to ensure the selected Visual Studio year is accepted by both `vs_toolchain.py` and the clang hook's keyed DIA DLL table.
+Every external-GN tag is also checked against its exact Chromium compiler configuration before CI disables warnings-as-errors on Windows. This keeps modern hosted MSVC diagnostics from becoming build failures without editing V8 source or hiding compiler errors.
 The JSON report records the exact V8 tag, Chromium build revision, template, and compatibility result.

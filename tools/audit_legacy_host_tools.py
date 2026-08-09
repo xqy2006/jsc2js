@@ -35,6 +35,7 @@ BUILD_ROOT = "https://chromium.googlesource.com/chromium/src/build"
 BUILD_PATH = "toolchain/win/setup_toolchain.py"
 VS_TOOLCHAIN_PATH = "vs_toolchain.py"
 COMPILER_BUILD_PATH = "config/compiler/BUILD.gn"
+COMPILER_GNI_PATH = "config/compiler/compiler.gni"
 GCC_TOOLCHAIN_PATH = "toolchain/gcc_toolchain.gni"
 CLANG_ROOT = "https://chromium.googlesource.com/chromium/src/tools/clang.git"
 CLANG_PATH = "scripts/update.py"
@@ -163,6 +164,19 @@ def classify_object_print_gn_arg(build_gn: str, v8_gni: str = "") -> str:
     return ""
 
 
+def supports_warning_policy_gn_arg(*compiler_sources: str) -> bool:
+    """Return whether this exact Chromium build exposes the /WX policy arg."""
+    return any(
+        bool(
+            re.search(
+                r"(?m)^\s*treat_warnings_as_errors\s*=",
+                source,
+            )
+        )
+        for source in compiler_sources
+    )
+
+
 def classify_version(
     v8_cache: RawSourceCache,
     build_cache: BuildSourceCache,
@@ -234,11 +248,22 @@ def classify_version(
         revision = extract_build_revision(deps)
         setup = build_cache.get(revision, BUILD_PATH)
         vs_toolchain = build_cache.get(revision, VS_TOOLCHAIN_PATH)
+        compiler_build = build_cache.get(revision, COMPILER_BUILD_PATH)
+        compiler_gni = ""
+        if not supports_warning_policy_gn_arg(compiler_build):
+            compiler_gni = build_cache.get(revision, COMPILER_GNI_PATH)
+        warning_policy_location = (
+            COMPILER_BUILD_PATH
+            if supports_warning_policy_gn_arg(compiler_build)
+            else COMPILER_GNI_PATH
+            if supports_warning_policy_gn_arg(compiler_gni)
+            else ""
+        )
+        warning_policy_arg_present = bool(warning_policy_location)
         vs_toolchain_years = extract_vs_toolchain_years(vs_toolchain)
         vs_year_compatible = selected_vs_year in vs_toolchain_years
         v52_hosted_linker_checks = {}
         if version.startswith("5.2."):
-            compiler_build = build_cache.get(revision, COMPILER_BUILD_PATH)
             gcc_toolchain = build_cache.get(revision, GCC_TOOLCHAIN_PATH)
             v52_hosted_linker_checks = {
                 "lld_flag_supported": '"-fuse-ld=lld"' in compiler_build,
@@ -262,6 +287,7 @@ def classify_version(
             and vs_year_compatible
             and clang_vs_year_compatible
             and all(v52_hosted_linker_checks.values())
+            and warning_policy_arg_present
             and bool(object_print_arg)
             and disassembler_arg_present
         )
@@ -294,6 +320,8 @@ def classify_version(
             ),
             "toolset_injection_supported": windows_compatible,
             "installed_sdk_injection_supported": len(environment_matches) == 1,
+            "warnings_as_errors_build_arg_present": warning_policy_arg_present,
+            "warnings_as_errors_build_arg_location": warning_policy_location,
             "linux_host_mode": linux_host_mode,
             "v8_deps_has_sysroot_hook": deps_has_sysroot_hook,
             "object_print_build_arg": object_print_arg,
@@ -331,6 +359,15 @@ def write_markdown(path: Path, payload: dict) -> None:
             for name, count in summary["object_print_build_args"].items()
         ),
         "",
+        "External-GN tags with exact `treat_warnings_as_errors` support: "
+        f"**{summary['warning_policy_gn_tags']}**",
+        "",
+        "Warning-policy declaration locations: "
+        + ", ".join(
+            f"`{path}` **{count}**"
+            for path, count in summary["warning_policy_locations"].items()
+        ),
+        "",
         "Selected Visual Studio compatibility years: "
         + ", ".join(
             f"`{year}` **{count}**"
@@ -365,6 +402,10 @@ def write_markdown(path: Path, payload: dict) -> None:
             "tools/clang revisions are also checked to ensure the selected "
             "Visual Studio year is accepted by both `vs_toolchain.py` and "
             "the clang hook's keyed DIA DLL table.",
+            "Every external-GN tag is also checked against its exact Chromium "
+            "compiler configuration before CI disables warnings-as-errors on "
+            "Windows. This keeps modern hosted MSVC diagnostics from becoming "
+            "build failures without editing V8 source or hiding compiler errors.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",
         ]
@@ -484,6 +525,17 @@ def main() -> int:
                 bool(result.get("legacy_vcvars_entry_point_provided"))
                 for result in results
             ),
+            "warning_policy_gn_tags": sum(
+                bool(result.get("warnings_as_errors_build_arg_present"))
+                for result in results
+            ),
+            "warning_policy_locations": {
+                path: sum(
+                    result.get("warnings_as_errors_build_arg_location") == path
+                    for result in results
+                )
+                for path in (COMPILER_BUILD_PATH, COMPILER_GNI_PATH)
+            },
             "linux_host_modes": {
                 mode: sum(result.get("linux_host_mode") == mode for result in results)
                 for mode in sorted(

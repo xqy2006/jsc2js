@@ -10,6 +10,7 @@ from tools.audit_legacy_host_tools import (
     extract_build_revision,
     extract_vs_toolchain_years,
     normalize_template,
+    supports_warning_policy_gn_arg,
 )
 
 
@@ -99,6 +100,22 @@ class HostToolAuditTest(unittest.TestCase):
             "v8_enable_object_print",
         )
         self.assertEqual(classify_object_print_gn_arg("other = false\n"), "")
+
+    def test_detects_the_exact_warnings_as_errors_declaration(self):
+        self.assertTrue(
+            supports_warning_policy_gn_arg(
+                "declare_args() {\n  treat_warnings_as_errors = true\n}\n"
+            )
+        )
+        self.assertTrue(
+            supports_warning_policy_gn_arg(
+                "config(\"warnings\") {}\n",
+                "declare_args() {\n  treat_warnings_as_errors = true\n}\n",
+            )
+        )
+        self.assertFalse(
+            supports_warning_policy_gn_arg("use_warnings_as_errors = true\n")
+        )
 
 
 if __name__ == "__main__":

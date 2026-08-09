@@ -254,6 +254,45 @@ class LegacyHookPythonTest(unittest.TestCase):
                 "v8_enable_object_print = true\n",
             )
 
+    def test_windows_disables_warning_promotion_only_when_declared(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            compiler_gn = root / "build/config/compiler/BUILD.gn"
+            compiler_gn.parent.mkdir(parents=True)
+            compiler_gn.write_text(
+                "declare_args() {\n  treat_warnings_as_errors = true\n}\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(
+                builder.platform, "system", return_value="Windows"
+            ):
+                self.assertEqual(
+                    builder.windows_warning_policy_gn_arg(root),
+                    "treat_warnings_as_errors = false\n",
+                )
+            compiler_gn.write_text("declare_args() {\n}\n", encoding="utf-8")
+            compiler_gni = root / "build/config/compiler/compiler.gni"
+            compiler_gni.write_text(
+                "declare_args() {\n  treat_warnings_as_errors = true\n}\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(
+                builder.platform, "system", return_value="Windows"
+            ):
+                self.assertEqual(
+                    builder.windows_warning_policy_gn_arg(root),
+                    "treat_warnings_as_errors = false\n",
+                )
+            compiler_gni.write_text("declare_args() {\n}\n", encoding="utf-8")
+            with mock.patch.object(
+                builder.platform, "system", return_value="Windows"
+            ), self.assertRaisesRegex(RuntimeError, "does not declare"):
+                builder.windows_warning_policy_gn_arg(root)
+
+    def test_non_windows_keeps_the_upstream_warning_policy(self):
+        with mock.patch.object(builder.platform, "system", return_value="Linux"):
+            self.assertEqual(builder.windows_warning_policy_gn_arg(), "")
+
     def test_current_windows_v8_has_no_legacy_toolset(self):
         self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))
 

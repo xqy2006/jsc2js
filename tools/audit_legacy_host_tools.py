@@ -7,6 +7,7 @@ import argparse
 import base64
 import concurrent.futures
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
@@ -14,6 +15,7 @@ import sys
 import tempfile
 import threading
 import time
+import tokenize
 import urllib.error
 import urllib.request
 
@@ -22,8 +24,12 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from build_versions_batch_v3 import (  # noqa: E402
+    WINDOWS_ATLMFC_MARKER,
+    WINDOWS_SDK_MARKER,
     WINDOWS_TOOLCHAIN_ARGS_RE,
     WINDOWS_TOOLCHAIN_ENV_RE,
+    WINDOWS_VCVARS_MARKER,
+    patch_windows_setup_toolchain_source,
     uses_in_tree_gyp,
     windows_compatibility_year,
     windows_legacy_toolset_spec,
@@ -142,6 +148,59 @@ def clang_hook_uses_keyed_dia_dll(source: str) -> bool:
     return bool(re.search(r"DIA_DLL\s*\[\s*msvs_version\s*\]", source))
 
 
+def extract_clang_release_version(source: str) -> str:
+    """Return the clang release advertised by one exact update.py revision."""
+    match = re.search(
+        r"(?m)^\s*RELEASE_VERSION\s*=\s*['\"](?P<version>[^'\"]+)['\"]",
+        source,
+    )
+    return match.group("version") if match else ""
+
+
+def clang_supports_selected_toolset(toolset: str, release_version: str) -> bool:
+    """Reject the clang 10 + v142 header combination observed on V8 8.0/8.1."""
+    if toolset != "v142" or not release_version:
+        return True
+    return int(release_version.split(".", 1)[0]) >= 11
+
+
+def audit_setup_toolchain_patch(source: str) -> dict:
+    """Replay the production injection and validate its complete Python layout."""
+    original_has_atlmfc_assert = "assert vc_lib_atlmfc_path" in source
+    try:
+        patched = patch_windows_setup_toolchain_source(source)
+        idempotent = patch_windows_setup_toolchain_source(patched) == patched
+        try:
+            list(tokenize.generate_tokens(io.StringIO(patched).readline))
+            tokenizable = True
+            token_error = ""
+        except (IndentationError, SyntaxError, tokenize.TokenError) as error:
+            tokenizable = False
+            token_error = f"{type(error).__name__}: {error}"
+        checks = {
+            "vcvars_marker_once": patched.count(WINDOWS_VCVARS_MARKER) == 1,
+            "sdk_marker_once": patched.count(WINDOWS_SDK_MARKER) == 1,
+            "atlmfc_assertion_complete": (
+                "assert vc_lib_atlmfc_path" not in patched
+                and patched.count(WINDOWS_ATLMFC_MARKER)
+                == (1 if original_has_atlmfc_assert else 0)
+            ),
+            "idempotent": idempotent,
+            "tokenizable": tokenizable,
+        }
+        return {
+            "supported": all(checks.values()),
+            "checks": checks,
+            "error": token_error,
+        }
+    except RuntimeError as error:
+        return {
+            "supported": False,
+            "checks": {},
+            "error": str(error),
+        }
+
+
 def classify_linux_host_mode(version: str, deps: str) -> str:
     """Describe how CI supplies a usable compiler/sysroot for this tag."""
     if uses_in_tree_gyp(version):
@@ -192,10 +251,14 @@ def classify_version(
         selected_vs_year = windows_compatibility_year(version)
         clang_revision = extract_clang_revision(deps)
         clang_update = clang_cache.get(clang_revision, CLANG_PATH)
+        clang_release_version = extract_clang_release_version(clang_update)
         clang_dia_dll_years = extract_dia_dll_years(clang_update)
         clang_keyed_dia_dll = clang_hook_uses_keyed_dia_dll(clang_update)
         clang_vs_year_compatible = (
             not clang_keyed_dia_dll or selected_vs_year in clang_dia_dll_years
+        )
+        clang_toolset_compatible = clang_supports_selected_toolset(
+            required_toolset, clang_release_version
         )
         linux_host_mode = classify_linux_host_mode(version, deps)
         deps_has_sysroot_hook = "install-sysroot.py" in deps
@@ -218,7 +281,11 @@ def classify_version(
                 "object_print": "v8_object_print=1" in makefile,
                 "disassembler": "v8_enable_disassembler=1" in makefile,
             }
-            compatible = all(checks.values()) and clang_vs_year_compatible
+            compatible = (
+                all(checks.values())
+                and clang_vs_year_compatible
+                and clang_toolset_compatible
+            )
             return {
                 "version": version,
                 "status": "ok" if compatible else "incompatible",
@@ -233,9 +300,11 @@ def classify_version(
                 "vs_toolchain_years": ["2013", "2015"],
                 "vs_year_compatible": selected_vs_year == "2015",
                 "clang_revision": clang_revision,
+                "clang_release_version": clang_release_version,
                 "clang_dia_dll_years": clang_dia_dll_years,
                 "clang_keyed_dia_dll": clang_keyed_dia_dll,
                 "clang_vs_year_compatible": clang_vs_year_compatible,
+                "clang_toolset_compatible": clang_toolset_compatible,
                 "legacy_vcvars_reference_present": True,
                 "legacy_vcvars_entry_point_provided": True,
                 "toolset_injection_supported": checks["vs2015_compatibility"],
@@ -282,10 +351,13 @@ def classify_version(
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
         legacy_vcvars_reference = bool(LEGACY_VCVARS_PATH_RE.search(setup))
         windows_compatible = len(matches) == 1 and len(environment_matches) == 1
+        setup_patch_audit = audit_setup_toolchain_patch(setup)
         compatible = (
             windows_compatible
+            and setup_patch_audit["supported"]
             and vs_year_compatible
             and clang_vs_year_compatible
+            and clang_toolset_compatible
             and all(v52_hosted_linker_checks.values())
             and warning_policy_arg_present
             and bool(object_print_arg)
@@ -306,9 +378,11 @@ def classify_version(
             "vs_toolchain_years": vs_toolchain_years,
             "vs_year_compatible": vs_year_compatible,
             "clang_revision": clang_revision,
+            "clang_release_version": clang_release_version,
             "clang_dia_dll_years": clang_dia_dll_years,
             "clang_keyed_dia_dll": clang_keyed_dia_dll,
             "clang_vs_year_compatible": clang_vs_year_compatible,
+            "clang_toolset_compatible": clang_toolset_compatible,
             **(
                 {"v52_hosted_linker_checks": v52_hosted_linker_checks}
                 if v52_hosted_linker_checks
@@ -318,8 +392,10 @@ def classify_version(
             "legacy_vcvars_entry_point_provided": bool(
                 toolset_spec and legacy_vcvars_reference
             ),
-            "toolset_injection_supported": windows_compatible,
+            "toolset_injection_supported": setup_patch_audit["supported"],
             "installed_sdk_injection_supported": len(environment_matches) == 1,
+            "setup_toolchain_patch_checks": setup_patch_audit["checks"],
+            "setup_toolchain_patch_error": setup_patch_audit["error"],
             "warnings_as_errors_build_arg_present": warning_policy_arg_present,
             "warnings_as_errors_build_arg_location": warning_policy_location,
             "linux_host_mode": linux_host_mode,
@@ -343,6 +419,16 @@ def write_markdown(path: Path, payload: dict) -> None:
         f"Chromium clang-hook revisions: **{summary['clang_revisions']}**",
         "",
         f"Windows toolchain templates: **{summary['templates']}**",
+        "",
+        "External-GN tags whose legacy setup transform was replayed, "
+        "tokenized, and found idempotent: "
+        f"**{summary['setup_patch_replay_tags']}**",
+        "",
+        "Pinned clang releases recorded: "
+        + ", ".join(
+            f"`{release}` **{count}**"
+            for release, count in summary["clang_release_counts"].items()
+        ),
         "",
         f"CI legacy `VC/vcvarsall.bat` bridge tags: "
         f"**{summary['legacy_vcvars_entry_point_tags']}**",
@@ -394,14 +480,23 @@ def write_markdown(path: Path, payload: dict) -> None:
         "tag must match one `vcvarsall` argument template and one environment-"
         "capture call, so CI can select both the historical MSVC headers and "
         "the SDK version actually installed on the runner. "
-        "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
-            "6.x–7.x, and the current toolset for 10.x–11.x. For every tag "
+        "The build selects v142 for V8 5.x, v141 for 6.x–7.x and "
+            "8.0–8.1, v142 for 8.2–9.x, and the current toolset for "
+            "10.x–11.x. This boundary is checked against the exact pinned "
+            "clang release; in particular, clang 10 is not paired with the "
+            "v142 headers that require clang 11. For every tag "
             "where a historical toolset is selected and the pinned setup "
             "script retains the legacy path, CI provides a forwarding "
             "`VC/vcvarsall.bat` entry point. The exact Chromium build and "
             "tools/clang revisions are also checked to ensure the selected "
             "Visual Studio year is accepted by both `vs_toolchain.py` and "
             "the clang hook's keyed DIA DLL table.",
+            "For every external-GN tag, the setup-toolchain transform used by "
+            "the legacy production path is applied to the exact Chromium "
+            "source, applied a second time "
+            "to prove idempotence, and fully tokenized. This catches dangling "
+            "continuation lines in multi-line ATL/MFC assertions before an "
+            "Actions build starts.",
             "Every external-GN tag is also checked against its exact Chromium "
             "compiler configuration before CI disables warnings-as-errors on "
             "Windows. This keeps modern hosted MSVC diagnostics from becoming "
@@ -507,7 +602,44 @@ def main() -> int:
                     if result.get("clang_revision")
                 }
             ),
+            "clang_release_counts": {
+                release: sum(
+                    result.get("clang_release_version") == release
+                    for result in results
+                )
+                for release in sorted(
+                    {
+                        result.get("clang_release_version")
+                        for result in results
+                        if result.get("clang_release_version")
+                    },
+                    key=lambda release: (
+                        int(release.split(".", 1)[0]),
+                        release,
+                    ),
+                )
+            },
+            "clang_toolset_compatible_tags": sum(
+                bool(result.get("clang_toolset_compatible")) for result in results
+            ),
             "templates": len(families),
+            "setup_patch_replay_tags": sum(
+                bool(result.get("setup_toolchain_patch_checks"))
+                and bool(result.get("toolset_injection_supported"))
+                for result in results
+            ),
+            "setup_patch_tokenizable_tags": sum(
+                bool(
+                    result.get("setup_toolchain_patch_checks", {}).get("tokenizable")
+                )
+                for result in results
+            ),
+            "setup_patch_idempotent_tags": sum(
+                bool(
+                    result.get("setup_toolchain_patch_checks", {}).get("idempotent")
+                )
+                for result in results
+            ),
             "toolset_counts": {
                 toolset: sum(
                     result.get("required_toolset") == toolset for result in results

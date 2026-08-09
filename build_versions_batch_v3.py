@@ -48,6 +48,14 @@ WINDOWS_TOOLCHAIN_ENV_RE = re.compile(
     r"^(?P<indent>[ \t]+)variables = _LoadEnvFromBat\(args\)[ \t]*$",
     re.MULTILINE,
 )
+WINDOWS_ATLMFC_ASSERT_RE = re.compile(
+    r"^(?P<indent>[ \t]+)assert vc_lib_atlmfc_path"
+    r"(?:,\s*\([^\r\n]*(?:\r?\n[ \t]+[^\r\n]*)*?\))?[ \t]*$",
+    re.MULTILINE,
+)
+WINDOWS_VCVARS_MARKER = "# JSC2JS_LEGACY_VCVARS_VERSION"
+WINDOWS_SDK_MARKER = "# JSC2JS_INSTALLED_WINDOWS_SDK"
+WINDOWS_ATLMFC_MARKER = "# JSC2JS_OPTIONAL_ATLMFC"
 
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
@@ -294,10 +302,10 @@ def patch_gclient_hook_dispatch(hook_python: str):
 
 def windows_legacy_toolset_spec(version: str):
     """Return the installed MSVC header generation matching a V8 release era."""
-    major = int(version.split(".", 1)[0])
+    major, minor = (int(part) for part in version.split(".", 2)[:2])
     if major == 5:
         return "14.29.*", "v142"
-    if major < 8:
+    if major < 8 or (major == 8 and minor < 2):
         return "14.16.*", "v141"
     if major < 10:
         return "14.29.*", "v142"
@@ -512,6 +520,70 @@ def activate_windows_vcvars(version: str):
     )
 
 
+def patch_windows_setup_toolchain_source(source: str) -> str:
+    """Inject hosted MSVC/SDK selection into one exact Chromium template."""
+    if WINDOWS_VCVARS_MARKER not in source:
+        matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(source))
+        if len(matches) != 1:
+            raise RuntimeError(
+                "Unsupported setup_toolchain.py vcvars argument layout: "
+                f"found {len(matches)} anchors"
+            )
+        match = matches[0]
+        indent = match.group("indent")
+        injection = (
+            match.group(0)
+            + f"\n{indent}{WINDOWS_VCVARS_MARKER}\n"
+            + f"{indent}jsc2js_vcvars_version = "
+            + "os.environ.get('JSC2JS_VCVARS_VERSION')\n"
+            + f"{indent}if jsc2js_vcvars_version:\n"
+            + f"{indent}  args.append('-vcvars_ver=' + jsc2js_vcvars_version)"
+        )
+        source = source[: match.start()] + injection + source[match.end() :]
+
+    if WINDOWS_SDK_MARKER not in source:
+        matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(source))
+        if len(matches) != 1:
+            raise RuntimeError(
+                "Unsupported setup_toolchain.py SDK environment layout: "
+                f"found {len(matches)} anchors"
+            )
+        match = matches[0]
+        indent = match.group("indent")
+        injection = (
+            f"{indent}{WINDOWS_SDK_MARKER}\n"
+            f"{indent}jsc2js_sdk_version = "
+            "os.environ.get('JSC2JS_WINDOWS_SDK_VERSION')\n"
+            f"{indent}if jsc2js_sdk_version:\n"
+            f"{indent}  args = [arg for arg in args if not (\n"
+            f"{indent}      isinstance(arg, str) and arg.count('.') == 3 and\n"
+            f"{indent}      all(part.isdigit() for part in arg.split('.')))]\n"
+            f"{indent}  args.append(jsc2js_sdk_version)\n"
+            + match.group(0)
+        )
+        source = source[: match.start()] + injection + source[match.end() :]
+
+    if (
+        WINDOWS_ATLMFC_MARKER not in source
+        and "assert vc_lib_atlmfc_path" in source
+    ):
+        matches = list(WINDOWS_ATLMFC_ASSERT_RE.finditer(source))
+        if len(matches) != 1:
+            raise RuntimeError(
+                "Unsupported setup_toolchain.py ATL/MFC assertion layout: "
+                f"found {len(matches)} anchors"
+            )
+        match = matches[0]
+        indent = match.group("indent")
+        replacement = (
+            f"{indent}pass  {WINDOWS_ATLMFC_MARKER}: "
+            "d8 does not link the optional ATL/MFC libraries"
+        )
+        source = source[: match.start()] + replacement + source[match.end() :]
+
+    return source
+
+
 def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     """Select the installed MSVC headers compatible with historical clang-cl."""
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
@@ -539,59 +611,10 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     setup_toolchain = v8_root / "build/toolchain/win/setup_toolchain.py"
     if not setup_toolchain.is_file():
         raise RuntimeError(f"Missing Windows setup toolchain: {setup_toolchain}")
-    marker = "# JSC2JS_LEGACY_VCVARS_VERSION"
-    sdk_marker = "# JSC2JS_INSTALLED_WINDOWS_SDK"
-    atlmfc_marker = "# JSC2JS_OPTIONAL_ATLMFC"
     source = setup_toolchain.read_text(encoding="utf-8")
-    modified = False
-    if marker not in source:
-        match = WINDOWS_TOOLCHAIN_ARGS_RE.search(source)
-        if not match:
-            raise RuntimeError(
-                f"Unsupported setup_toolchain.py layout in {setup_toolchain}"
-            )
-        indent = match.group("indent")
-        injection = (
-            match.group(0)
-            + f"\n{indent}{marker}\n"
-            + f"{indent}jsc2js_vcvars_version = "
-            + "os.environ.get('JSC2JS_VCVARS_VERSION')\n"
-            + f"{indent}if jsc2js_vcvars_version:\n"
-            + f"{indent}  args.append('-vcvars_ver=' + jsc2js_vcvars_version)"
-        )
-        source = source[: match.start()] + injection + source[match.end() :]
-        modified = True
-    if sdk_marker not in source:
-        matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(source))
-        if len(matches) != 1:
-            raise RuntimeError(
-                "Unsupported setup_toolchain.py SDK environment layout in "
-                f"{setup_toolchain}: found {len(matches)} anchors"
-            )
-        match = matches[0]
-        indent = match.group("indent")
-        injection = (
-            f"{indent}{sdk_marker}\n"
-            f"{indent}jsc2js_sdk_version = "
-            "os.environ.get('JSC2JS_WINDOWS_SDK_VERSION')\n"
-            f"{indent}if jsc2js_sdk_version:\n"
-            f"{indent}  args = [arg for arg in args if not (\n"
-            f"{indent}      isinstance(arg, str) and arg.count('.') == 3 and\n"
-            f"{indent}      all(part.isdigit() for part in arg.split('.')))]\n"
-            f"{indent}  args.append(jsc2js_sdk_version)\n"
-            + match.group(0)
-        )
-        source = source[: match.start()] + injection + source[match.end() :]
-        modified = True
-    if atlmfc_marker not in source and "assert vc_lib_atlmfc_path" in source:
-        source = source.replace(
-            "assert vc_lib_atlmfc_path",
-            f"pass  {atlmfc_marker}: d8 does not link the optional ATL/MFC libraries",
-            1,
-        )
-        modified = True
-    if modified:
-        setup_toolchain.write_text(source, encoding="utf-8")
+    patched = patch_windows_setup_toolchain_source(source)
+    if patched != source:
+        setup_toolchain.write_text(patched, encoding="utf-8")
     os.environ["JSC2JS_VCVARS_VERSION"] = vcvars_version
     log(
         f"Using MSVC {toolset_name} ({compatible[-1].name}) through "

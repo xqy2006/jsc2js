@@ -10,8 +10,17 @@ class HostRequirementTest(unittest.TestCase):
             {
                 "python2": True,
                 "v141": True,
-                "v142": True,
+                "v142": False,
                 "vs_year": "2017",
+            },
+        )
+        self.assertEqual(
+            classify_versions(["8.1.307.20", "8.2.308.0"]),
+            {
+                "python2": True,
+                "v141": True,
+                "v142": True,
+                "vs_year": "2019",
             },
         )
         self.assertEqual(

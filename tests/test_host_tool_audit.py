@@ -2,9 +2,12 @@ import unittest
 
 from tools.audit_legacy_host_tools import (
     LEGACY_VCVARS_PATH_RE,
+    audit_setup_toolchain_patch,
+    clang_supports_selected_toolset,
     classify_linux_host_mode,
     classify_object_print_gn_arg,
     clang_hook_uses_keyed_dia_dll,
+    extract_clang_release_version,
     extract_clang_revision,
     extract_dia_dll_years,
     extract_build_revision,
@@ -32,6 +35,30 @@ class HostToolAuditTest(unittest.TestCase):
             f"'/chromium/src/tools/clang.git' + '@' + '{revision}',"
         )
         self.assertEqual(extract_clang_revision(deps), revision)
+
+    def test_clang_release_controls_the_v142_header_boundary(self):
+        self.assertEqual(
+            extract_clang_release_version("RELEASE_VERSION = '10.0.0'\n"),
+            "10.0.0",
+        )
+        self.assertEqual(extract_clang_release_version("CLANG_REVISION = 'old'\n"), "")
+        self.assertFalse(clang_supports_selected_toolset("v142", "10.0.0"))
+        self.assertTrue(clang_supports_selected_toolset("v141", "10.0.0"))
+        self.assertTrue(clang_supports_selected_toolset("v142", "11.0.0"))
+
+    def test_replays_and_tokenizes_the_multiline_atlmfc_template(self):
+        source = """def load(cpu):
+  args = [script_path, cpu_arg]
+  variables = _LoadEnvFromBat(args)
+  if not target_store:
+    assert vc_lib_atlmfc_path, ("missing ATL/MFC " +
+                                "from the installation")
+  return args
+"""
+        result = audit_setup_toolchain_patch(source)
+        self.assertTrue(result["supported"], result)
+        self.assertTrue(result["checks"]["tokenizable"])
+        self.assertTrue(result["checks"]["idempotent"])
 
     def test_extracts_visual_studio_years_from_exact_host_scripts(self):
         vs_toolchain = """

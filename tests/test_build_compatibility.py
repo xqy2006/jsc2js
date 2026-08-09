@@ -153,6 +153,9 @@ class LegacyHookPythonTest(unittest.TestCase):
             "5.8.283.38": ("14.29.30133", "14.29"),
             "6.7.288.43": ("14.16.27023", "14.16"),
             "7.6.274": ("14.16.27023", "14.16"),
+            "8.0.426.8": ("14.16.27023", "14.16"),
+            "8.1.307.20": ("14.16.27023", "14.16"),
+            "8.2.308.0": ("14.29.30133", "14.29"),
             "8.5.189": ("14.29.30133", "14.29"),
             "9.4.146.8": ("14.29.30133", "14.29"),
         }
@@ -204,6 +207,22 @@ class LegacyHookPythonTest(unittest.TestCase):
         legacy_vcvars = vs_root / "VC/vcvarsall.bat"
         self.assertTrue(legacy_vcvars.is_file())
         self.assertIn("Auxiliary\\Build", legacy_vcvars.read_text())
+
+    def test_multiline_atlmfc_assertion_is_removed_as_one_statement(self):
+        original = """def load(cpu):
+  args = [script_path, cpu_arg]
+  variables = _LoadEnvFromBat(args)
+  if not target_store:
+    assert vc_lib_atlmfc_path, ("Microsoft.VisualStudio.Component.VC.ATLMFC " +
+                                "is not found, check if it's installed.")
+  return args
+"""
+        patched = builder.patch_windows_setup_toolchain_source(original)
+        compile(patched, "setup_toolchain.py", "exec")
+        self.assertNotIn("assert vc_lib_atlmfc_path", patched)
+        self.assertNotIn("is not found, check if it's installed", patched)
+        self.assertEqual(patched.count("JSC2JS_OPTIONAL_ATLMFC"), 1)
+        self.assertEqual(builder.patch_windows_setup_toolchain_source(patched), patched)
 
     def test_v8_52_linux_uses_hosted_clang_without_wheezy_sysroot(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -295,6 +314,17 @@ class LegacyHookPythonTest(unittest.TestCase):
 
     def test_current_windows_v8_has_no_legacy_toolset(self):
         self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))
+
+    def test_v8_8_toolset_boundary_follows_the_pinned_clang_release(self):
+        expected = {
+            "8.0.426.8": "v141",
+            "8.1.307.20": "v141",
+            "8.2.308.0": "v142",
+            "9.0.257.24": "v142",
+        }
+        for version, toolset in expected.items():
+            with self.subTest(version=version):
+                self.assertEqual(builder.windows_legacy_toolset_spec(version)[1], toolset)
 
     def test_visual_studio_compatibility_year_boundaries(self):
         expected = {

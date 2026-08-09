@@ -100,14 +100,19 @@ printed at most once.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded
-  legacy vcvars entry point, and an exact per-tag toolset selection (72 v141,
-  159 v142, 138 current). The selected Visual Studio year is checked against
+  legacy vcvars entry point, and an exact per-tag toolset selection (87 v141,
+  144 v142, 138 current). V8 8.0–8.1's pinned clang 10 therefore uses v141;
+  V8 8.2's clang 11 is the first 8.x family to use v142. The selected Visual
+  Studio year is checked against
   every exact `vs_toolchain.py`; for the 93 tags whose clang hook indexes a
   keyed DIA DLL table, it is checked against that exact table as well. The
   Linux audit records three in-tree GYP tags, the single pre-sysroot-hook V8
   5.2 tag (hosted clang and lld), and 365 sysroot-hook tags. It also verifies
   the exact object-print argument name (3 GYP, 9 legacy GN, 357 current GN);
-  all templates are recognized before CI starts.
+  all templates are recognized before CI starts. For all 366 external-GN tags,
+  the setup-toolchain transform is replayed twice to prove idempotence and the
+  complete result is tokenized, including both single-line and multi-line
+  ATL/MFC assertion forms.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

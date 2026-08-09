@@ -180,6 +180,9 @@ def audit_setup_toolchain_patch(source: str) -> dict:
         checks = {
             "vcvars_marker_once": patched.count(WINDOWS_VCVARS_MARKER) == 1,
             "sdk_marker_once": patched.count(WINDOWS_SDK_MARKER) == 1,
+            "sdk_precedes_vcvars_guard": (
+                "args.insert(jsc2js_vcvars_index, jsc2js_sdk_version)" in patched
+            ),
             "atlmfc_assertion_complete": (
                 "assert vc_lib_atlmfc_path" not in patched
                 and patched.count(WINDOWS_ATLMFC_MARKER)
@@ -424,6 +427,9 @@ def write_markdown(path: Path, payload: dict) -> None:
         "tokenized, and found idempotent: "
         f"**{summary['setup_patch_replay_tags']}**",
         "",
+        "External-GN tags preserving SDK-before-toolset argument order: "
+        f"**{summary['setup_patch_sdk_ordering_tags']}**",
+        "",
         "Pinned clang releases recorded: "
         + ", ".join(
             f"`{release}` **{count}**"
@@ -496,7 +502,9 @@ def write_markdown(path: Path, payload: dict) -> None:
             "source, applied a second time "
             "to prove idempotence, and fully tokenized. This catches dangling "
             "continuation lines in multi-line ATL/MFC assertions before an "
-            "Actions build starts.",
+            "Actions build starts. The replay also requires the installed SDK "
+            "argument to remain ahead of the `-vcvars_ver` toolset switch, "
+            "matching the upstream vcvars template order.",
             "Every external-GN tag is also checked against its exact Chromium "
             "compiler configuration before CI disables warnings-as-errors on "
             "Windows. This keeps modern hosted MSVC diagnostics from becoming "
@@ -637,6 +645,14 @@ def main() -> int:
             "setup_patch_idempotent_tags": sum(
                 bool(
                     result.get("setup_toolchain_patch_checks", {}).get("idempotent")
+                )
+                for result in results
+            ),
+            "setup_patch_sdk_ordering_tags": sum(
+                bool(
+                    result.get("setup_toolchain_patch_checks", {}).get(
+                        "sdk_precedes_vcvars_guard"
+                    )
                 )
                 for result in results
             ),

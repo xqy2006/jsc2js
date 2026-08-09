@@ -112,7 +112,9 @@ printed at most once.
   all templates are recognized before CI starts. For all 366 external-GN tags,
   the setup-toolchain transform is replayed twice to prove idempotence and the
   complete result is tokenized, including both single-line and multi-line
-  ATL/MFC assertion forms.
+  ATL/MFC assertion forms. The installed SDK argument is also required to stay
+  ahead of the injected `-vcvars_ver` switch, preserving the exact upstream
+  vcvars argument order.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

@@ -558,7 +558,11 @@ def patch_windows_setup_toolchain_source(source: str) -> str:
             f"{indent}  args = [arg for arg in args if not (\n"
             f"{indent}      isinstance(arg, str) and arg.count('.') == 3 and\n"
             f"{indent}      all(part.isdigit() for part in arg.split('.')))]\n"
-            f"{indent}  args.append(jsc2js_sdk_version)\n"
+            f"{indent}  jsc2js_vcvars_index = next((\n"
+            f"{indent}      index for index, arg in enumerate(args)\n"
+            f"{indent}      if isinstance(arg, str) and\n"
+            f"{indent}      arg.startswith('-vcvars_ver=')), len(args))\n"
+            f"{indent}  args.insert(jsc2js_vcvars_index, jsc2js_sdk_version)\n"
             + match.group(0)
         )
         source = source[: match.start()] + injection + source[match.end() :]

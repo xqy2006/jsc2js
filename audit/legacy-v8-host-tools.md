@@ -10,6 +10,8 @@ Windows toolchain templates: **6**
 
 External-GN tags whose legacy setup transform was replayed, tokenized, and found idempotent: **366**
 
+External-GN tags preserving SDK-before-toolset argument order: **366**
+
 Pinned clang releases recorded: `9.0.0` **23**, `10.0.0` **26**, `11.0.0` **37**, `12.0.0` **28**, `13.0.0` **36**, `14.0.0` **29**, `15.0.0` **32**, `16` **11**, `16.0.0` **23**, `17` **63**, `18` **9**
 
 CI legacy `VC/vcvarsall.bat` bridge tags: **231**
@@ -34,6 +36,6 @@ Selected Visual Studio compatibility years: `2015` **14**, `2017` **72**, `2019`
 | `args = [script_path, cpu_arg, ]` | 8.6.125 | 11.9.169.4 | 233 | current, v142 |
 
 V8 5.1 is audited against its in-tree GYP/Ninja generator and imports the selected hosted `vcvarsall` environment directly. V8 5.2 predates the Linux sysroot hook, so CI disables the missing Wheezy sysroot and routes the pinned clang and gold paths to the hosted compiler and lld. Every later exact tag must match one `vcvarsall` argument template and one environment-capture call, so CI can select both the historical MSVC headers and the SDK version actually installed on the runner. The build selects v142 for V8 5.x, v141 for 6.x–7.x and 8.0–8.1, v142 for 8.2–9.x, and the current toolset for 10.x–11.x. This boundary is checked against the exact pinned clang release; in particular, clang 10 is not paired with the v142 headers that require clang 11. For every tag where a historical toolset is selected and the pinned setup script retains the legacy path, CI provides a forwarding `VC/vcvarsall.bat` entry point. The exact Chromium build and tools/clang revisions are also checked to ensure the selected Visual Studio year is accepted by both `vs_toolchain.py` and the clang hook's keyed DIA DLL table.
-For every external-GN tag, the setup-toolchain transform used by the legacy production path is applied to the exact Chromium source, applied a second time to prove idempotence, and fully tokenized. This catches dangling continuation lines in multi-line ATL/MFC assertions before an Actions build starts.
+For every external-GN tag, the setup-toolchain transform used by the legacy production path is applied to the exact Chromium source, applied a second time to prove idempotence, and fully tokenized. This catches dangling continuation lines in multi-line ATL/MFC assertions before an Actions build starts. The replay also requires the installed SDK argument to remain ahead of the `-vcvars_ver` toolset switch, matching the upstream vcvars template order.
 Every external-GN tag is also checked against its exact Chromium compiler configuration before CI disables warnings-as-errors on Windows. This keeps modern hosted MSVC diagnostics from becoming build failures without editing V8 source or hiding compiler errors.
 The JSON report records the exact V8 tag, Chromium build revision, template, and compatibility result.

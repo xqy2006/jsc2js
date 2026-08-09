@@ -224,6 +224,39 @@ class LegacyHookPythonTest(unittest.TestCase):
         self.assertEqual(patched.count("JSC2JS_OPTIONAL_ATLMFC"), 1)
         self.assertEqual(builder.patch_windows_setup_toolchain_source(patched), patched)
 
+    def test_installed_sdk_stays_before_the_vcvars_toolset_switch(self):
+        original = """def load():
+  args = [script_path, cpu_arg, '10.0.14393.0']
+  variables = _LoadEnvFromBat(args)
+  return args
+"""
+        patched = builder.patch_windows_setup_toolchain_source(original)
+        namespace = {
+            "os": os,
+            "script_path": "vcvarsall.bat",
+            "cpu_arg": "amd64",
+            "_LoadEnvFromBat": lambda args: args,
+        }
+        with mock.patch.dict(
+            os.environ,
+            {
+                "JSC2JS_VCVARS_VERSION": "14.16",
+                "JSC2JS_WINDOWS_SDK_VERSION": "10.0.26100.0",
+            },
+            clear=True,
+        ):
+            exec(patched, namespace)
+            args = namespace["load"]()
+        self.assertEqual(
+            args,
+            [
+                "vcvarsall.bat",
+                "amd64",
+                "10.0.26100.0",
+                "-vcvars_ver=14.16",
+            ],
+        )
+
     def test_v8_52_linux_uses_hosted_clang_without_wheezy_sysroot(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

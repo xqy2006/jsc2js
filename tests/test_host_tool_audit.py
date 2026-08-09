@@ -59,6 +59,7 @@ class HostToolAuditTest(unittest.TestCase):
         self.assertTrue(result["supported"], result)
         self.assertTrue(result["checks"]["tokenizable"])
         self.assertTrue(result["checks"]["idempotent"])
+        self.assertTrue(result["checks"]["sdk_precedes_vcvars_guard"])
 
     def test_extracts_visual_studio_years_from_exact_host_scripts(self):
         vs_toolchain = """

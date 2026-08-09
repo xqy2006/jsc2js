@@ -54,6 +54,36 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn('cmd[0] == "python"', patched)
             self.assertIn('os.environ["PATH"] = hook_dir', patched)
 
+    def test_old_windows_v8_selects_installed_v142_toolset(self):
+        templates = (
+            "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+            "args = [script_path, cpu_arg]",
+            "args = [script_path, cpu_arg, ]",
+        )
+        for args_line in templates:
+            with self.subTest(args_line=args_line), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                vs_root = root / "vs"
+                (vs_root / "VC/Tools/MSVC/14.29.30133").mkdir(parents=True)
+                setup = root / "v8/build/toolchain/win/setup_toolchain.py"
+                setup.parent.mkdir(parents=True)
+                setup.write_text(
+                    f"def load(cpu):\n  {args_line}\n  return args\n",
+                    encoding="utf-8",
+                )
+                with mock.patch.dict(
+                    os.environ, {"GYP_MSVS_OVERRIDE_PATH": str(vs_root)}, clear=False
+                ), mock.patch.object(
+                    builder.platform, "system", return_value="Windows"
+                ):
+                    builder.configure_windows_legacy_toolset("7.6.274", root / "v8")
+                    self.assertEqual(
+                        os.environ["JSC2JS_VCVARS_VERSION"], "14.29"
+                    )
+                patched = setup.read_text(encoding="utf-8")
+                self.assertIn("JSC2JS_LEGACY_VCVARS_VERSION", patched)
+                self.assertIn("-vcvars_ver=", patched)
+
 
 if __name__ == "__main__":
     unittest.main()

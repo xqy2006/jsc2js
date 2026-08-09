@@ -450,13 +450,16 @@ def patch_serializer(text: str, features: Features) -> str:
         return text.replace(old, new, 1)
 
     match = re.search(
-        r"source_hash\s*!=\s*expected_source_hash", text
+        r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*"
+        r"source_hash\s*!=\s*expected_source_hash\s*\)\s*"
+        r"return\s+SOURCE_MISMATCH;[ \t]*$",
+        text,
     )
     if not match:
-        raise PatchError("inline source hash check was not found")
+        raise PatchError("inline source hash return was not found")
     replacement = (
-        "false && source_hash != expected_source_hash  "
-        "/* JSC2JS_SOURCE_HASH_BYPASS */"
+        match.group("indent")
+        + "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text."
     )
     return text[: match.start()] + replacement + text[match.end() :]
 

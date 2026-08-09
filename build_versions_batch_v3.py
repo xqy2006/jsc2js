@@ -206,6 +206,56 @@ def patch_gclient_hook_dispatch(hook_python: str):
     log(f"Configured {gclient_py} to dispatch legacy hooks with {hook_python}")
 
 
+def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
+    """Select the installed v142 headers for V8 branches incompatible with v143."""
+    os.environ.pop("JSC2JS_VCVARS_VERSION", None)
+    if not platform.system().lower().startswith("win"):
+        return
+    if int(version.split(".", 1)[0]) >= 9:
+        return
+
+    vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
+    toolsets_root = vs_root / "VC/Tools/MSVC"
+    compatible = sorted(
+        path for path in toolsets_root.glob("14.29.*") if path.is_dir()
+    )
+    if not compatible:
+        raise RuntimeError(f"MSVC v142 was not found under {toolsets_root}")
+    vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
+
+    setup_toolchain = v8_root / "build/toolchain/win/setup_toolchain.py"
+    if not setup_toolchain.is_file():
+        raise RuntimeError(f"Missing Windows setup toolchain: {setup_toolchain}")
+    marker = "# JSC2JS_LEGACY_VCVARS_VERSION"
+    source = setup_toolchain.read_text(encoding="utf-8")
+    if marker not in source:
+        pattern = re.compile(
+            r"^(?P<indent>[ \t]+)args = \[script_path,[^\]\r\n]*\]\s*$",
+            re.MULTILINE,
+        )
+        match = pattern.search(source)
+        if not match:
+            raise RuntimeError(
+                f"Unsupported setup_toolchain.py layout in {setup_toolchain}"
+            )
+        indent = match.group("indent")
+        injection = (
+            match.group(0)
+            + f"\n{indent}{marker}\n"
+            + f"{indent}jsc2js_vcvars_version = "
+            + "os.environ.get('JSC2JS_VCVARS_VERSION')\n"
+            + f"{indent}if jsc2js_vcvars_version:\n"
+            + f"{indent}  args.append('-vcvars_ver=' + jsc2js_vcvars_version)"
+        )
+        source = source[: match.start()] + injection + source[match.end() :]
+        setup_toolchain.write_text(source, encoding="utf-8")
+    os.environ["JSC2JS_VCVARS_VERSION"] = vcvars_version
+    log(
+        f"Using MSVC {compatible[-1].name} through {setup_toolchain} "
+        f"for V8 {version}"
+    )
+
+
 def windows_linker_arg(v8_root: Path) -> str:
     """Use current MSVC link.exe when an old bundled lld cannot read its CRT."""
     candidates = (
@@ -270,6 +320,7 @@ def main():
             if hook_python:
                 patch_gclient_hook_dispatch(hook_python)
             run("gclient runhooks", check=True)
+            configure_windows_legacy_toolset(ver)
 
             work_dir = Path("v8/out.gn/x64.release")
             if not keep_work_dir:

@@ -415,6 +415,13 @@ def activate_windows_vcvars(version: str):
     vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
     vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
     provide_legacy_vcvars_entry_point(vs_root)
+    activation_signature = f"{vs_root.resolve()}|{vcvars_version}"
+    if os.environ.get("JSC2JS_ACTIVE_VCVARS_SIGNATURE") == activation_signature:
+        log(
+            f"Reusing imported MSVC {toolset_name} ({compatible[-1].name}) "
+            f"for V8 {version} GYP"
+        )
+        return
     sdk_version = os.environ.get("JSC2JS_WINDOWS_SDK_VERSION", "")
     # Let vcvarsall select its installed default SDK. Passing a current SDK
     # through the historical -winsdk switch makes VS 2022's v142 setup fail
@@ -442,6 +449,7 @@ def activate_windows_vcvars(version: str):
         os.environ[name] = value
     os.environ["GYP_MSVS_VERSION"] = "2015"
     os.environ["GYP_MSVS_OVERRIDE_PATH"] = str(vs_root)
+    os.environ["JSC2JS_ACTIVE_VCVARS_SIGNATURE"] = activation_signature
     log(
         f"Imported MSVC {toolset_name} ({compatible[-1].name}) and SDK "
         f"{sdk_version or 'default'} for V8 {version} GYP"

@@ -211,6 +211,7 @@ class LegacyHookPythonTest(unittest.TestCase):
                 {
                     "GYP_MSVS_OVERRIDE_PATH": str(vs_root),
                     "JSC2JS_WINDOWS_SDK_VERSION": "10.0.26100.0",
+                    "JSC2JS_ACTIVE_VCVARS_SIGNATURE": "",
                 },
                 clear=False,
             ), mock.patch.object(
@@ -219,6 +220,8 @@ class LegacyHookPythonTest(unittest.TestCase):
                 builder.subprocess, "run", return_value=completed
             ) as run:
                 builder.activate_windows_vcvars("5.1.281.47")
+                builder.activate_windows_vcvars("5.1.281.59")
+            self.assertEqual(run.call_count, 1)
             command = run.call_args.args[0]
             self.assertIsInstance(command, str)
             self.assertIn("cmd.exe /d /s /c", command)

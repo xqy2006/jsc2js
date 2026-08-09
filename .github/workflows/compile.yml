@@ -173,6 +173,17 @@ jobs:
           git -C v8 fetch --depth=1 origin "refs/tags/$VERSION:refs/tags/$VERSION"
           git -C v8 checkout --detach "$VERSION"
 
+      - name: Generate issue 23 cache with matching Electron
+        if: inputs.version == '10.8.168.25'
+        shell: bash
+        run: |
+          set -eux
+          cache_path="$RUNNER_TEMP/issue-23-electron-22.3.27.jsc"
+          ELECTRON_RUN_AS_NODE=1 npx --yes electron@22.3.27 \
+            tests/generate_electron_cache.cjs "$cache_path"
+          test -s "$cache_path"
+          echo "JSC2JS_VALID_CACHE=$cache_path" >> "$GITHUB_ENV"
+
       - name: Build d8 with patch
         shell: bash
         env:

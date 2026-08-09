@@ -110,6 +110,39 @@ def run_legacy_rejection_smoke(built_bin: Path) -> str:
     return output
 
 
+def run_legacy_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
+    """Verify a real cache from the matching Electron/V8 build is printable."""
+    if not cache_path.is_file() or cache_path.stat().st_size == 0:
+        raise RuntimeError(f"legacy valid-cache fixture is missing: {cache_path}")
+    build_dir = built_bin.parent.resolve()
+    local_cache = build_dir / "jsc2js-valid-cache.jsc"
+    shutil.copy2(cache_path, local_cache)
+    marker = "JSC2JS_VALID_CACHE_OK"
+    javascript = (
+        "loadjsc('jsc2js-valid-cache.jsc'); "
+        f"print('{marker}');"
+    )
+    completed = subprocess.run(
+        [str(built_bin.resolve()), "--no-lazy", "-e", javascript],
+        cwd=str(build_dir),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=120,
+    )
+    output = completed.stdout or ""
+    if (
+        completed.returncode != 0
+        or marker not in output
+        or "Start SharedFunctionInfo" not in output
+    ):
+        raise RuntimeError(
+            "legacy valid-cache smoke test failed: "
+            f"exit={completed.returncode} output={output[-4000:]}"
+        )
+    return output
+
+
 def configure_host_compatibility():
     """Make historical LLVM binaries usable on current Linux runners."""
     if not platform.system().lower().startswith("linux"):
@@ -429,8 +462,14 @@ def main():
                 continue
 
             smoke_output = ""
+            valid_cache_output = ""
             if is_legacy:
                 smoke_output = run_legacy_rejection_smoke(built_bin)
+                valid_cache = os.environ.get("JSC2JS_VALID_CACHE")
+                if valid_cache:
+                    valid_cache_output = run_legacy_valid_cache_smoke(
+                        built_bin, Path(valid_cache).resolve()
+                    )
 
             target_dir = artifacts_dir / f"d8-{ver}-{os_name}"
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -449,6 +488,10 @@ def main():
             if smoke_output:
                 (target_dir / "runtime_smoke.txt").write_text(
                     smoke_output, encoding="utf-8", newline="\n"
+                )
+            if valid_cache_output:
+                (target_dir / "runtime_valid_cache_smoke.txt").write_text(
+                    valid_cache_output, encoding="utf-8", newline="\n"
                 )
 
             # Backup out.gn/x64.release

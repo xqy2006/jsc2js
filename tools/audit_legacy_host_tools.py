@@ -23,6 +23,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from build_versions_batch_v3 import (  # noqa: E402
     WINDOWS_TOOLCHAIN_ARGS_RE,
+    WINDOWS_TOOLCHAIN_ENV_RE,
     windows_legacy_toolset_spec,
 )
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
@@ -102,10 +103,11 @@ def classify_version(
         revision = extract_build_revision(deps)
         setup = build_cache.get(revision, BUILD_PATH)
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
+        environment_matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
         toolset_spec = windows_legacy_toolset_spec(version)
         required_toolset = toolset_spec[1] if toolset_spec else "current"
-        compatible = len(matches) == 1
+        compatible = len(matches) == 1 and len(environment_matches) == 1
         status = "ok" if compatible else "incompatible"
         return {
             "version": version,
@@ -113,9 +115,11 @@ def classify_version(
             "build_revision": revision,
             "setup_toolchain_path": BUILD_PATH,
             "vcvars_args_matches": len(matches),
+            "vcvars_environment_matches": len(environment_matches),
             "vcvars_args_template": template,
             "required_toolset": required_toolset,
             "toolset_injection_supported": compatible,
+            "installed_sdk_injection_supported": len(environment_matches) == 1,
         }
     except Exception as error:
         return {"version": version, "status": "fetch-error", "error": str(error)}
@@ -143,9 +147,11 @@ def write_markdown(path: Path, payload: dict) -> None:
         )
     lines.extend(
         [
-            "",
-            "Every exact tag must match exactly one `vcvarsall` argument template. "
-            "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
+        "",
+        "Every exact tag must match exactly one `vcvarsall` argument template "
+        "and one environment-capture call, so CI can select both the historical "
+        "MSVC headers and the SDK version actually installed on the runner. "
+        "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
             "6.x–7.x, and the current toolset for 10.x–11.x.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",

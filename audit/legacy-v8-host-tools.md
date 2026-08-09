@@ -14,5 +14,5 @@ Windows toolchain templates: **5**
 | `args = [script_path, cpu_arg]` | 6.7.288.43 | 8.5.210.26 | 113 | v141, v142 |
 | `args = [script_path, cpu_arg, ]` | 8.6.125 | 11.9.169.4 | 233 | current, v142 |
 
-Every exact tag must match exactly one `vcvarsall` argument template. The build selects v142 for V8 5.x and 8.x–9.x, v141 for 6.x–7.x, and the current toolset for 10.x–11.x.
+Every exact tag must match exactly one `vcvarsall` argument template and one environment-capture call, so CI can select both the historical MSVC headers and the SDK version actually installed on the runner. The build selects v142 for V8 5.x and 8.x–9.x, v141 for 6.x–7.x, and the current toolset for 10.x–11.x.
 The JSON report records the exact V8 tag, Chromium build revision, template, and compatibility result.

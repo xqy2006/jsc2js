@@ -198,6 +198,7 @@ jobs:
           if (-not $installed) { Write-Output "No SDK found"; exit 1 }
           $actualVer = $installed.Name
           Write-Output "Installed SDK: $actualVer"
+          "JSC2JS_WINDOWS_SDK_VERSION=$actualVer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
           $legacyVersions = @(
             "10.0.14393.0", "10.0.15063.0", "10.0.16299.0",

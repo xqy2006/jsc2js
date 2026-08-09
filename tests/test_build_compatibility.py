@@ -87,6 +87,7 @@ class LegacyHookPythonTest(unittest.TestCase):
         setup.parent.mkdir(parents=True)
         setup.write_text(
             f"def load(cpu):\n  {args_line}\n"
+            "  variables = _LoadEnvFromBat(args)\n"
             "  if desktop:\n    assert vc_lib_atlmfc_path\n"
             "  return args\n",
             encoding="utf-8",
@@ -103,6 +104,8 @@ class LegacyHookPythonTest(unittest.TestCase):
         patched = setup.read_text(encoding="utf-8")
         self.assertIn("JSC2JS_LEGACY_VCVARS_VERSION", patched)
         self.assertIn("-vcvars_ver=", patched)
+        self.assertIn("JSC2JS_INSTALLED_WINDOWS_SDK", patched)
+        self.assertIn("JSC2JS_WINDOWS_SDK_VERSION", patched)
         self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
         self.assertNotIn("assert vc_lib_atlmfc_path", patched)
 

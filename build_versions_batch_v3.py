@@ -44,6 +44,10 @@ WINDOWS_TOOLCHAIN_ARGS_RE = re.compile(
     r"(?:[^\]\r\n]*\r?\n[ \t]+)*[^\]\r\n]*\][ \t]*$",
     re.MULTILINE,
 )
+WINDOWS_TOOLCHAIN_ENV_RE = re.compile(
+    r"^(?P<indent>[ \t]+)variables = _LoadEnvFromBat\(args\)[ \t]*$",
+    re.MULTILINE,
+)
 
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
@@ -280,6 +284,7 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     if not setup_toolchain.is_file():
         raise RuntimeError(f"Missing Windows setup toolchain: {setup_toolchain}")
     marker = "# JSC2JS_LEGACY_VCVARS_VERSION"
+    sdk_marker = "# JSC2JS_INSTALLED_WINDOWS_SDK"
     atlmfc_marker = "# JSC2JS_OPTIONAL_ATLMFC"
     source = setup_toolchain.read_text(encoding="utf-8")
     modified = False
@@ -297,6 +302,28 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
             + "os.environ.get('JSC2JS_VCVARS_VERSION')\n"
             + f"{indent}if jsc2js_vcvars_version:\n"
             + f"{indent}  args.append('-vcvars_ver=' + jsc2js_vcvars_version)"
+        )
+        source = source[: match.start()] + injection + source[match.end() :]
+        modified = True
+    if sdk_marker not in source:
+        matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(source))
+        if len(matches) != 1:
+            raise RuntimeError(
+                "Unsupported setup_toolchain.py SDK environment layout in "
+                f"{setup_toolchain}: found {len(matches)} anchors"
+            )
+        match = matches[0]
+        indent = match.group("indent")
+        injection = (
+            f"{indent}{sdk_marker}\n"
+            f"{indent}jsc2js_sdk_version = "
+            "os.environ.get('JSC2JS_WINDOWS_SDK_VERSION')\n"
+            f"{indent}if jsc2js_sdk_version:\n"
+            f"{indent}  args = [arg for arg in args if not (\n"
+            f"{indent}      isinstance(arg, str) and arg.count('.') == 3 and\n"
+            f"{indent}      all(part.isdigit() for part in arg.split('.')))]\n"
+            f"{indent}  args.append(jsc2js_sdk_version)\n"
+            + match.group(0)
         )
         source = source[: match.start()] + injection + source[match.end() :]
         modified = True

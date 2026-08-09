@@ -90,6 +90,23 @@ class LegacyHookPythonTest(unittest.TestCase):
                 self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
                 self.assertNotIn("assert vc_lib_atlmfc_path", patched)
 
+    def test_old_windows_v8_allows_historical_clang_with_v142_stl(self):
+        with mock.patch.dict(os.environ, {"CL": "/DKEEP_ME"}, clear=True), \
+                mock.patch.object(builder.platform, "system", return_value="Windows"):
+            builder.configure_windows_legacy_compiler_flags("7.6.274")
+            builder.configure_windows_legacy_compiler_flags("7.6.274")
+            flags = os.environ["CL"].split()
+            self.assertEqual(
+                flags.count(builder.WINDOWS_LEGACY_STL_DEFINE), 1
+            )
+            self.assertIn("/DKEEP_ME", flags)
+
+    def test_modern_windows_v8_does_not_change_cl_flags(self):
+        with mock.patch.dict(os.environ, {"CL": "/DKEEP_ME"}, clear=True), \
+                mock.patch.object(builder.platform, "system", return_value="Windows"):
+            builder.configure_windows_legacy_compiler_flags("9.4.146.8")
+            self.assertEqual(os.environ["CL"], "/DKEEP_ME")
+
 
 if __name__ == "__main__":
     unittest.main()

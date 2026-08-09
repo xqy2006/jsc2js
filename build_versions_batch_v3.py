@@ -45,6 +45,8 @@ WINDOWS_TOOLCHAIN_ARGS_RE = re.compile(
     re.MULTILINE,
 )
 
+WINDOWS_LEGACY_STL_DEFINE = "/D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"
+
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
 
@@ -302,6 +304,29 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     )
 
 
+def configure_windows_legacy_compiler_flags(version: str):
+    """Allow historical clang-cl releases to consume the installed v142 STL."""
+    if not platform.system().lower().startswith("win"):
+        return
+    if int(version.split(".", 1)[0]) >= 9:
+        return
+
+    # clang-cl has honored the CL environment variable since before the oldest
+    # supported V8 release.  Passing the compatibility define this way avoids
+    # relying on a GN argument that does not exist in every historical Chromium
+    # build revision.
+    existing = os.environ.get("CL", "").strip()
+    flags = existing.split()
+    if WINDOWS_LEGACY_STL_DEFINE not in flags:
+        os.environ["CL"] = " ".join(
+            item for item in (WINDOWS_LEGACY_STL_DEFINE, existing) if item
+        )
+    log(
+        "Enabled the MSVC STL compatibility gate for the historical "
+        f"clang-cl used by V8 {version}"
+    )
+
+
 def windows_linker_arg(v8_root: Path) -> str:
     """Use current MSVC link.exe when an old bundled lld cannot read its CRT."""
     candidates = (
@@ -367,6 +392,7 @@ def main():
                 patch_gclient_hook_dispatch(hook_python)
             run("gclient runhooks", check=True)
             configure_windows_legacy_toolset(ver)
+            configure_windows_legacy_compiler_flags(ver)
 
             work_dir = Path("v8/out.gn/x64.release")
             if not keep_work_dir:

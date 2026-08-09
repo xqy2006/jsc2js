@@ -185,6 +185,14 @@ class LegacyHookPythonTest(unittest.TestCase):
             "  return args\n",
             encoding="utf-8",
         )
+        vs_toolchain = root / "v8/build/vs_toolchain.py"
+        vs_toolchain.write_text(
+            "MSVS_VERSIONS = {'2017': '15.0', '2019': '16.0'}\n\n"
+            "def GetVisualStudioVersion():\n"
+            "  \"\"\"Return the detected Visual Studio version.\"\"\"\n"
+            "  raise RuntimeError('host version was not recognized')\n",
+            encoding="utf-8",
+        )
         with mock.patch.dict(
             os.environ, {"GYP_MSVS_OVERRIDE_PATH": str(vs_root)}, clear=False
         ), mock.patch.object(
@@ -204,6 +212,9 @@ class LegacyHookPythonTest(unittest.TestCase):
         self.assertIn("JSC2JS_WINDOWS_SDK_VERSION", patched)
         self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
         self.assertNotIn("assert vc_lib_atlmfc_path", patched)
+        patched_vs_toolchain = vs_toolchain.read_text(encoding="utf-8")
+        self.assertIn("JSC2JS_HOSTED_VS_VERSION", patched_vs_toolchain)
+        self.assertIn("GYP_MSVS_VERSION", patched_vs_toolchain)
         legacy_vcvars = vs_root / "VC/vcvarsall.bat"
         self.assertTrue(legacy_vcvars.is_file())
         self.assertIn("Auxiliary\\Build", legacy_vcvars.read_text())
@@ -295,6 +306,50 @@ def locate_um_lib():
                 exec(patched, namespace)
                 actual = namespace["locate_um_lib"]()
             self.assertEqual(actual, str(expected.resolve()))
+
+    def test_selected_vs_year_bridges_newer_host_detection(self):
+        original = """MSVS_VERSIONS = {'2017': '15.0', '2019': '16.0'}
+
+def GetVisualStudioVersion():
+  \"\"\"Return the best detected Visual Studio version.\"\"\"
+  raise RuntimeError('VS 2022 is not in the historical table')
+"""
+        patched = builder.patch_windows_vs_toolchain_source(original)
+        namespace = {"os": os}
+        with mock.patch.dict(
+            os.environ, {"GYP_MSVS_VERSION": "2019"}, clear=True
+        ):
+            exec(patched, namespace)
+            self.assertEqual(namespace["GetVisualStudioVersion"](), "2019")
+        self.assertEqual(
+            namespace["GetVisualStudioVersion"].__doc__,
+            "Return the best detected Visual Studio version.",
+        )
+        self.assertEqual(patched.count("JSC2JS_HOSTED_VS_VERSION"), 1)
+        self.assertEqual(builder.patch_windows_vs_toolchain_source(patched), patched)
+
+    def test_existing_vs_year_environment_support_is_unchanged(self):
+        original = """def GetVisualStudioVersion():
+  return os.environ.get('GYP_MSVS_VERSION', '2019')
+"""
+        self.assertEqual(builder.patch_windows_vs_toolchain_source(original), original)
+
+    def test_vs_year_bridge_preserves_a_body_without_a_docstring(self):
+        original = """MSVS_VERSIONS = {'2019': '16.0'}
+
+def GetVisualStudioVersion():
+  raise RuntimeError('host generation is unsupported')
+"""
+        patched = builder.patch_windows_vs_toolchain_source(original)
+        namespace = {"os": os}
+        with mock.patch.dict(
+            os.environ, {"GYP_MSVS_VERSION": "2019"}, clear=True
+        ):
+            exec(patched, namespace)
+            self.assertEqual(namespace["GetVisualStudioVersion"](), "2019")
+        self.assertIn(
+            "  raise RuntimeError('host generation is unsupported')", patched
+        )
 
     def test_v8_52_linux_uses_hosted_clang_without_wheezy_sysroot(self):
         with tempfile.TemporaryDirectory() as directory:

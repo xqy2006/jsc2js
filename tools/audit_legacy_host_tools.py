@@ -29,8 +29,11 @@ from build_versions_batch_v3 import (  # noqa: E402
     WINDOWS_TOOLCHAIN_ARGS_RE,
     WINDOWS_TOOLCHAIN_ENV_RE,
     WINDOWS_UM_LIB_MARKER,
+    WINDOWS_VS_VERSION_FUNCTION_RE,
+    WINDOWS_VS_VERSION_MARKER,
     WINDOWS_VCVARS_MARKER,
     patch_windows_setup_toolchain_source,
+    patch_windows_vs_toolchain_source,
     uses_in_tree_gyp,
     windows_compatibility_year,
     windows_legacy_toolset_spec,
@@ -228,6 +231,58 @@ def audit_setup_toolchain_patch(source: str) -> dict:
         }
 
 
+def audit_vs_toolchain_patch(source: str, selected_year: str) -> dict:
+    """Replay the hosted VS-version bridge against one exact build helper."""
+    function = WINDOWS_VS_VERSION_FUNCTION_RE.search(source)
+    bridge_required = bool(function and "GYP_MSVS_VERSION" not in function.group(0))
+    try:
+        patched = patch_windows_vs_toolchain_source(source)
+        idempotent = patch_windows_vs_toolchain_source(patched) == patched
+        try:
+            list(tokenize.generate_tokens(io.StringIO(patched).readline))
+            tokenizable = True
+            token_error = ""
+        except (IndentationError, SyntaxError, tokenize.TokenError) as error:
+            tokenizable = False
+            token_error = f"{type(error).__name__}: {error}"
+
+        patched_lines = iter(patched.splitlines())
+        original_lines_preserved = all(
+            any(candidate == line for candidate in patched_lines)
+            for line in source.splitlines()
+        )
+        checks = {
+            "selected_year_supported": selected_year
+            in extract_vs_toolchain_years(source),
+            "bridge_marker_expected": patched.count(WINDOWS_VS_VERSION_MARKER)
+            == (1 if bridge_required else 0),
+            "bridge_logic_complete": (
+                not bridge_required
+                or (
+                    "os.environ.get('GYP_MSVS_VERSION')" in patched
+                    and "jsc2js_msvs_version in MSVS_VERSIONS" in patched
+                    and "return jsc2js_msvs_version" in patched
+                )
+            ),
+            "original_lines_preserved": original_lines_preserved,
+            "idempotent": idempotent,
+            "tokenizable": tokenizable,
+        }
+        return {
+            "supported": all(checks.values()),
+            "bridge_required": bridge_required,
+            "checks": checks,
+            "error": token_error,
+        }
+    except RuntimeError as error:
+        return {
+            "supported": False,
+            "bridge_required": bridge_required,
+            "checks": {},
+            "error": str(error),
+        }
+
+
 def classify_linux_host_mode(version: str, deps: str) -> str:
     """Describe how CI supplies a usable compiler/sysroot for this tag."""
     if uses_in_tree_gyp(version):
@@ -358,6 +413,17 @@ def classify_version(
         warning_policy_arg_present = bool(warning_policy_location)
         vs_toolchain_years = extract_vs_toolchain_years(vs_toolchain)
         vs_year_compatible = selected_vs_year in vs_toolchain_years
+        vs_bridge_active = bool(toolset_spec)
+        vs_bridge_audit = (
+            audit_vs_toolchain_patch(vs_toolchain, selected_vs_year)
+            if vs_bridge_active
+            else {
+                "supported": True,
+                "bridge_required": False,
+                "checks": {},
+                "error": "",
+            }
+        )
         v52_hosted_linker_checks = {}
         if version.startswith("5.2."):
             gcc_toolchain = build_cache.get(revision, GCC_TOOLCHAIN_PATH)
@@ -383,6 +449,7 @@ def classify_version(
             windows_compatible
             and setup_patch_audit["supported"]
             and vs_year_compatible
+            and vs_bridge_audit["supported"]
             and clang_vs_year_compatible
             and clang_toolset_compatible
             and all(v52_hosted_linker_checks.values())
@@ -404,6 +471,13 @@ def classify_version(
             "selected_vs_year": selected_vs_year,
             "vs_toolchain_years": vs_toolchain_years,
             "vs_year_compatible": vs_year_compatible,
+            "vs_version_bridge_active": vs_bridge_active,
+            "vs_version_bridge_required": bool(
+                vs_bridge_active and vs_bridge_audit["bridge_required"]
+            ),
+            "vs_version_bridge_supported": vs_bridge_audit["supported"],
+            "vs_version_bridge_checks": vs_bridge_audit["checks"],
+            "vs_version_bridge_error": vs_bridge_audit["error"],
             "clang_revision": clang_revision,
             "clang_release_version": clang_release_version,
             "clang_dia_dll_years": clang_dia_dll_years,
@@ -465,6 +539,16 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         "Historical-toolset tags that actively receive that fallback: "
         f"**{summary['setup_patch_um_lib_fallback_active_tags']}**",
+        "",
+        "Historical-toolset tags replaying the VS-version bridge: "
+        f"**{summary['vs_version_bridge_replay_tags']}**",
+        "",
+        "Exact tags that require the VS-version bridge on a VS 2022 host: "
+        f"**{summary['vs_version_bridge_required_tags']}**",
+        "",
+        "Bridge-required tags whose pinned clang hook consumes the logical "
+        "year for keyed DIA lookup: "
+        f"**{summary['vs_version_bridge_keyed_dia_tags']}**",
         "",
         "Pinned clang releases recorded: "
         + ", ".join(
@@ -545,7 +629,12 @@ def write_markdown(path: Path, payload: dict) -> None:
             "guards against an assertion edit consuming unrelated code. Active "
             "historical-toolset templates that export `vc_lib_um_path` also "
             "receive a checked fallback to the installed SDK's "
-            "`Lib/<version>/um/<arch>` directory if vcvars omits it.",
+            "`Lib/<version>/um/<arch>` directory if vcvars omits it. The exact "
+            "`vs_toolchain.py` helper is separately replayed so revisions that "
+            "stopped honoring `GYP_MSVS_VERSION` still expose the selected "
+            "logical VS2017/2019 generation on the VS 2022 runner. Where the "
+            "exact pinned clang hook performs a keyed DIA lookup, the same "
+            "logical year is verified against that hook's table.",
             "Every external-GN tag is also checked against its exact Chromium "
             "compiler configuration before CI disables warnings-as-errors on "
             "Windows. This keeps modern hosted MSVC diagnostics from becoming "
@@ -703,6 +792,20 @@ def main() -> int:
             ),
             "setup_patch_um_lib_fallback_active_tags": sum(
                 bool(result.get("setup_toolchain_um_lib_fallback_active"))
+                for result in results
+            ),
+            "vs_version_bridge_replay_tags": sum(
+                bool(result.get("vs_version_bridge_active"))
+                and bool(result.get("vs_version_bridge_supported"))
+                for result in results
+            ),
+            "vs_version_bridge_required_tags": sum(
+                bool(result.get("vs_version_bridge_required"))
+                for result in results
+            ),
+            "vs_version_bridge_keyed_dia_tags": sum(
+                bool(result.get("vs_version_bridge_required"))
+                and bool(result.get("clang_keyed_dia_dll"))
                 for result in results
             ),
             "toolset_counts": {

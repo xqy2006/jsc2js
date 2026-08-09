@@ -58,10 +58,19 @@ WINDOWS_UM_LIB_OUTPUT_RE = re.compile(
     r"print(?:[ \t]*\(|[ \t]+)['\"]vc_lib_um_path))",
     re.MULTILINE,
 )
+WINDOWS_VS_VERSION_FUNCTION_RE = re.compile(
+    r"(?ms)^def GetVisualStudioVersion\(\):.*?(?=^def |\Z)"
+)
+WINDOWS_VS_VERSION_HEADER_RE = re.compile(
+    r"^(?P<header>def GetVisualStudioVersion\(\):[^\r\n]*\r?\n)"
+    r"(?P<body_indent>[ \t]+)(?=\S)",
+    re.MULTILINE,
+)
 WINDOWS_VCVARS_MARKER = "# JSC2JS_LEGACY_VCVARS_VERSION"
 WINDOWS_SDK_MARKER = "# JSC2JS_INSTALLED_WINDOWS_SDK"
 WINDOWS_ATLMFC_MARKER = "# JSC2JS_OPTIONAL_ATLMFC"
 WINDOWS_UM_LIB_MARKER = "# JSC2JS_INSTALLED_SDK_UM_LIB"
+WINDOWS_VS_VERSION_MARKER = "# JSC2JS_HOSTED_VS_VERSION"
 
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
@@ -616,6 +625,67 @@ def patch_windows_setup_toolchain_source(source: str) -> str:
     return source
 
 
+def patch_windows_vs_toolchain_source(source: str) -> str:
+    """Make a selected historical VS year visible on a VS 2022 host."""
+    function = WINDOWS_VS_VERSION_FUNCTION_RE.search(source)
+    if not function:
+        raise RuntimeError("Unsupported vs_toolchain.py Visual Studio version layout")
+    if (
+        WINDOWS_VS_VERSION_MARKER in source
+        or "GYP_MSVS_VERSION" in function.group(0)
+    ):
+        return source
+    if "MSVS_VERSIONS" not in source:
+        raise RuntimeError("Unsupported vs_toolchain.py Visual Studio version table")
+
+    header = WINDOWS_VS_VERSION_HEADER_RE.search(source, function.start(), function.end())
+    if not header:
+        raise RuntimeError("Unsupported vs_toolchain.py function indentation")
+    body_indent = header.group("body_indent")
+    newline = "\r\n" if "\r\n" in header.group("header") else "\n"
+    body_start = header.start("body_indent")
+    body_content_start = header.end()
+    insert_at = body_start
+
+    # Keep the function docstring as its first statement. Exact historical
+    # templates use either a one-line or a body-indented multi-line docstring.
+    quote_match = re.match(
+        r"(?P<quote>'''|\"\"\")", source[body_content_start:]
+    )
+    if quote_match:
+        quote = quote_match.group("quote")
+        first_line_end = source.find("\n", body_content_start)
+        if first_line_end < 0:
+            first_line_end = len(source)
+        first_line = source[body_content_start:first_line_end]
+        if quote in first_line[len(quote) :]:
+            insert_at = min(first_line_end + 1, len(source))
+        else:
+            closing = re.search(
+                rf"(?m)^{re.escape(body_indent)}{re.escape(quote)}[ \t]*\r?$",
+                source[first_line_end + 1 : function.end()],
+            )
+            if not closing:
+                raise RuntimeError("Unsupported vs_toolchain.py function docstring")
+            closing_end = first_line_end + 1 + closing.end()
+            if source.startswith("\r\n", closing_end):
+                insert_at = closing_end + 2
+            elif source.startswith("\n", closing_end):
+                insert_at = closing_end + 1
+            else:
+                insert_at = closing_end
+
+    nested_indent = body_indent + ("\t" if "\t" in body_indent else "  ")
+    injection = (
+        f"{body_indent}{WINDOWS_VS_VERSION_MARKER}{newline}"
+        f"{body_indent}jsc2js_msvs_version = "
+        f"os.environ.get('GYP_MSVS_VERSION'){newline}"
+        f"{body_indent}if jsc2js_msvs_version in MSVS_VERSIONS:{newline}"
+        f"{nested_indent}return jsc2js_msvs_version{newline}"
+    )
+    return source[:insert_at] + injection + source[insert_at:]
+
+
 def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     """Select the installed MSVC headers compatible with historical clang-cl."""
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
@@ -639,6 +709,14 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
         raise RuntimeError(f"MSVC {toolset_name} was not found under {toolsets_root}")
     vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
     provide_legacy_vcvars_entry_point(vs_root)
+
+    vs_toolchain = v8_root / "build/vs_toolchain.py"
+    if not vs_toolchain.is_file():
+        raise RuntimeError(f"Missing Windows VS toolchain helper: {vs_toolchain}")
+    vs_source = vs_toolchain.read_text(encoding="utf-8")
+    patched_vs_source = patch_windows_vs_toolchain_source(vs_source)
+    if patched_vs_source != vs_source:
+        vs_toolchain.write_text(patched_vs_source, encoding="utf-8")
 
     setup_toolchain = v8_root / "build/toolchain/win/setup_toolchain.py"
     if not setup_toolchain.is_file():

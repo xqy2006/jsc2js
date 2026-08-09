@@ -120,7 +120,14 @@ printed at most once.
   unrelated setup code. There are 215 exact templates with a `vc_lib_um_path`
   fallback anchor, of which the 208 historical-toolset tags actively receive a
   checked `Lib/<version>/um/<arch>` fallback when vcvars does not report a UM
-  directory and `User32.Lib` exists there.
+  directory and `User32.Lib` exists there. The exact `vs_toolchain.py` transform
+  is also replayed for all 228 external-GN historical-toolset tags. In 133 tags,
+  beginning at V8 8.1.197, the Chromium helper no longer reads
+  `GYP_MSVS_VERSION`; those templates receive an insertion-only bridge so their
+  build helper sees logical VS2017/2019 while CI runs on VS 2022. In 25 of those
+  tags (V8 8.1.197 through 8.4.191), the exact pinned clang hook consumes that
+  logical year for a keyed DIA DLL lookup. Every replay is tokenized,
+  idempotent, and required to preserve all original lines in order.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

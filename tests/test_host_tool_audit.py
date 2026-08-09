@@ -3,6 +3,7 @@ import unittest
 from tools.audit_legacy_host_tools import (
     LEGACY_VCVARS_PATH_RE,
     audit_setup_toolchain_patch,
+    audit_vs_toolchain_patch,
     clang_supports_selected_toolset,
     classify_linux_host_mode,
     classify_object_print_gn_arg,
@@ -85,6 +86,22 @@ class HostToolAuditTest(unittest.TestCase):
         self.assertEqual(extract_dia_dll_years(clang_update), ["2015", "2017"])
         self.assertTrue(clang_hook_uses_keyed_dia_dll(clang_update))
         self.assertFalse(clang_hook_uses_keyed_dia_dll("dia_dll = GetDiaPath()"))
+
+    def test_replays_the_hosted_vs_version_bridge(self):
+        source = """MSVS_VERSIONS = {
+  '2017': '15.0',
+  '2019': '16.0',
+}
+
+def GetVisualStudioVersion():
+  \"\"\"Return the best detected version.\"\"\"
+  raise RuntimeError('host generation is unsupported')
+"""
+        result = audit_vs_toolchain_patch(source, "2019")
+        self.assertTrue(result["supported"], result)
+        self.assertTrue(result["bridge_required"])
+        self.assertTrue(result["checks"]["original_lines_preserved"])
+        self.assertTrue(result["checks"]["tokenizable"])
 
     def test_normalizes_vcvars_argument_template(self):
         self.assertEqual(

@@ -3,6 +3,7 @@ import unittest
 from tools.audit_legacy_host_tools import (
     LEGACY_VCVARS_PATH_RE,
     classify_linux_host_mode,
+    classify_object_print_gn_arg,
     extract_build_revision,
     normalize_template,
 )
@@ -54,6 +55,17 @@ class HostToolAuditTest(unittest.TestCase):
                 "'Build', 'vcvarsall.bat')"
             )
         )
+
+    def test_classifies_both_object_print_gn_argument_names(self):
+        self.assertEqual(
+            classify_object_print_gn_arg('v8_object_print = ""\n'),
+            "v8_object_print",
+        )
+        self.assertEqual(
+            classify_object_print_gn_arg("", "v8_enable_object_print = false\n"),
+            "v8_enable_object_print",
+        )
+        self.assertEqual(classify_object_print_gn_arg("other = false\n"), "")
 
 
 if __name__ == "__main__":

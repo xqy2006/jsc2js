@@ -10,6 +10,8 @@ CI legacy `VC/vcvarsall.bat` bridge tags: **231**
 
 Linux host modes: `hosted-clang-in-tree-gyp` **3**, `hosted-clang-without-sysroot-hook` **1**, `pinned-clang-with-sysroot-hook` **365**
 
+Object-print build arguments: `gyp:v8_object_print` **3**, `v8_enable_object_print` **357**, `v8_object_print` **9**
+
 | Template | First V8 | Last V8 | Tags | Toolsets |
 |---|---:|---:|---:|---|
 | `in-tree GYP/Ninja with imported vcvarsall environment` | 5.1.281.47 | 5.1.281.65 | 3 | v142 |

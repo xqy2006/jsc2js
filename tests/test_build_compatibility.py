@@ -201,7 +201,7 @@ class LegacyHookPythonTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             build_gn = root / "BUILD.gn"
-            build_gn.write_text("declare_args() {\n  v8_object_print = false\n}\n")
+            build_gn.write_text('declare_args() {\n  v8_object_print = ""\n}\n')
             self.assertEqual(
                 builder.object_print_gn_arg(root), "v8_object_print = true\n"
             )

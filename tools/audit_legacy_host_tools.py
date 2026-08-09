@@ -110,6 +110,16 @@ def classify_linux_host_mode(version: str, deps: str) -> str:
     return "pinned-clang-without-v8-sysroot-hook"
 
 
+def classify_object_print_gn_arg(build_gn: str, v8_gni: str = "") -> str:
+    """Return the exact GN object-print argument exposed by a V8 checkout."""
+    sources = f"{build_gn}\n{v8_gni}"
+    if re.search(r"(?m)^\s*v8_object_print\s*=", sources):
+        return "v8_object_print"
+    if "v8_enable_object_print" in sources:
+        return "v8_enable_object_print"
+    return ""
+
+
 def classify_version(
     v8_cache: RawSourceCache, build_cache: BuildSourceCache, version: str
 ) -> dict:
@@ -157,15 +167,25 @@ def classify_version(
                 "installed_sdk_injection_supported": checks["sdk_environment"],
                 "linux_host_mode": linux_host_mode,
                 "v8_deps_has_sysroot_hook": deps_has_sysroot_hook,
+                "object_print_build_arg": "gyp:v8_object_print",
                 "in_tree_gyp_checks": checks,
             }
         revision = extract_build_revision(deps)
         setup = build_cache.get(revision, BUILD_PATH)
+        build_gn = v8_cache.get(version, "BUILD.gn") or ""
+        v8_gni = v8_cache.get(version, "gni/v8.gni") or ""
+        object_print_arg = classify_object_print_gn_arg(build_gn, v8_gni)
+        disassembler_arg_present = "v8_enable_disassembler" in (
+            build_gn + "\n" + v8_gni
+        )
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
         environment_matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
         legacy_vcvars_reference = bool(LEGACY_VCVARS_PATH_RE.search(setup))
-        compatible = len(matches) == 1 and len(environment_matches) == 1
+        windows_compatible = len(matches) == 1 and len(environment_matches) == 1
+        compatible = (
+            windows_compatible and bool(object_print_arg) and disassembler_arg_present
+        )
         status = "ok" if compatible else "incompatible"
         return {
             "version": version,
@@ -181,10 +201,12 @@ def classify_version(
             "legacy_vcvars_entry_point_provided": bool(
                 toolset_spec and legacy_vcvars_reference
             ),
-            "toolset_injection_supported": compatible,
+            "toolset_injection_supported": windows_compatible,
             "installed_sdk_injection_supported": len(environment_matches) == 1,
             "linux_host_mode": linux_host_mode,
             "v8_deps_has_sysroot_hook": deps_has_sysroot_hook,
+            "object_print_build_arg": object_print_arg,
+            "disassembler_build_arg_present": disassembler_arg_present,
         }
     except Exception as error:
         return {"version": version, "status": "fetch-error", "error": str(error)}
@@ -208,6 +230,12 @@ def write_markdown(path: Path, payload: dict) -> None:
         + ", ".join(
             f"`{mode}` **{count}**"
             for mode, count in summary["linux_host_modes"].items()
+        ),
+        "",
+        "Object-print build arguments: "
+        + ", ".join(
+            f"`{name}` **{count}**"
+            for name, count in summary["object_print_build_args"].items()
         ),
         "",
         "| Template | First V8 | Last V8 | Tags | Toolsets |",
@@ -338,6 +366,19 @@ def main() -> int:
                         result.get("linux_host_mode")
                         for result in results
                         if result.get("linux_host_mode")
+                    }
+                )
+            },
+            "object_print_build_args": {
+                name: sum(
+                    result.get("object_print_build_arg") == name
+                    for result in results
+                )
+                for name in sorted(
+                    {
+                        result.get("object_print_build_arg")
+                        for result in results
+                        if result.get("object_print_build_arg")
                     }
                 )
             },

@@ -98,9 +98,12 @@ printed at most once.
   change for each tag across 14 patch templates, and no deserializer file
   changes.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
-  six Windows generator/toolchain templates, and an exact per-tag toolset selection
-  (72 v141, 159 v142, 138 current); all templates are recognized
-  before CI starts.
+  six Windows generator/toolchain templates, 231 historical-toolset tags with
+  a forwarded legacy vcvars entry point, and an exact per-tag toolset selection
+  (72 v141, 159 v142, 138 current). The Linux audit records three in-tree GYP
+  tags, the single pre-sysroot-hook V8 5.2 tag, and 365 sysroot-hook tags. It
+  also verifies the exact object-print argument name (3 GYP, 9 legacy GN, 357
+  current GN); all templates are recognized before CI starts.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

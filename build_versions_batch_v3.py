@@ -358,7 +358,7 @@ def object_print_gn_arg(v8_root: Path = Path("v8")) -> str:
     if not build_gn.is_file():
         raise RuntimeError(f"V8 BUILD.gn is missing: {build_gn}")
     source = build_gn.read_text(encoding="utf-8", errors="replace")
-    if re.search(r"(?m)^\s*v8_object_print\s*=\s*(?:true|false)\s*$", source):
+    if re.search(r"(?m)^\s*v8_object_print\s*=", source):
         return "v8_object_print = true\n"
     return "v8_enable_object_print = true\n"
 

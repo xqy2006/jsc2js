@@ -26,6 +26,11 @@
       "hosted-clang-in-tree-gyp": 3,
       "hosted-clang-without-sysroot-hook": 1,
       "pinned-clang-with-sysroot-hook": 365
+    },
+    "object_print_build_args": {
+      "gyp:v8_object_print": 3,
+      "v8_enable_object_print": 357,
+      "v8_object_print": 9
     }
   },
   "families": [
@@ -95,6 +100,7 @@
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "hosted-clang-in-tree-gyp",
       "v8_deps_has_sysroot_hook": false,
+      "object_print_build_arg": "gyp:v8_object_print",
       "in_tree_gyp_checks": {
         "ninja_generator": true,
         "gyp_defines": true,
@@ -121,6 +127,7 @@
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "hosted-clang-in-tree-gyp",
       "v8_deps_has_sysroot_hook": false,
+      "object_print_build_arg": "gyp:v8_object_print",
       "in_tree_gyp_checks": {
         "ninja_generator": true,
         "gyp_defines": true,
@@ -147,6 +154,7 @@
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "hosted-clang-in-tree-gyp",
       "v8_deps_has_sysroot_hook": false,
+      "object_print_build_arg": "gyp:v8_object_print",
       "in_tree_gyp_checks": {
         "ninja_generator": true,
         "gyp_defines": true,
@@ -172,7 +180,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "hosted-clang-without-sysroot-hook",
-      "v8_deps_has_sysroot_hook": false
+      "v8_deps_has_sysroot_hook": false,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.3.332.37",
@@ -189,7 +199,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.3.332.45",
@@ -206,7 +218,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.3.332.47",
@@ -223,7 +237,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.4.500.31",
@@ -240,7 +256,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.4.500.36",
@@ -257,7 +275,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.4.500.43",
@@ -274,7 +294,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.5.372.40",
@@ -291,7 +313,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.6.326.50",
@@ -308,7 +332,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.8.283.38",
@@ -325,7 +351,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "5.9.211.38",
@@ -342,7 +370,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.0.286.52",
@@ -359,7 +389,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.1.534.41",
@@ -376,7 +408,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.1.534.42",
@@ -393,7 +427,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.2.414.32",
@@ -410,7 +446,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.2.414.44",
@@ -427,7 +465,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.2.414.46",
@@ -444,7 +484,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.6.346.24",
@@ -461,7 +503,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.6.346.27",
@@ -478,7 +522,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.6.346.32",
@@ -495,7 +541,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.7.288.43",
@@ -512,7 +560,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.7.288.45",
@@ -529,7 +579,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.7.288.46",
@@ -546,7 +598,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.7.288.49",
@@ -563,7 +617,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.8.275.24",
@@ -580,7 +636,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.8.275.30",
@@ -597,7 +655,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.8.275.32",
@@ -614,7 +674,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.9.427.24",
@@ -631,7 +693,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "6.9.427.31",
@@ -648,7 +712,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.0.276.28",
@@ -665,7 +731,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.0.276.32",
@@ -682,7 +750,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.0.276.38",
@@ -699,7 +769,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.0.276.40",
@@ -716,7 +788,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.1.302.31",
@@ -733,7 +807,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.2.502.19",
@@ -750,7 +826,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.2.502.25",
@@ -767,7 +845,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.10",
@@ -784,7 +864,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.17",
@@ -801,7 +883,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.19",
@@ -818,7 +902,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.25",
@@ -835,7 +921,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.26",
@@ -852,7 +940,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.3.492.27",
@@ -869,7 +959,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.4.269",
@@ -886,7 +978,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.4.288.21",
@@ -903,7 +997,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.4.288.27",
@@ -920,7 +1016,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.5.288.22",
@@ -937,7 +1035,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.1",
@@ -954,7 +1054,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.81",
@@ -971,7 +1073,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.82",
@@ -988,7 +1092,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.274",
@@ -1005,7 +1111,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.293",
@@ -1022,7 +1130,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.2",
@@ -1039,7 +1149,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.4",
@@ -1056,7 +1168,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.5",
@@ -1073,7 +1187,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.7",
@@ -1090,7 +1206,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.8",
@@ -1107,7 +1225,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.18",
@@ -1124,7 +1244,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.19",
@@ -1141,7 +1263,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.22",
@@ -1158,7 +1282,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.27",
@@ -1175,7 +1301,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.29",
@@ -1192,7 +1320,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.30",
@@ -1209,7 +1339,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.6.303.31",
@@ -1226,7 +1358,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.1",
@@ -1243,7 +1377,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.13",
@@ -1260,7 +1396,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.179",
@@ -1277,7 +1415,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.192",
@@ -1294,7 +1434,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.299",
@@ -1311,7 +1453,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.299.11",
@@ -1328,7 +1472,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.7.299.13",
@@ -1345,7 +1491,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.36",
@@ -1362,7 +1510,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.77",
@@ -1379,7 +1529,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.180",
@@ -1396,7 +1548,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.212.1",
@@ -1413,7 +1567,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.279",
@@ -1430,7 +1586,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.279.17",
@@ -1447,7 +1605,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.279.19",
@@ -1464,7 +1624,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.8.279.23",
@@ -1481,7 +1643,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.9.53",
@@ -1498,7 +1662,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.9.74",
@@ -1515,7 +1681,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.9.187",
@@ -1532,7 +1700,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.9.317.23",
@@ -1549,7 +1719,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "7.9.317.25",
@@ -1566,7 +1738,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.76",
@@ -1583,7 +1757,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.111",
@@ -1600,7 +1776,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.113",
@@ -1617,7 +1795,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.8",
@@ -1634,7 +1814,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.12",
@@ -1651,7 +1833,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.14",
@@ -1668,7 +1852,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.15",
@@ -1685,7 +1871,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.16",
@@ -1702,7 +1890,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.26",
@@ -1719,7 +1909,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.27",
@@ -1736,7 +1928,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.0.426.30",
@@ -1753,7 +1947,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.1.18",
@@ -1770,7 +1966,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.1.197",
@@ -1787,7 +1985,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.1.307.30",
@@ -1804,7 +2004,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.1.307.31",
@@ -1821,7 +2023,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.1",
@@ -1838,7 +2042,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.8",
@@ -1855,7 +2061,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.72",
@@ -1872,7 +2080,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.223",
@@ -1889,7 +2099,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.281",
@@ -1906,7 +2118,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.297",
@@ -1923,7 +2137,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.297.1",
@@ -1940,7 +2156,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.2.297.3",
@@ -1957,7 +2175,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.62",
@@ -1974,7 +2194,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.4",
@@ -1991,7 +2213,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.5",
@@ -2008,7 +2232,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.7",
@@ -2025,7 +2251,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.8",
@@ -2042,7 +2270,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.9",
@@ -2059,7 +2289,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.12",
@@ -2076,7 +2308,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.110.13",
@@ -2093,7 +2327,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.3.122",
@@ -2110,7 +2346,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.50",
@@ -2127,7 +2365,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.55",
@@ -2144,7 +2384,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.138",
@@ -2161,7 +2403,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.166",
@@ -2178,7 +2422,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.191",
@@ -2195,7 +2441,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.371.19",
@@ -2212,7 +2460,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.4.371.23",
@@ -2229,7 +2479,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.34",
@@ -2246,7 +2498,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.73",
@@ -2263,7 +2517,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.74",
@@ -2280,7 +2536,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.189",
@@ -2297,7 +2555,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.200",
@@ -2314,7 +2574,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.8",
@@ -2331,7 +2593,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.11",
@@ -2348,7 +2612,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.15",
@@ -2365,7 +2631,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.19",
@@ -2382,7 +2650,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.20",
@@ -2399,7 +2669,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.5.210.26",
@@ -2416,7 +2688,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.6.125",
@@ -2433,7 +2707,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.6.198",
@@ -2450,7 +2726,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.6.373",
@@ -2467,7 +2745,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.6.395.16",
@@ -2484,7 +2764,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.6.395.17",
@@ -2501,7 +2783,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.37",
@@ -2518,7 +2802,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.135",
@@ -2535,7 +2821,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220",
@@ -2552,7 +2840,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.8",
@@ -2569,7 +2859,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.10",
@@ -2586,7 +2878,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.14",
@@ -2603,7 +2897,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.23",
@@ -2620,7 +2916,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.25",
@@ -2637,7 +2935,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.29",
@@ -2654,7 +2954,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.7.220.31",
@@ -2671,7 +2973,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.8.74",
@@ -2688,7 +2992,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.8.186",
@@ -2705,7 +3011,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.8.278",
@@ -2722,7 +3030,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.100",
@@ -2739,7 +3049,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.163",
@@ -2756,7 +3068,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.231",
@@ -2773,7 +3087,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.9",
@@ -2790,7 +3106,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.18",
@@ -2807,7 +3125,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.19",
@@ -2824,7 +3144,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.20",
@@ -2841,7 +3163,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.24",
@@ -2858,7 +3182,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.255.25",
@@ -2875,7 +3201,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.270",
@@ -2892,7 +3220,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "8.9.273",
@@ -2909,7 +3239,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.0.85",
@@ -2926,7 +3258,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.0.161",
@@ -2943,7 +3277,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.0.257.17",
@@ -2960,7 +3296,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.0.257.24",
@@ -2977,7 +3315,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.0.257.25",
@@ -2994,7 +3334,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.127",
@@ -3011,7 +3353,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.19",
@@ -3028,7 +3372,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.23",
@@ -3045,7 +3391,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.28",
@@ -3062,7 +3410,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.36",
@@ -3079,7 +3429,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.38",
@@ -3096,7 +3448,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.39",
@@ -3113,7 +3467,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.1.269.40",
@@ -3130,7 +3486,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.2",
@@ -3147,7 +3505,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.98",
@@ -3164,7 +3524,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.131",
@@ -3181,7 +3543,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.146",
@@ -3198,7 +3562,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.153",
@@ -3215,7 +3581,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.193",
@@ -3232,7 +3600,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.225",
@@ -3249,7 +3619,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.2.230.21",
@@ -3266,7 +3638,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.51",
@@ -3283,7 +3657,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.73",
@@ -3300,7 +3676,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.80",
@@ -3317,7 +3695,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.100",
@@ -3334,7 +3714,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.178",
@@ -3351,7 +3733,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.213",
@@ -3368,7 +3752,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.234",
@@ -3385,7 +3771,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.239",
@@ -3402,7 +3790,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.278",
@@ -3419,7 +3809,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.345.6",
@@ -3436,7 +3828,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.345.9",
@@ -3453,7 +3847,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.345.16",
@@ -3470,7 +3866,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.345.19",
@@ -3487,7 +3885,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.3.345.20",
@@ -3504,7 +3904,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.32",
@@ -3521,7 +3923,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.66",
@@ -3538,7 +3942,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.8",
@@ -3555,7 +3961,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.10",
@@ -3572,7 +3980,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.16",
@@ -3589,7 +3999,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.18",
@@ -3606,7 +4018,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.19",
@@ -3623,7 +4037,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.21",
@@ -3640,7 +4056,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.22",
@@ -3657,7 +4075,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.24",
@@ -3674,7 +4094,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.4.146.26",
@@ -3691,7 +4113,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.5.19",
@@ -3708,7 +4132,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.5.99",
@@ -3725,7 +4151,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.5.172.21",
@@ -3742,7 +4170,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.5.172.25",
@@ -3759,7 +4189,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.56",
@@ -3776,7 +4208,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.4",
@@ -3793,7 +4227,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.7",
@@ -3810,7 +4246,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.8",
@@ -3827,7 +4265,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.10",
@@ -3844,7 +4284,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.12",
@@ -3861,7 +4303,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.14",
@@ -3878,7 +4322,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.15",
@@ -3895,7 +4341,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.21",
@@ -3912,7 +4360,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.6.180.23",
@@ -3929,7 +4379,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.8.44",
@@ -3946,7 +4398,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.8.177.2",
@@ -3963,7 +4417,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.8.177.9",
@@ -3980,7 +4436,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.8.177.11",
@@ -3997,7 +4455,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.8.177.13",
@@ -4014,7 +4474,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "9.9.3",
@@ -4031,7 +4493,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139",
@@ -4048,7 +4512,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139.6",
@@ -4065,7 +4531,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139.8",
@@ -4082,7 +4550,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139.9",
@@ -4099,7 +4569,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139.15",
@@ -4116,7 +4588,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.0.139.17",
@@ -4133,7 +4607,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.1.124.8",
@@ -4150,7 +4626,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.9",
@@ -4167,7 +4645,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.18",
@@ -4184,7 +4664,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.23",
@@ -4201,7 +4683,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.82",
@@ -4218,7 +4702,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.127",
@@ -4235,7 +4721,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.3",
@@ -4252,7 +4740,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.4",
@@ -4269,7 +4759,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.8",
@@ -4286,7 +4778,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.10",
@@ -4303,7 +4797,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.13",
@@ -4320,7 +4816,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.15",
@@ -4337,7 +4835,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.23",
@@ -4354,7 +4854,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.2.154.26",
@@ -4371,7 +4873,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.3.125",
@@ -4388,7 +4892,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.27",
@@ -4405,7 +4911,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.16",
@@ -4422,7 +4930,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.19",
@@ -4439,7 +4949,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.20",
@@ -4456,7 +4968,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.22",
@@ -4473,7 +4987,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.23",
@@ -4490,7 +5006,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.4.132.24",
@@ -4507,7 +5025,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.5.29",
@@ -4524,7 +5044,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.5.151",
@@ -4541,7 +5063,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.5.196",
@@ -4558,7 +5082,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.82",
@@ -4575,7 +5101,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.10",
@@ -4592,7 +5120,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.11",
@@ -4609,7 +5139,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.12",
@@ -4626,7 +5158,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.17",
@@ -4643,7 +5177,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.18",
@@ -4660,7 +5196,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.21",
@@ -4677,7 +5215,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.23",
@@ -4694,7 +5234,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.6.194.26",
@@ -4711,7 +5253,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.7.75.1",
@@ -4728,7 +5272,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.7.122",
@@ -4745,7 +5291,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.7.193.13",
@@ -4762,7 +5310,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.7.193.20",
@@ -4779,7 +5329,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.79",
@@ -4796,7 +5348,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.156",
@@ -4813,7 +5367,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.4",
@@ -4830,7 +5386,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.11",
@@ -4847,7 +5405,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.16",
@@ -4864,7 +5424,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.20",
@@ -4881,7 +5443,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.21",
@@ -4898,7 +5462,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.22",
@@ -4915,7 +5481,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.8.168.25",
@@ -4932,7 +5500,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.9.79",
@@ -4949,7 +5519,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "10.9.194.1",
@@ -4966,7 +5538,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.133",
@@ -4983,7 +5557,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.219",
@@ -5000,7 +5576,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.9",
@@ -5017,7 +5595,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.10",
@@ -5034,7 +5614,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.13",
@@ -5051,7 +5633,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.16",
@@ -5068,7 +5652,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.19",
@@ -5085,7 +5671,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.0.226.20",
@@ -5102,7 +5690,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.1.111",
@@ -5119,7 +5709,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.1.269",
@@ -5136,7 +5728,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.1.277.13",
@@ -5153,7 +5747,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.5",
@@ -5170,7 +5766,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.7",
@@ -5187,7 +5785,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.9",
@@ -5204,7 +5804,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.14",
@@ -5221,7 +5823,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.19",
@@ -5238,7 +5842,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.2.214.22",
@@ -5255,7 +5861,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.97",
@@ -5272,7 +5880,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.158",
@@ -5289,7 +5899,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.169",
@@ -5306,7 +5918,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.202",
@@ -5323,7 +5937,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.203",
@@ -5340,7 +5956,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.214",
@@ -5357,7 +5975,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.225",
@@ -5374,7 +5994,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.243",
@@ -5391,7 +6013,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.244.4",
@@ -5408,7 +6032,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.3.244.8",
@@ -5425,7 +6051,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.28",
@@ -5442,7 +6070,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.47",
@@ -5459,7 +6089,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.55",
@@ -5476,7 +6108,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.73",
@@ -5493,7 +6127,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.75",
@@ -5510,7 +6146,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.94",
@@ -5527,7 +6165,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.117",
@@ -5544,7 +6184,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.4",
@@ -5561,7 +6203,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.8",
@@ -5578,7 +6222,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.14",
@@ -5595,7 +6241,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.19",
@@ -5612,7 +6260,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.23",
@@ -5629,7 +6279,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.25",
@@ -5646,7 +6298,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.27",
@@ -5663,7 +6317,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.4.183.29",
@@ -5680,7 +6336,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.5.75",
@@ -5697,7 +6355,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.5.138",
@@ -5714,7 +6374,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.5.150",
@@ -5731,7 +6393,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.69",
@@ -5748,7 +6412,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.120",
@@ -5765,7 +6431,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.136",
@@ -5782,7 +6450,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.149",
@@ -5799,7 +6469,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.2",
@@ -5816,7 +6488,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.6",
@@ -5833,7 +6507,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.11",
@@ -5850,7 +6526,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.12",
@@ -5867,7 +6545,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.15",
@@ -5884,7 +6564,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.18",
@@ -5901,7 +6583,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.20",
@@ -5918,7 +6602,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.6.189.22",
@@ -5935,7 +6621,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.20",
@@ -5952,7 +6640,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.153",
@@ -5969,7 +6659,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.203",
@@ -5986,7 +6678,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.228",
@@ -6003,7 +6697,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.300",
@@ -6020,7 +6716,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.7.349",
@@ -6037,7 +6735,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.29",
@@ -6054,7 +6754,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.171",
@@ -6071,7 +6773,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172",
@@ -6088,7 +6792,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.1",
@@ -6105,7 +6811,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.2",
@@ -6122,7 +6830,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.6",
@@ -6139,7 +6849,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.12",
@@ -6156,7 +6868,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.13",
@@ -6173,7 +6887,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.15",
@@ -6190,7 +6906,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.16",
@@ -6207,7 +6925,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.17",
@@ -6224,7 +6944,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.8.172.18",
@@ -6241,7 +6963,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.67",
@@ -6258,7 +6982,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.100",
@@ -6275,7 +7001,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.107",
@@ -6292,7 +7020,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.133",
@@ -6309,7 +7039,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.168",
@@ -6326,7 +7058,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.169",
@@ -6343,7 +7077,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.169.3",
@@ -6360,7 +7096,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     },
     {
       "version": "11.9.169.4",
@@ -6377,7 +7115,9 @@
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
       "linux_host_mode": "pinned-clang-with-sysroot-hook",
-      "v8_deps_has_sysroot_hook": true
+      "v8_deps_has_sysroot_hook": true,
+      "object_print_build_arg": "v8_enable_object_print",
+      "disassembler_build_arg_present": true
     }
   ]
 }

@@ -30,7 +30,6 @@ concurrency:
 env:
   V8_REPO: https://github.com/v8/v8.git
   VERSION: ${{ inputs.version }}
-  DEPOT_TOOLS_UPDATE: "0"
 
 jobs:
   build:
@@ -85,6 +84,7 @@ jobs:
           export PATH="$PWD/depot_tools:$PATH"
           python --version
           gclient --version
+          echo "DEPOT_TOOLS_UPDATE=0" >> "$GITHUB_ENV"
 
       - name: Prepare (Windows)
         if: runner.os == 'Windows'
@@ -99,6 +99,7 @@ jobs:
           "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
           gclient --version
+          "DEPOT_TOOLS_UPDATE=0"         | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Record Python 3 executable
         shell: bash

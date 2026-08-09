@@ -24,7 +24,6 @@ concurrency:
 env:
   V8_REPO: https://github.com/v8/v8.git
   SLOTS_PER_OS: "6"
-  DEPOT_TOOLS_UPDATE: "0"
 
 jobs:
   plan:
@@ -144,6 +143,7 @@ jobs:
           echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
           python3 --version
           gclient --version
+          echo "DEPOT_TOOLS_UPDATE=0" >> "$GITHUB_ENV"
 
       - name: Install Python 2 for historical Windows hooks
         if: runner.os == 'Windows' && steps.requirements.outputs.python2 == 'true'

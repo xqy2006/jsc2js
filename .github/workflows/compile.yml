@@ -71,6 +71,7 @@ jobs:
             mkdir -p "$RUNNER_TEMP/python2-shim"
             ln -sf /usr/bin/python2 "$RUNNER_TEMP/python2-shim/python"
             echo "$RUNNER_TEMP/python2-shim" >> "$GITHUB_PATH"
+            echo "JSC2JS_PYTHON2_DIR=$RUNNER_TEMP/python2-shim" >> "$GITHUB_ENV"
             export PATH="$RUNNER_TEMP/python2-shim:$PATH"
           fi
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -114,7 +115,9 @@ jobs:
             $python2 = "C:\Python27\python.exe"
           }
           if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
-          Split-Path $python2 -Parent | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $python2Dir = Split-Path $python2 -Parent
+          $python2Dir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "JSC2JS_PYTHON2_DIR=$python2Dir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           & $python2 --version
 
       - name: Map installed Visual Studio to the legacy toolchain name

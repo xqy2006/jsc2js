@@ -129,7 +129,57 @@ def configure_host_compatibility():
     )
     log(f"Preferring host libstdc++ for historical LLVM: {library_dir}")
 
+
+def configure_python_compatibility():
+    compat_dir = Path("tools/python_compat").resolve()
+    current = os.environ.get("PYTHONPATH", "")
+    os.environ["PYTHONPATH"] = (
+        str(compat_dir)
+        if not current
+        else str(compat_dir) + os.pathsep + current
+    )
+
+
+def activate_legacy_hook_python(version: str):
+    """Put Python 2 ahead of depot_tools only for V8 hooks that require it."""
+    if int(version.split(".", 1)[0]) >= 9:
+        return
+    python2_dir = os.environ.get("JSC2JS_PYTHON2_DIR", "")
+    if not python2_dir or not Path(python2_dir).is_dir():
+        raise RuntimeError(
+            f"V8 {version} requires JSC2JS_PYTHON2_DIR for its historical hooks"
+        )
+    os.environ["PATH"] = python2_dir + os.pathsep + os.environ.get("PATH", "")
+    resolved = shutil.which("python")
+    if not resolved:
+        raise RuntimeError("Python 2 shim did not provide a python command")
+    version_output = subprocess.check_output(
+        [resolved, "--version"], stderr=subprocess.STDOUT, text=True
+    ).strip()
+    if not version_output.startswith("Python 2.7"):
+        raise RuntimeError(
+            f"Historical V8 hooks resolved {resolved} as {version_output}, not Python 2.7"
+        )
+    log(f"Using {resolved} ({version_output}) for V8 {version} hooks")
+
+
+def windows_linker_arg(v8_root: Path) -> str:
+    """Use current MSVC link.exe when an old bundled lld cannot read its CRT."""
+    candidates = (
+        v8_root / "build/config/compiler/BUILD.gn",
+        v8_root / "build/config/compiler/compiler.gni",
+        v8_root / "build/toolchain/win/BUILD.gn",
+    )
+    if any(
+        path.is_file()
+        and "use_lld" in path.read_text(encoding="utf-8", errors="ignore")
+        for path in candidates
+    ):
+        return "use_lld = false\n"
+    return ""
+
 def main():
+    configure_python_compatibility()
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
     apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
     backup_base = Path(os.environ.get("BACKUP_BASE", "v8/out.gn/version_backups"))
@@ -173,6 +223,7 @@ def main():
             run(f"git -C v8 checkout --detach {ver}", check=True)
             # Sync + hooks
             run("gclient sync -D --no-history --nohooks", check=True)
+            activate_legacy_hook_python(ver)
             run("gclient runhooks", check=True)
 
             work_dir = Path("v8/out.gn/x64.release")
@@ -255,8 +306,10 @@ def main():
                 'target_cpu = "x64"\n'
                 "is_debug = false\n"
                 "is_component_build = false\n"
+                "symbol_level = 0\n"
                 "v8_enable_disassembler = true\n"
-                "v8_enable_object_print = true\n",
+                "v8_enable_object_print = true\n"
+                + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
                 encoding="utf-8",
                 newline="\n",
             )

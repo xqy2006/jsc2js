@@ -347,28 +347,19 @@ jobs:
             WIN_SNAP="${WIN_DIR}/snapshot_blob.bin"
 
             mkdir -p "public/$v"
-            NEW_ASSETS=()
-
-            if [ -f "$LIN_BIN" ] && [ -f "$LIN_SNAP" ]; then
-              tar_name="public/$v/d8-${v}-linux.tar.gz"
-              tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
-              NEW_ASSETS+=("$tar_name")
-            else
-              echo "Skip Linux package for $v (missing d8 or snapshot_blob.bin)."
-            fi
-
-            if [ -f "$WIN_BIN" ] && [ -f "$WIN_SNAP" ]; then
-              zip_name="public/$v/d8-${v}-windows.zip"
-              zip -j -9 "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
-              NEW_ASSETS+=("$zip_name")
-            else
-              echo "Skip Windows package for $v (missing d8.exe or snapshot_blob.bin)."
-            fi
-
-            if [ ${#NEW_ASSETS[@]} -eq 0 ]; then
-              echo "No complete artifacts for $v, skipping release update."
+            if [ ! -f "$LIN_BIN" ] || [ ! -f "$LIN_SNAP" ] || \
+               [ ! -f "$WIN_BIN" ] || [ ! -f "$WIN_SNAP" ]; then
+              echo "Skip release $v: both Linux and Windows artifacts are required."
               continue
             fi
+            NEW_ASSETS=()
+
+            tar_name="public/$v/d8-${v}-linux.tar.gz"
+            tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
+            NEW_ASSETS+=("$tar_name")
+            zip_name="public/$v/d8-${v}-windows.zip"
+            zip -j -9 "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
+            NEW_ASSETS+=("$zip_name")
 
             notes="Patched d8 for V8 $v (includes d8 + snapshot_blob.bin)."
 

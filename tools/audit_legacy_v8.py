@@ -351,6 +351,21 @@ def family_summary(records: list[dict]) -> list[dict]:
 
 
 def write_markdown(path: Path, payload: dict) -> None:
+    scope = payload["scope"]
+    scope_note = (
+        "Scope: exact V8 tags shipped by Node.js or Electron with "
+        f"{scope['minimum']} <= V8 < {scope['maximum_exclusive']}."
+    )
+    if version_key(scope["maximum_exclusive"]) <= version_key("5.1.0"):
+        boundary_note = (
+            f"Compatibility result: all {payload['summary']['incompatible']} tags "
+            "lack the complete code-cache deserialization path required by jsc2js."
+        )
+    else:
+        boundary_note = (
+            "V8 5.1 is the supported lower boundary; the separate pre-5.1 audit "
+            "records why older tags are incompatible."
+        )
     lines = [
         "# Legacy V8 API audit",
         "",
@@ -358,9 +373,9 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         f"API families: **{payload['summary']['families']}**",
         "",
-        "Scope: exact V8 tags shipped by Node.js or Electron from V8 5.1 "
-        "inclusive through V8 11.9. Tags through V8 5.0 do not expose the "
-        "code-cache deserialization path required by jsc2js.",
+        scope_note,
+        "",
+        boundary_note,
         "",
         "| Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |",
         "|---|---:|---:|---|---|---|---|---|",

@@ -4,7 +4,9 @@ Exact tags audited: **369**
 
 API families: **17**
 
-Scope: exact V8 tags shipped by Node.js or Electron from V8 5.1 inclusive through V8 11.9. Tags through V8 5.0 do not expose the code-cache deserialization path required by jsc2js.
+Scope: exact V8 tags shipped by Node.js or Electron with 5.1.0 <= V8 < 12.0.0.
+
+V8 5.1 is the supported lower boundary; the separate pre-5.1 audit records why older tags are incompatible.
 
 | Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |
 |---|---:|---:|---|---|---|---|---|

@@ -153,7 +153,42 @@ def run_legacy_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
     return output
 
 
-def configure_host_compatibility():
+def discover_host_cpp_include_paths(include_root: Path = Path("/usr/include")):
+    """Return the installed GCC C++ include hierarchy for historical clang."""
+    try:
+        gcc_version = subprocess.check_output(
+            ["g++", "-dumpfullversion", "-dumpversion"], text=True
+        ).strip()
+        multiarch = subprocess.check_output(
+            ["g++", "-print-multiarch"], text=True
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return []
+
+    version_names = []
+    for candidate in (gcc_version, gcc_version.split(".", 1)[0]):
+        if candidate and candidate not in version_names:
+            version_names.append(candidate)
+    version_name = next(
+        (
+            candidate
+            for candidate in version_names
+            if (include_root / "c++" / candidate).is_dir()
+        ),
+        None,
+    )
+    if version_name is None:
+        return []
+
+    base = include_root / "c++" / version_name
+    candidates = [base]
+    if multiarch:
+        candidates.append(include_root / multiarch / "c++" / version_name)
+    candidates.append(base / "backward")
+    return [str(path.resolve()) for path in candidates if path.is_dir()]
+
+
+def configure_host_compatibility(include_cpp_headers: bool = False):
     """Make historical LLVM binaries usable on current Linux runners."""
     if not platform.system().lower().startswith("linux"):
         return
@@ -162,15 +197,27 @@ def configure_host_compatibility():
             ["g++", "-print-file-name=libstdc++.so.6"], text=True
         ).strip()
     except (OSError, subprocess.CalledProcessError):
-        return
-    if not system_libstdcpp or system_libstdcpp == "libstdc++.so.6":
-        return
-    library_dir = str(Path(system_libstdcpp).resolve().parent)
-    current = os.environ.get("LD_LIBRARY_PATH", "")
-    os.environ["LD_LIBRARY_PATH"] = (
-        library_dir if not current else library_dir + os.pathsep + current
-    )
-    log(f"Preferring host libstdc++ for historical LLVM: {library_dir}")
+        system_libstdcpp = ""
+    if system_libstdcpp and system_libstdcpp != "libstdc++.so.6":
+        library_dir = str(Path(system_libstdcpp).resolve().parent)
+        current = os.environ.get("LD_LIBRARY_PATH", "")
+        os.environ["LD_LIBRARY_PATH"] = (
+            library_dir if not current else library_dir + os.pathsep + current
+        )
+        log(f"Preferring host libstdc++ for historical LLVM: {library_dir}")
+
+    if include_cpp_headers:
+        include_paths = discover_host_cpp_include_paths()
+        if not include_paths:
+            raise RuntimeError("Could not locate the host GCC C++ include hierarchy")
+        current = os.environ.get("CPLUS_INCLUDE_PATH", "")
+        if current:
+            include_paths.append(current)
+        os.environ["CPLUS_INCLUDE_PATH"] = os.pathsep.join(include_paths)
+        log(
+            "Providing host GCC C++ headers to historical LLVM: "
+            + os.pathsep.join(include_paths)
+        )
 
 
 def configure_python_compatibility():
@@ -319,20 +366,25 @@ def activate_windows_vcvars(version: str):
     if not vcvars.is_file():
         raise RuntimeError(f"vcvarsall.bat was not found at {vcvars}")
     sdk_version = os.environ.get("JSC2JS_WINDOWS_SDK_VERSION", "")
-    sdk_option = f" -winsdk={sdk_version}" if sdk_version else ""
-    command = (
-        f'call "{vcvars}" amd64 -vcvars_ver={vcvars_version}'
-        f"{sdk_option} >nul && set"
-    )
+    # Let vcvarsall select its installed default SDK. Passing a current SDK
+    # through the historical -winsdk switch makes VS 2022's v142 setup fail
+    # before GYP starts, even though the SDK itself is usable by the build.
+    command = f'call "{vcvars}" x64 -vcvars_ver={vcvars_version} >nul && set'
     completed = subprocess.run(
-        ["cmd.exe", "/d", "/s", "/c", command],
-        check=True,
+        ["cmd.exe", "/d", "/c", command],
+        check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"vcvarsall failed with exit {completed.returncode}: "
+            f"stdout={completed.stdout[-2000:]!r} "
+            f"stderr={completed.stderr[-2000:]!r}"
+        )
     for line in completed.stdout.splitlines():
         if "=" not in line or line.startswith("="):
             continue
@@ -587,7 +639,7 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            configure_host_compatibility()
+            configure_host_compatibility(include_cpp_headers=in_tree_gyp)
             if in_tree_gyp:
                 # gclient runhooks generated this Ninja project before source
                 # patching; the patch does not alter the build graph.

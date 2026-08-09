@@ -75,7 +75,9 @@ View8 需要：
   反序列化器的同步与边界检查也完全不改。完整的逐版本审计见
   [`audit/legacy-v8-api.md`](audit/legacy-v8-api.md)；对应 Chromium build
   模板与 Windows 工具链审计见
-  [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)。Issue #23
+  [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)；369 个精确
+  tag 的 Linux/Windows 双平台构建结果见
+  [`audit/legacy-v8-ci.md`](audit/legacy-v8-ci.md)。Issue #23
   的崩溃路径对照见 [`audit/issue-23-crash-analysis.md`](audit/issue-23-crash-analysis.md)。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
@@ -182,7 +184,9 @@ View8 requires:
   checks, and 20 read-only-snapshot checksum checks. The deserializer's
   synchronization and bounds checks are unchanged.
   See the [per-version API audit](audit/legacy-v8-api.md) and
-  [host-tool template audit](audit/legacy-v8-host-tools.md). See also the
+  [host-tool template audit](audit/legacy-v8-host-tools.md). The
+  [cross-platform Actions audit](audit/legacy-v8-ci.md) records successful
+  Linux and Windows builds for all 369 exact tags. See also the
   [issue #23 crash-path audit](audit/issue-23-crash-analysis.md).
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.

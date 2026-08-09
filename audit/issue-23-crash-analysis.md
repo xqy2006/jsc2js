@@ -82,7 +82,7 @@ The V8 5.1–11.9 patcher follows a narrower design:
 | Upstream cache checks | Preserved exactly; magic/checksum on all 369 tags, header on 358, length on 356, CPU feature on 45, read-only snapshot checksum on 20 |
 | Deserializer | Unchanged |
 | `HeapObjectShortPrint` | Unchanged |
-| Object type predicates | Selected from the exact `Object` declaration: 349 member-verifier tags and 20 static/free-function tags |
+| Object type predicates | Selected from the exact predicate signature: 348 member-call tags and 21 free-function tags |
 | Nested functions | Flat work list of `Handle<SharedFunctionInfo>` |
 | Cycle handling | Handle identity checked before every print |
 | Invalid cache | JavaScript exception; process must remain alive |
@@ -93,17 +93,19 @@ printed at most once.
 
 ## Validation coverage
 
-- Source/API audit: 369 exact Node/Electron V8 tags, 16 API families,
+- Source/API audit: 369 exact Node/Electron V8 tags, 17 API families,
   369 compatible and zero fetch failures.
 - Semantic patch replay: 369/369 exact tags; exactly four V8 source files
-  change for each tag across 14 patch templates, and no deserializer file
+  change for each tag across 15 patch templates, and no deserializer file
   changes. The predicate form is audited independently from the
-  `FixedArray::get` return type: [V8 11.7.349's `objects.h`](https://github.com/v8/v8/blob/11.7.349/src/objects/objects.h)
-  still declares `EXPORT_DECL_VERIFIER(Object)`, while
-  [V8 11.8.29's `objects.h`](https://github.com/v8/v8/blob/11.8.29/src/objects/objects.h)
-  switches to `EXPORT_DECL_STATIC_VERIFIER(Object)` and requires the free
-  `IsSharedFunctionInfo(object)` form. All 20 audited V8 11.8–11.9 tags use
-  that static/free-function API.
+  `FixedArray::get` return type and verifier macro. The exact declaration in
+  [V8 11.7.300's `objects.h`](https://github.com/v8/v8/blob/11.7.300/src/objects/objects.h)
+  expands to the member form `Is##Type() const`; the exact declaration in
+  [V8 11.7.349's `objects.h`](https://github.com/v8/v8/blob/11.7.349/src/objects/objects.h)
+  expands to the free form `Is##Type(Tagged<Object> obj)`. V8 11.7.349 still
+  contains `EXPORT_DECL_VERIFIER(Object)`, so that macro is not a valid proxy
+  for the callable predicate API. All 21 audited tags from V8 11.7.349 through
+  V8 11.9 use the free-function form.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded
@@ -135,6 +137,13 @@ printed at most once.
   tags (V8 8.1.197 through 8.4.191), the exact pinned clang hook consumes that
   logical year for a keyed DIA DLL lookup. Every replay is tokenized,
   idempotent, and required to preserve all original lines in order.
+- Exhaustive production-builder validation completed all 369 exact tags on
+  both Ubuntu 22.04 and Windows Server 2022, divided into 86 source-family
+  bounded batches: 86 successful, zero failed, and zero active. Every job has a
+  330-minute timeout, below GitHub's six-hour workflow limit. The per-batch run
+  links and exact head SHAs are recorded in
+  [`legacy-v8-ci.md`](legacy-v8-ci.md) and
+  [`legacy-v8-ci.json`](legacy-v8-ci.json), respectively.
 - The exact hosted-VS/DIA regression range, V8 8.3.110.5 through 8.3.110.12,
   completed all five tags on Linux and Windows in
   [Actions run 31311301043](https://github.com/xqy2006/jsc2js/actions/runs/31311301043).
@@ -158,12 +167,19 @@ printed at most once.
   `JSC2JS_SAFE_REJECTION`.
 - V8 11.8.29 built successfully on Linux and Windows in
   [Actions run 31294051640](https://github.com/xqy2006/jsc2js/actions/runs/31294051640).
-- The exhaustive pass later exposed a compile-only source-classification edge
-  at that exact tag: `FixedArray::get` still returned `Object`, but the object
-  predicates had already become static/free functions. After the patcher was
-  changed to inspect the exact `Object` verifier declaration independently,
-  V8 11.8.29 again completed both platforms at commit `9fcf5f0` in
+- The exhaustive pass exposed a compile-only source-classification edge in
+  this release range: `FixedArray::get` still returned `Object`, but object
+  predicates had already become free functions. An intermediate fix using the
+  verifier macro made V8 11.8.29 complete both platforms at commit `9fcf5f0` in
   [Actions run 31326369720](https://github.com/xqy2006/jsc2js/actions/runs/31326369720).
+- Exact-source comparison then placed the real boundary one tag earlier,
+  between V8 11.7.300 and 11.7.349. After the patcher was changed to classify
+  the callable declaration itself, V8 11.7.349 completed both platforms at
+  commit `1cf45b8` in
+  [Actions run 31329397457](https://github.com/xqy2006/jsc2js/actions/runs/31329397457).
+  The complete boundary batch—V8 11.7.228, 11.7.300, and 11.7.349—also
+  completed on both platforms in
+  [Actions run 31329339567](https://github.com/xqy2006/jsc2js/actions/runs/31329339567).
 - V8 11.8.171 built successfully on Linux and Windows in
   [Actions run 31296954463](https://github.com/xqy2006/jsc2js/actions/runs/31296954463).
 

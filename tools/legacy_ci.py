@@ -301,12 +301,18 @@ def view_run(repo: str, dispatch_record: dict) -> tuple[dict, dict]:
     return dispatch_record, json.loads(completed.stdout)
 
 
-def refresh(manifest: dict, workers: int) -> None:
-    latest = [
+def refreshable_dispatches(manifest: dict) -> list[dict]:
+    """Return only latest run records whose completed state can still change."""
+    return [
         batch["dispatches"][-1]
         for batch in manifest["batches"]
         if batch["dispatches"]
+        and batch["dispatches"][-1].get("status") != "completed"
     ]
+
+
+def refresh(manifest: dict, workers: int) -> None:
+    latest = refreshable_dispatches(manifest)
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         futures = [
             executor.submit(view_run, manifest["repository"], record)

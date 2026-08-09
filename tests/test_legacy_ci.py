@@ -1,6 +1,11 @@
 import unittest
 
-from tools.legacy_ci import parse_run_url, plan_batches, select_dispatched_run
+from tools.legacy_ci import (
+    parse_run_url,
+    plan_batches,
+    refreshable_dispatches,
+    select_dispatched_run,
+)
 
 
 class LegacyCiPlanTest(unittest.TestCase):
@@ -63,6 +68,21 @@ class LegacyCiPlanTest(unittest.TestCase):
             runs, before_ids={10}, head="abc", display_title="Legacy V8 5.1.1"
         )
         self.assertEqual(selected["databaseId"], 13)
+
+    def test_refreshes_only_the_latest_incomplete_dispatch(self):
+        completed = {"run_id": 1, "status": "completed"}
+        superseded = {"run_id": 2, "status": "completed"}
+        active = {"run_id": 3, "status": "in_progress"}
+        queued = {"run_id": 4, "status": "queued"}
+        manifest = {
+            "batches": [
+                {"dispatches": [completed]},
+                {"dispatches": [superseded, active]},
+                {"dispatches": [queued]},
+                {"dispatches": []},
+            ]
+        }
+        self.assertEqual(refreshable_dispatches(manifest), [active, queued])
 
 
 if __name__ == "__main__":

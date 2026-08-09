@@ -1,10 +1,12 @@
 import unittest
 
 from tools.legacy_ci import (
+    dispatch_has_failed_job,
     parse_run_url,
     plan_batches,
     refreshable_dispatches,
     select_dispatched_run,
+    update_summary,
 )
 
 
@@ -83,6 +85,27 @@ class LegacyCiPlanTest(unittest.TestCase):
             ]
         }
         self.assertEqual(refreshable_dispatches(manifest), [active, queued])
+
+    def test_surfaces_a_failed_job_before_the_workflow_finishes(self):
+        record = {
+            "status": "in_progress",
+            "conclusion": "",
+            "jobs": [
+                {"status": "completed", "conclusion": "failure"},
+                {"status": "in_progress", "conclusion": ""},
+            ],
+        }
+        manifest = {
+            "summary": {},
+            "batches": [
+                {"versions": ["8.0.426.8"], "dispatches": [record]},
+            ],
+        }
+        self.assertTrue(dispatch_has_failed_job(record))
+        update_summary(manifest)
+        self.assertEqual(manifest["summary"]["failed"], 1)
+        self.assertEqual(manifest["summary"]["active"], 1)
+        self.assertEqual(manifest["summary"]["verified_versions"], 0)
 
 
 if __name__ == "__main__":

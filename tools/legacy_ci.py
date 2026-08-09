@@ -340,6 +340,15 @@ def refresh(manifest: dict, workers: int) -> None:
     update_summary(manifest)
 
 
+def dispatch_has_failed_job(record: dict) -> bool:
+    """Surface a terminal job failure before its sibling job finishes."""
+    return any(
+        job.get("status") == "completed"
+        and job.get("conclusion") not in {"success", "skipped", "neutral"}
+        for job in record.get("jobs", [])
+    )
+
+
 def update_summary(manifest: dict) -> None:
     latest = [
         (batch, batch["dispatches"][-1])
@@ -350,8 +359,11 @@ def update_summary(manifest: dict) -> None:
     failed = [
         item
         for item in latest
-        if item[1]["status"] == "completed"
-        and item[1]["conclusion"] != "success"
+        if (
+            item[1]["status"] == "completed"
+            and item[1]["conclusion"] != "success"
+        )
+        or dispatch_has_failed_job(item[1])
     ]
     manifest["summary"].update(
         {

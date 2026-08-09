@@ -58,19 +58,29 @@ class FixedArrayObjectStyleTest(unittest.TestCase):
                 self.assertIn("JSC2JS_FLAGS_HASH_BYPASS", patched)
                 self.assertIn("CHECKSUM_MISMATCH", patched)
 
-    def test_classifies_the_v11_8_static_object_predicate_boundary(self):
+    def test_classifies_the_v11_7_free_object_predicate_boundary(self):
         self.assertEqual(
             object_type_predicate_style(
-                "class Object { EXPORT_DECL_STATIC_VERIFIER(Object) };"
+                "#define IS_TYPE_FUNCTION_DECL(Type) "
+                "V8_INLINE bool Is##Type(Tagged<Object> obj);"
             ),
             "free",
         )
         self.assertEqual(
             object_type_predicate_style(
-                "class Object { EXPORT_DECL_VERIFIER(Object) };"
+                "#define IS_TYPE_FUNCTION_DECL(Type) "
+                "V8_INLINE bool Is##Type() const;"
             ),
             "member",
         )
+
+    def test_does_not_use_the_object_verifier_as_a_predicate_proxy(self):
+        header = """
+class Object { EXPORT_DECL_VERIFIER(Object) };
+#define IS_TYPE_FUNCTION_DECL(Type) \\
+  V8_INLINE bool Is##Type(Tagged<Object> obj);
+"""
+        self.assertEqual(object_type_predicate_style(header), "free")
 
     def test_value_object_uses_free_predicate_with_static_object_api(self):
         features = Features(

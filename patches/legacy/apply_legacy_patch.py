@@ -158,18 +158,21 @@ def fixed_array_object_style(header: str) -> str:
 
 
 def object_type_predicate_style(header: str) -> str:
-    """Classify Object type checks from the exact Object declaration.
+    """Classify the generated Object predicate declarations themselves.
 
-    V8 11.8 made Object's generated verifier/static API explicit and removed
-    value-style calls such as ``object.IsSharedFunctionInfo()``.  The free
-    predicate remains ``IsSharedFunctionInfo(object)``.  Older declarations do
-    not have the static-verifier marker and retain the member predicate API.
+    V8 11.7 removed value-style calls such as
+    ``object.IsSharedFunctionInfo()`` before the unrelated Object verifier macro
+    became static in V8 11.8.  Detect the generated predicate signature rather
+    than using either the V8 version or verifier declaration as a proxy.
     """
-    if "EXPORT_DECL_STATIC_VERIFIER(Object)" in header:
-        return "free"
-    if "class Object" in header:
+    if re.search(r"\bIs##(?:Type|type_?)\s*\(\s*\)\s*const\b", header):
         return "member"
-    raise PatchError("Object class declaration is missing")
+    if re.search(
+        r"\bIs##(?:Type|type_?)\s*\(\s*Tagged\s*<\s*Object\s*>\s+obj\b",
+        header,
+    ):
+        return "free"
+    raise PatchError("Object type-predicate declaration is missing")
 
 
 def shared_function_info_bytecode_accessor(header: str) -> str:

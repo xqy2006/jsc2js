@@ -248,11 +248,11 @@ def patch_gclient_hook_dispatch(hook_python: str):
 
 
 def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
-    """Select the installed v142 headers for V8 branches incompatible with v143."""
+    """Select v142 for V8 branches whose bundled libc++ is incompatible with v143."""
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
     if not platform.system().lower().startswith("win"):
         return
-    if int(version.split(".", 1)[0]) >= 9:
+    if int(version.split(".", 1)[0]) >= 10:
         return
 
     vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))

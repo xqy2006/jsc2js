@@ -100,7 +100,7 @@ def classify_version(
         setup = build_cache.get(revision, BUILD_PATH)
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
-        requires_v142 = version_key(version) < version_key("9.0.0")
+        requires_v142 = version_key(version) < version_key("10.0.0")
         compatible = len(matches) == 1
         status = "ok" if compatible else "incompatible"
         return {
@@ -140,7 +140,7 @@ def write_markdown(path: Path, payload: dict) -> None:
     lines.extend(
         [
             "",
-            "For V8 before 9.0, every exact tag must match exactly one `vcvarsall` "
+            "For V8 before 10.0, every exact tag must match exactly one `vcvarsall` "
             "argument template so the installed MSVC v142 toolset can be selected.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",

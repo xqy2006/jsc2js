@@ -153,42 +153,7 @@ def run_legacy_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
     return output
 
 
-def discover_host_cpp_include_paths(include_root: Path = Path("/usr/include")):
-    """Return the installed GCC C++ include hierarchy for historical clang."""
-    try:
-        gcc_version = subprocess.check_output(
-            ["g++", "-dumpfullversion", "-dumpversion"], text=True
-        ).strip()
-        multiarch = subprocess.check_output(
-            ["g++", "-print-multiarch"], text=True
-        ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        return []
-
-    version_names = []
-    for candidate in (gcc_version, gcc_version.split(".", 1)[0]):
-        if candidate and candidate not in version_names:
-            version_names.append(candidate)
-    version_name = next(
-        (
-            candidate
-            for candidate in version_names
-            if (include_root / "c++" / candidate).is_dir()
-        ),
-        None,
-    )
-    if version_name is None:
-        return []
-
-    base = include_root / "c++" / version_name
-    candidates = [base]
-    if multiarch:
-        candidates.append(include_root / multiarch / "c++" / version_name)
-    candidates.append(base / "backward")
-    return [str(path.resolve()) for path in candidates if path.is_dir()]
-
-
-def configure_host_compatibility(include_cpp_headers: bool = False):
+def configure_host_compatibility():
     """Make historical LLVM binaries usable on current Linux runners."""
     if not platform.system().lower().startswith("linux"):
         return
@@ -205,20 +170,6 @@ def configure_host_compatibility(include_cpp_headers: bool = False):
             library_dir if not current else library_dir + os.pathsep + current
         )
         log(f"Preferring host libstdc++ for historical LLVM: {library_dir}")
-
-    if include_cpp_headers:
-        include_paths = discover_host_cpp_include_paths()
-        if not include_paths:
-            raise RuntimeError("Could not locate the host GCC C++ include hierarchy")
-        current = os.environ.get("CPLUS_INCLUDE_PATH", "")
-        if current:
-            include_paths.append(current)
-        os.environ["CPLUS_INCLUDE_PATH"] = os.pathsep.join(include_paths)
-        log(
-            "Providing host GCC C++ headers to historical LLVM: "
-            + os.pathsep.join(include_paths)
-        )
-
 
 def configure_python_compatibility():
     compat_dir = Path("tools/python_compat").resolve()
@@ -333,16 +284,28 @@ def configure_in_tree_gyp(version: str) -> bool:
 
     os.environ["GYP_GENERATORS"] = "ninja"
     os.environ["GYP_GENERATOR_FLAGS"] = "output_dir=out"
-    os.environ["GYP_DEFINES"] = " ".join(
-        (
-            "target_arch=x64",
-            "v8_target_arch=x64",
-            "v8_enable_disassembler=1",
-            "v8_object_print=1",
-            "v8_use_external_startup_data=1",
-            "component=static_library",
+    defines = [
+        "target_arch=x64",
+        "v8_target_arch=x64",
+        "v8_enable_disassembler=1",
+        "v8_object_print=1",
+        "v8_use_external_startup_data=1",
+        "component=static_library",
+    ]
+    if platform.system().lower().startswith("linux"):
+        # The downloaded 2016 clang cannot parse the GCC 11 standard library
+        # on ubuntu-22.04. V8 5.1's standalone.gypi explicitly supports a
+        # custom clang_dir, so use the runner's compatible /usr/bin/clang.
+        defines.extend(
+            (
+                "clang=1",
+                "host_clang=1",
+                "clang_dir=/usr",
+                "linux_use_bundled_gold=0",
+                "werror=",
+            )
         )
-    )
+    os.environ["GYP_DEFINES"] = " ".join(defines)
     log(f"Using the in-tree GYP/Ninja generator for V8 {version}")
     return True
 
@@ -371,7 +334,7 @@ def activate_windows_vcvars(version: str):
     # before GYP starts, even though the SDK itself is usable by the build.
     command = f'call "{vcvars}" x64 -vcvars_ver={vcvars_version} >nul && set'
     completed = subprocess.run(
-        ["cmd.exe", "/d", "/c", command],
+        f'cmd.exe /d /s /c "{command}"',
         check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -639,7 +602,7 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            configure_host_compatibility(include_cpp_headers=in_tree_gyp)
+            configure_host_compatibility()
             if in_tree_gyp:
                 # gclient runhooks generated this Ninja project before source
                 # patching; the patch does not alter the build graph.

@@ -1,7 +1,6 @@
 import os
 import tempfile
 import unittest
-from types import SimpleNamespace
 from unittest import mock
 from pathlib import Path
 
@@ -23,6 +22,15 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertNotIn("GYP_GENERATORS", os.environ)
             self.assertNotIn("GYP_GENERATOR_FLAGS", os.environ)
             self.assertNotIn("GYP_DEFINES", os.environ)
+
+    def test_v8_51_linux_gyp_uses_the_runner_clang(self):
+        with mock.patch.dict(os.environ, {}, clear=True), mock.patch.object(
+            builder.platform, "system", return_value="Linux"
+        ):
+            self.assertTrue(builder.configure_in_tree_gyp("5.1.281.47"))
+            self.assertIn("clang_dir=/usr", os.environ["GYP_DEFINES"])
+            self.assertIn("linux_use_bundled_gold=0", os.environ["GYP_DEFINES"])
+            self.assertIn("werror=", os.environ["GYP_DEFINES"])
 
     def test_legacy_hooks_force_python_2_ahead_of_depot_tools(self):
         original_path = os.environ.get("PATH", "")
@@ -152,24 +160,6 @@ class LegacyHookPythonTest(unittest.TestCase):
     def test_current_windows_v8_has_no_legacy_toolset(self):
         self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))
 
-    def test_host_cpp_include_discovery_uses_gcc_major_directory(self):
-        with tempfile.TemporaryDirectory() as directory:
-            include_root = Path(directory)
-            expected = (
-                include_root / "c++" / "12",
-                include_root / "x86_64-linux-gnu" / "c++" / "12",
-                include_root / "c++" / "12" / "backward",
-            )
-            for path in expected:
-                path.mkdir(parents=True, exist_ok=True)
-            with mock.patch.object(
-                builder.subprocess,
-                "check_output",
-                side_effect=("12.3.0\n", "x86_64-linux-gnu\n"),
-            ):
-                actual = builder.discover_host_cpp_include_paths(include_root)
-        self.assertEqual(actual, [str(path.resolve()) for path in expected])
-
     def test_v8_51_vcvars_uses_default_installed_sdk(self):
         with tempfile.TemporaryDirectory() as directory:
             vs_root = Path(directory)
@@ -177,7 +167,7 @@ class LegacyHookPythonTest(unittest.TestCase):
             vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
             vcvars.parent.mkdir(parents=True)
             vcvars.touch()
-            completed = SimpleNamespace(
+            completed = mock.Mock(
                 returncode=0,
                 stdout="PATH=C:\\toolchain\nWindowsSDKVersion=10.0.26100.0\\\n",
                 stderr="",
@@ -196,9 +186,10 @@ class LegacyHookPythonTest(unittest.TestCase):
             ) as run:
                 builder.activate_windows_vcvars("5.1.281.47")
             command = run.call_args.args[0]
-            self.assertEqual(command[:3], ["cmd.exe", "/d", "/c"])
-            self.assertIn(" x64 -vcvars_ver=14.29", command[3])
-            self.assertNotIn("-winsdk", command[3])
+            self.assertIsInstance(command, str)
+            self.assertIn("cmd.exe /d /s /c", command)
+            self.assertIn(" x64 -vcvars_ver=14.29", command)
+            self.assertNotIn("-winsdk", command)
 
 
 if __name__ == "__main__":

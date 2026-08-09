@@ -82,6 +82,7 @@ The V8 5.1–11.9 patcher follows a narrower design:
 | Upstream cache checks | Preserved exactly; magic/checksum on all 369 tags, header on 358, length on 356, CPU feature on 45, read-only snapshot checksum on 20 |
 | Deserializer | Unchanged |
 | `HeapObjectShortPrint` | Unchanged |
+| Object type predicates | Selected from the exact `Object` declaration: 349 member-verifier tags and 20 static/free-function tags |
 | Nested functions | Flat work list of `Handle<SharedFunctionInfo>` |
 | Cycle handling | Handle identity checked before every print |
 | Invalid cache | JavaScript exception; process must remain alive |
@@ -96,7 +97,13 @@ printed at most once.
   369 compatible and zero fetch failures.
 - Semantic patch replay: 369/369 exact tags; exactly four V8 source files
   change for each tag across 14 patch templates, and no deserializer file
-  changes.
+  changes. The predicate form is audited independently from the
+  `FixedArray::get` return type: [V8 11.7.349's `objects.h`](https://github.com/v8/v8/blob/11.7.349/src/objects/objects.h)
+  still declares `EXPORT_DECL_VERIFIER(Object)`, while
+  [V8 11.8.29's `objects.h`](https://github.com/v8/v8/blob/11.8.29/src/objects/objects.h)
+  switches to `EXPORT_DECL_STATIC_VERIFIER(Object)` and requires the free
+  `IsSharedFunctionInfo(object)` form. All 20 audited V8 11.8–11.9 tags use
+  that static/free-function API.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded
@@ -133,6 +140,16 @@ printed at most once.
   [Actions run 31311301043](https://github.com/xqy2006/jsc2js/actions/runs/31311301043).
   The Windows job crossed the previously failing pinned clang DIA hook and
   completed the patched builds and smoke checks.
+- The complete V8 8.7.220.25 through 8.8.186 batch, including the checkout
+  that originally exceeded Windows' legacy path limit at V8 8.8.74, completed
+  all five tags on both platforms in
+  [Actions run 31317674121](https://github.com/xqy2006/jsc2js/actions/runs/31317674121).
+- The depot_tools bootstrap regression range completed all five V8 9.4 tags
+  on both platforms in
+  [Actions run 31321149072](https://github.com/xqy2006/jsc2js/actions/runs/31321149072).
+  depot_tools is allowed to bootstrap once, then `DEPOT_TOOLS_UPDATE=0` pins
+  it for the remaining fetch, hook, patch, and build steps; this avoids both
+  an uninitialized checkout and a late self-update network failure.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with

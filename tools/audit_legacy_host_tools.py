@@ -21,7 +21,10 @@ import urllib.request
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from build_versions_batch_v3 import WINDOWS_TOOLCHAIN_ARGS_RE  # noqa: E402
+from build_versions_batch_v3 import (  # noqa: E402
+    WINDOWS_TOOLCHAIN_ARGS_RE,
+    windows_legacy_toolset_spec,
+)
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 
 
@@ -100,7 +103,8 @@ def classify_version(
         setup = build_cache.get(revision, BUILD_PATH)
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
-        requires_v142 = version_key(version) < version_key("10.0.0")
+        toolset_spec = windows_legacy_toolset_spec(version)
+        required_toolset = toolset_spec[1] if toolset_spec else "current"
         compatible = len(matches) == 1
         status = "ok" if compatible else "incompatible"
         return {
@@ -110,8 +114,8 @@ def classify_version(
             "setup_toolchain_path": BUILD_PATH,
             "vcvars_args_matches": len(matches),
             "vcvars_args_template": template,
-            "requires_v142_compatibility": requires_v142,
-            "v142_injection_supported": compatible if requires_v142 else None,
+            "required_toolset": required_toolset,
+            "toolset_injection_supported": compatible,
         }
     except Exception as error:
         return {"version": version, "status": "fetch-error", "error": str(error)}
@@ -128,20 +132,21 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         f"Windows toolchain templates: **{summary['templates']}**",
         "",
-        "| Template | First V8 | Last V8 | Tags | v142 tags |",
-        "|---|---:|---:|---:|---:|",
+        "| Template | First V8 | Last V8 | Tags | Toolsets |",
+        "|---|---:|---:|---:|---|",
     ]
     for family in payload["families"]:
         template = family["template"].replace("|", "\\|")
         lines.append(
             f"| `{template}` | {family['first']} | {family['last']} | "
-            f"{family['count']} | {family['v142_count']} |"
+            f"{family['count']} | {family['toolsets']} |"
         )
     lines.extend(
         [
             "",
-            "For V8 before 10.0, every exact tag must match exactly one `vcvarsall` "
-            "argument template so the installed MSVC v142 toolset can be selected.",
+            "Every exact tag must match exactly one `vcvarsall` argument template. "
+            "The build selects v140 for V8 5.x, v141 for 6.x–7.x, v142 for "
+            "8.x–9.x, and the current toolset for 10.x–11.x.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",
         ]
@@ -204,8 +209,8 @@ def main() -> int:
                 "first": records[0]["version"],
                 "last": records[-1]["version"],
                 "count": len(records),
-                "v142_count": sum(
-                    bool(record["requires_v142_compatibility"]) for record in records
+                "toolsets": ", ".join(
+                    sorted({record["required_toolset"] for record in records})
                 ),
             }
         )
@@ -229,9 +234,12 @@ def main() -> int:
                 }
             ),
             "templates": len(families),
-            "v142_versions": sum(
-                bool(result.get("requires_v142_compatibility")) for result in results
-            ),
+            "toolset_counts": {
+                toolset: sum(
+                    result.get("required_toolset") == toolset for result in results
+                )
+                for toolset in ("v140", "v141", "v142", "current")
+            },
         },
         "families": families,
         "versions": results,

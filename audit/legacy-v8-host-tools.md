@@ -6,13 +6,13 @@ Chromium build revisions: **167**
 
 Windows toolchain templates: **5**
 
-| Template | First V8 | Last V8 | Tags | v142 tags |
-|---|---:|---:|---:|---:|
-| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']` | 5.8.283.38 | 6.2.414.46 | 7 | 7 |
-| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.14393.0']` | 6.0.286.52 | 6.0.286.52 | 1 | 1 |
-| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.15063.0']` | 6.6.346.24 | 6.6.346.32 | 3 | 3 |
-| `args = [script_path, cpu_arg]` | 6.7.288.43 | 8.5.210.26 | 113 | 113 |
-| `args = [script_path, cpu_arg, ]` | 8.6.125 | 11.9.169.4 | 233 | 95 |
+| Template | First V8 | Last V8 | Tags | Toolsets |
+|---|---:|---:|---:|---|
+| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']` | 5.8.283.38 | 6.2.414.46 | 7 | v140, v141 |
+| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.14393.0']` | 6.0.286.52 | 6.0.286.52 | 1 | v141 |
+| `args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.15063.0']` | 6.6.346.24 | 6.6.346.32 | 3 | v141 |
+| `args = [script_path, cpu_arg]` | 6.7.288.43 | 8.5.210.26 | 113 | v141, v142 |
+| `args = [script_path, cpu_arg, ]` | 8.6.125 | 11.9.169.4 | 233 | current, v142 |
 
-For V8 before 10.0, every exact tag must match exactly one `vcvarsall` argument template so the installed MSVC v142 toolset can be selected.
+Every exact tag must match exactly one `vcvarsall` argument template. The build selects v140 for V8 5.x, v141 for 6.x–7.x, v142 for 8.x–9.x, and the current toolset for 10.x–11.x.
 The JSON report records the exact V8 tag, Chromium build revision, template, and compatibility result.

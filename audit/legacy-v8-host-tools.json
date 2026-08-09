@@ -15,7 +15,12 @@
     "fetch_errors": 0,
     "build_revisions": 167,
     "templates": 5,
-    "v142_versions": 219
+    "toolset_counts": {
+      "v140": 2,
+      "v141": 72,
+      "v142": 145,
+      "current": 138
+    }
   },
   "families": [
     {
@@ -24,7 +29,7 @@
       "first": "5.8.283.38",
       "last": "6.2.414.46",
       "count": 7,
-      "v142_count": 7
+      "toolsets": "v140, v141"
     },
     {
       "family": "9b383a94e79c",
@@ -32,7 +37,7 @@
       "first": "6.0.286.52",
       "last": "6.0.286.52",
       "count": 1,
-      "v142_count": 1
+      "toolsets": "v141"
     },
     {
       "family": "00fcb0a333ec",
@@ -40,7 +45,7 @@
       "first": "6.6.346.24",
       "last": "6.6.346.32",
       "count": 3,
-      "v142_count": 3
+      "toolsets": "v141"
     },
     {
       "family": "ab7d5ecc0d00",
@@ -48,7 +53,7 @@
       "first": "6.7.288.43",
       "last": "8.5.210.26",
       "count": 113,
-      "v142_count": 113
+      "toolsets": "v141, v142"
     },
     {
       "family": "22f589153f30",
@@ -56,7 +61,7 @@
       "first": "8.6.125",
       "last": "11.9.169.4",
       "count": 233,
-      "v142_count": 95
+      "toolsets": "current, v142"
     }
   ],
   "versions": [
@@ -67,8 +72,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v140",
+      "toolset_injection_supported": true
     },
     {
       "version": "5.9.211.38",
@@ -77,8 +82,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v140",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.0.286.52",
@@ -87,8 +92,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.14393.0']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.1.534.41",
@@ -97,8 +102,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.1.534.42",
@@ -107,8 +112,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.2.414.32",
@@ -117,8 +122,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.2.414.44",
@@ -127,8 +132,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.2.414.46",
@@ -137,8 +142,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.6.346.24",
@@ -147,8 +152,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.15063.0']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.6.346.27",
@@ -157,8 +162,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.15063.0']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.6.346.32",
@@ -167,8 +172,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64', '10.0.15063.0']",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.7.288.43",
@@ -177,8 +182,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.7.288.45",
@@ -187,8 +192,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.7.288.46",
@@ -197,8 +202,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.7.288.49",
@@ -207,8 +212,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.8.275.24",
@@ -217,8 +222,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.8.275.30",
@@ -227,8 +232,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.8.275.32",
@@ -237,8 +242,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.9.427.24",
@@ -247,8 +252,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "6.9.427.31",
@@ -257,8 +262,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.0.276.28",
@@ -267,8 +272,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.0.276.32",
@@ -277,8 +282,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.0.276.38",
@@ -287,8 +292,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.0.276.40",
@@ -297,8 +302,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.1.302.31",
@@ -307,8 +312,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.2.502.19",
@@ -317,8 +322,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.2.502.25",
@@ -327,8 +332,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.10",
@@ -337,8 +342,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.17",
@@ -347,8 +352,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.19",
@@ -357,8 +362,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.25",
@@ -367,8 +372,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.26",
@@ -377,8 +382,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.3.492.27",
@@ -387,8 +392,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.4.269",
@@ -397,8 +402,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.4.288.21",
@@ -407,8 +412,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.4.288.27",
@@ -417,8 +422,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.5.288.22",
@@ -427,8 +432,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.1",
@@ -437,8 +442,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.81",
@@ -447,8 +452,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.82",
@@ -457,8 +462,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.274",
@@ -467,8 +472,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.293",
@@ -477,8 +482,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.2",
@@ -487,8 +492,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.4",
@@ -497,8 +502,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.5",
@@ -507,8 +512,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.7",
@@ -517,8 +522,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.8",
@@ -527,8 +532,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.18",
@@ -537,8 +542,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.19",
@@ -547,8 +552,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.22",
@@ -557,8 +562,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.27",
@@ -567,8 +572,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.29",
@@ -577,8 +582,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.30",
@@ -587,8 +592,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.6.303.31",
@@ -597,8 +602,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.1",
@@ -607,8 +612,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.13",
@@ -617,8 +622,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.179",
@@ -627,8 +632,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.192",
@@ -637,8 +642,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.299",
@@ -647,8 +652,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.299.11",
@@ -657,8 +662,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.7.299.13",
@@ -667,8 +672,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.36",
@@ -677,8 +682,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.77",
@@ -687,8 +692,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.180",
@@ -697,8 +702,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.212.1",
@@ -707,8 +712,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.279",
@@ -717,8 +722,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.279.17",
@@ -727,8 +732,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.279.19",
@@ -737,8 +742,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.8.279.23",
@@ -747,8 +752,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.9.53",
@@ -757,8 +762,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.9.74",
@@ -767,8 +772,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.9.187",
@@ -777,8 +782,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.9.317.23",
@@ -787,8 +792,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "7.9.317.25",
@@ -797,8 +802,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v141",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.76",
@@ -807,8 +812,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.111",
@@ -817,8 +822,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.113",
@@ -827,8 +832,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.8",
@@ -837,8 +842,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.12",
@@ -847,8 +852,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.14",
@@ -857,8 +862,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.15",
@@ -867,8 +872,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.16",
@@ -877,8 +882,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.26",
@@ -887,8 +892,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.27",
@@ -897,8 +902,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.0.426.30",
@@ -907,8 +912,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.1.18",
@@ -917,8 +922,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.1.197",
@@ -927,8 +932,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.1.307.30",
@@ -937,8 +942,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.1.307.31",
@@ -947,8 +952,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.1",
@@ -957,8 +962,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.8",
@@ -967,8 +972,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.72",
@@ -977,8 +982,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.223",
@@ -987,8 +992,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.281",
@@ -997,8 +1002,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.297",
@@ -1007,8 +1012,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.297.1",
@@ -1017,8 +1022,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.2.297.3",
@@ -1027,8 +1032,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.62",
@@ -1037,8 +1042,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.4",
@@ -1047,8 +1052,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.5",
@@ -1057,8 +1062,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.7",
@@ -1067,8 +1072,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.8",
@@ -1077,8 +1082,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.9",
@@ -1087,8 +1092,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.12",
@@ -1097,8 +1102,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.110.13",
@@ -1107,8 +1112,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.3.122",
@@ -1117,8 +1122,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.50",
@@ -1127,8 +1132,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.55",
@@ -1137,8 +1142,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.138",
@@ -1147,8 +1152,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.166",
@@ -1157,8 +1162,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.191",
@@ -1167,8 +1172,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.371.19",
@@ -1177,8 +1182,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.4.371.23",
@@ -1187,8 +1192,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.34",
@@ -1197,8 +1202,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.73",
@@ -1207,8 +1212,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.74",
@@ -1217,8 +1222,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.189",
@@ -1227,8 +1232,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.200",
@@ -1237,8 +1242,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.8",
@@ -1247,8 +1252,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.11",
@@ -1257,8 +1262,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.15",
@@ -1267,8 +1272,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.19",
@@ -1277,8 +1282,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.20",
@@ -1287,8 +1292,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.5.210.26",
@@ -1297,8 +1302,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.6.125",
@@ -1307,8 +1312,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.6.198",
@@ -1317,8 +1322,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.6.373",
@@ -1327,8 +1332,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.6.395.16",
@@ -1337,8 +1342,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.6.395.17",
@@ -1347,8 +1352,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.37",
@@ -1357,8 +1362,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.135",
@@ -1367,8 +1372,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220",
@@ -1377,8 +1382,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.8",
@@ -1387,8 +1392,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.10",
@@ -1397,8 +1402,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.14",
@@ -1407,8 +1412,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.23",
@@ -1417,8 +1422,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.25",
@@ -1427,8 +1432,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.29",
@@ -1437,8 +1442,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.7.220.31",
@@ -1447,8 +1452,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.8.74",
@@ -1457,8 +1462,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.8.186",
@@ -1467,8 +1472,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.8.278",
@@ -1477,8 +1482,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.100",
@@ -1487,8 +1492,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.163",
@@ -1497,8 +1502,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.231",
@@ -1507,8 +1512,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.9",
@@ -1517,8 +1522,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.18",
@@ -1527,8 +1532,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.19",
@@ -1537,8 +1542,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.20",
@@ -1547,8 +1552,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.24",
@@ -1557,8 +1562,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.255.25",
@@ -1567,8 +1572,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.270",
@@ -1577,8 +1582,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "8.9.273",
@@ -1587,8 +1592,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.0.85",
@@ -1597,8 +1602,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.0.161",
@@ -1607,8 +1612,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.0.257.17",
@@ -1617,8 +1622,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.0.257.24",
@@ -1627,8 +1632,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.0.257.25",
@@ -1637,8 +1642,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.127",
@@ -1647,8 +1652,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.19",
@@ -1657,8 +1662,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.23",
@@ -1667,8 +1672,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.28",
@@ -1677,8 +1682,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.36",
@@ -1687,8 +1692,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.38",
@@ -1697,8 +1702,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.39",
@@ -1707,8 +1712,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.1.269.40",
@@ -1717,8 +1722,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.2",
@@ -1727,8 +1732,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.98",
@@ -1737,8 +1742,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.131",
@@ -1747,8 +1752,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.146",
@@ -1757,8 +1762,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.153",
@@ -1767,8 +1772,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.193",
@@ -1777,8 +1782,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.225",
@@ -1787,8 +1792,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.2.230.21",
@@ -1797,8 +1802,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.51",
@@ -1807,8 +1812,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.73",
@@ -1817,8 +1822,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.80",
@@ -1827,8 +1832,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.100",
@@ -1837,8 +1842,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.178",
@@ -1847,8 +1852,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.213",
@@ -1857,8 +1862,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.234",
@@ -1867,8 +1872,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.239",
@@ -1877,8 +1882,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.278",
@@ -1887,8 +1892,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.345.6",
@@ -1897,8 +1902,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.345.9",
@@ -1907,8 +1912,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.345.16",
@@ -1917,8 +1922,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.345.19",
@@ -1927,8 +1932,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.3.345.20",
@@ -1937,8 +1942,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.32",
@@ -1947,8 +1952,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.66",
@@ -1957,8 +1962,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.8",
@@ -1967,8 +1972,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.10",
@@ -1977,8 +1982,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.16",
@@ -1987,8 +1992,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.18",
@@ -1997,8 +2002,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.19",
@@ -2007,8 +2012,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.21",
@@ -2017,8 +2022,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.22",
@@ -2027,8 +2032,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.24",
@@ -2037,8 +2042,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.4.146.26",
@@ -2047,8 +2052,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.5.19",
@@ -2057,8 +2062,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.5.99",
@@ -2067,8 +2072,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.5.172.21",
@@ -2077,8 +2082,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.5.172.25",
@@ -2087,8 +2092,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.56",
@@ -2097,8 +2102,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.4",
@@ -2107,8 +2112,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.7",
@@ -2117,8 +2122,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.8",
@@ -2127,8 +2132,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.10",
@@ -2137,8 +2142,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.12",
@@ -2147,8 +2152,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.14",
@@ -2157,8 +2162,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.15",
@@ -2167,8 +2172,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.21",
@@ -2177,8 +2182,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.6.180.23",
@@ -2187,8 +2192,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.8.44",
@@ -2197,8 +2202,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.8.177.2",
@@ -2207,8 +2212,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.8.177.9",
@@ -2217,8 +2222,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.8.177.11",
@@ -2227,8 +2232,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.8.177.13",
@@ -2237,8 +2242,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "9.9.3",
@@ -2247,8 +2252,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": true,
-      "v142_injection_supported": true
+      "required_toolset": "v142",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139",
@@ -2257,8 +2262,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139.6",
@@ -2267,8 +2272,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139.8",
@@ -2277,8 +2282,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139.9",
@@ -2287,8 +2292,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139.15",
@@ -2297,8 +2302,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.0.139.17",
@@ -2307,8 +2312,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.1.124.8",
@@ -2317,8 +2322,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.9",
@@ -2327,8 +2332,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.18",
@@ -2337,8 +2342,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.23",
@@ -2347,8 +2352,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.82",
@@ -2357,8 +2362,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.127",
@@ -2367,8 +2372,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.3",
@@ -2377,8 +2382,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.4",
@@ -2387,8 +2392,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.8",
@@ -2397,8 +2402,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.10",
@@ -2407,8 +2412,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.13",
@@ -2417,8 +2422,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.15",
@@ -2427,8 +2432,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.23",
@@ -2437,8 +2442,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.2.154.26",
@@ -2447,8 +2452,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.3.125",
@@ -2457,8 +2462,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.27",
@@ -2467,8 +2472,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.16",
@@ -2477,8 +2482,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.19",
@@ -2487,8 +2492,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.20",
@@ -2497,8 +2502,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.22",
@@ -2507,8 +2512,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.23",
@@ -2517,8 +2522,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.4.132.24",
@@ -2527,8 +2532,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.5.29",
@@ -2537,8 +2542,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.5.151",
@@ -2547,8 +2552,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.5.196",
@@ -2557,8 +2562,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.82",
@@ -2567,8 +2572,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.10",
@@ -2577,8 +2582,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.11",
@@ -2587,8 +2592,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.12",
@@ -2597,8 +2602,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.17",
@@ -2607,8 +2612,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.18",
@@ -2617,8 +2622,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.21",
@@ -2627,8 +2632,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.23",
@@ -2637,8 +2642,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.6.194.26",
@@ -2647,8 +2652,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.7.75.1",
@@ -2657,8 +2662,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.7.122",
@@ -2667,8 +2672,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.7.193.13",
@@ -2677,8 +2682,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.7.193.20",
@@ -2687,8 +2692,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.79",
@@ -2697,8 +2702,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.156",
@@ -2707,8 +2712,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.4",
@@ -2717,8 +2722,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.11",
@@ -2727,8 +2732,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.16",
@@ -2737,8 +2742,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.20",
@@ -2747,8 +2752,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.21",
@@ -2757,8 +2762,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.22",
@@ -2767,8 +2772,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.8.168.25",
@@ -2777,8 +2782,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.9.79",
@@ -2787,8 +2792,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "10.9.194.1",
@@ -2797,8 +2802,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.133",
@@ -2807,8 +2812,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.219",
@@ -2817,8 +2822,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.9",
@@ -2827,8 +2832,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.10",
@@ -2837,8 +2842,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.13",
@@ -2847,8 +2852,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.16",
@@ -2857,8 +2862,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.19",
@@ -2867,8 +2872,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.0.226.20",
@@ -2877,8 +2882,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.1.111",
@@ -2887,8 +2892,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.1.269",
@@ -2897,8 +2902,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.1.277.13",
@@ -2907,8 +2912,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.5",
@@ -2917,8 +2922,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.7",
@@ -2927,8 +2932,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.9",
@@ -2937,8 +2942,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.14",
@@ -2947,8 +2952,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.19",
@@ -2957,8 +2962,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.2.214.22",
@@ -2967,8 +2972,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.97",
@@ -2977,8 +2982,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.158",
@@ -2987,8 +2992,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.169",
@@ -2997,8 +3002,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.202",
@@ -3007,8 +3012,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.203",
@@ -3017,8 +3022,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.214",
@@ -3027,8 +3032,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.225",
@@ -3037,8 +3042,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.243",
@@ -3047,8 +3052,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.244.4",
@@ -3057,8 +3062,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.3.244.8",
@@ -3067,8 +3072,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.28",
@@ -3077,8 +3082,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.47",
@@ -3087,8 +3092,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.55",
@@ -3097,8 +3102,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.73",
@@ -3107,8 +3112,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.75",
@@ -3117,8 +3122,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.94",
@@ -3127,8 +3132,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.117",
@@ -3137,8 +3142,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.4",
@@ -3147,8 +3152,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.8",
@@ -3157,8 +3162,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.14",
@@ -3167,8 +3172,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.19",
@@ -3177,8 +3182,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.23",
@@ -3187,8 +3192,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.25",
@@ -3197,8 +3202,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.27",
@@ -3207,8 +3212,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.4.183.29",
@@ -3217,8 +3222,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.5.75",
@@ -3227,8 +3232,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.5.138",
@@ -3237,8 +3242,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.5.150",
@@ -3247,8 +3252,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.69",
@@ -3257,8 +3262,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.120",
@@ -3267,8 +3272,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.136",
@@ -3277,8 +3282,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.149",
@@ -3287,8 +3292,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.2",
@@ -3297,8 +3302,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.6",
@@ -3307,8 +3312,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.11",
@@ -3317,8 +3322,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.12",
@@ -3327,8 +3332,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.15",
@@ -3337,8 +3342,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.18",
@@ -3347,8 +3352,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.20",
@@ -3357,8 +3362,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.6.189.22",
@@ -3367,8 +3372,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.20",
@@ -3377,8 +3382,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.153",
@@ -3387,8 +3392,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.203",
@@ -3397,8 +3402,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.228",
@@ -3407,8 +3412,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.300",
@@ -3417,8 +3422,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.7.349",
@@ -3427,8 +3432,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.29",
@@ -3437,8 +3442,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.171",
@@ -3447,8 +3452,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172",
@@ -3457,8 +3462,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.1",
@@ -3467,8 +3472,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.2",
@@ -3477,8 +3482,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.6",
@@ -3487,8 +3492,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.12",
@@ -3497,8 +3502,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.13",
@@ -3507,8 +3512,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.15",
@@ -3517,8 +3522,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.16",
@@ -3527,8 +3532,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.17",
@@ -3537,8 +3542,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.8.172.18",
@@ -3547,8 +3552,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.67",
@@ -3557,8 +3562,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.100",
@@ -3567,8 +3572,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.107",
@@ -3577,8 +3582,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.133",
@@ -3587,8 +3592,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.168",
@@ -3597,8 +3602,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.169",
@@ -3607,8 +3612,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.169.3",
@@ -3617,8 +3622,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     },
     {
       "version": "11.9.169.4",
@@ -3627,8 +3632,8 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, cpu_arg, ]",
-      "requires_v142_compatibility": false,
-      "v142_injection_supported": null
+      "required_toolset": "current",
+      "toolset_injection_supported": true
     }
   ]
 }

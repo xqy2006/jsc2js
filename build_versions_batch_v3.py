@@ -45,8 +45,6 @@ WINDOWS_TOOLCHAIN_ARGS_RE = re.compile(
     re.MULTILINE,
 )
 
-WINDOWS_LEGACY_STL_DEFINE = "/D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"
-
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
 
@@ -247,21 +245,35 @@ def patch_gclient_hook_dispatch(hook_python: str):
     log(f"Configured {gclient_py} to dispatch legacy hooks with {hook_python}")
 
 
+def windows_legacy_toolset_spec(version: str):
+    """Return the installed MSVC header generation matching a V8 release era."""
+    major = int(version.split(".", 1)[0])
+    if major == 5:
+        return "14.0*", "v140"
+    if major < 8:
+        return "14.16.*", "v141"
+    if major < 10:
+        return "14.29.*", "v142"
+    return None
+
+
 def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
-    """Select v142 for V8 branches whose bundled libc++ is incompatible with v143."""
+    """Select the installed MSVC headers compatible with historical clang-cl."""
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
     if not platform.system().lower().startswith("win"):
         return
-    if int(version.split(".", 1)[0]) >= 10:
+    spec = windows_legacy_toolset_spec(version)
+    if spec is None:
         return
+    toolset_glob, toolset_name = spec
 
     vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
     toolsets_root = vs_root / "VC/Tools/MSVC"
     compatible = sorted(
-        path for path in toolsets_root.glob("14.29.*") if path.is_dir()
+        path for path in toolsets_root.glob(toolset_glob) if path.is_dir()
     )
     if not compatible:
-        raise RuntimeError(f"MSVC v142 was not found under {toolsets_root}")
+        raise RuntimeError(f"MSVC {toolset_name} was not found under {toolsets_root}")
     vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
 
     setup_toolchain = v8_root / "build/toolchain/win/setup_toolchain.py"
@@ -299,31 +311,9 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
         setup_toolchain.write_text(source, encoding="utf-8")
     os.environ["JSC2JS_VCVARS_VERSION"] = vcvars_version
     log(
-        f"Using MSVC {compatible[-1].name} through {setup_toolchain} "
+        f"Using MSVC {toolset_name} ({compatible[-1].name}) through "
+        f"{setup_toolchain} "
         f"for V8 {version}"
-    )
-
-
-def configure_windows_legacy_compiler_flags(version: str):
-    """Allow historical clang-cl releases to consume the installed v142 STL."""
-    if not platform.system().lower().startswith("win"):
-        return
-    if int(version.split(".", 1)[0]) >= 9:
-        return
-
-    # clang-cl has honored the CL environment variable since before the oldest
-    # supported V8 release.  Passing the compatibility define this way avoids
-    # relying on a GN argument that does not exist in every historical Chromium
-    # build revision.
-    existing = os.environ.get("CL", "").strip()
-    flags = existing.split()
-    if WINDOWS_LEGACY_STL_DEFINE not in flags:
-        os.environ["CL"] = " ".join(
-            item for item in (WINDOWS_LEGACY_STL_DEFINE, existing) if item
-        )
-    log(
-        "Enabled the MSVC STL compatibility gate for the historical "
-        f"clang-cl used by V8 {version}"
     )
 
 
@@ -392,7 +382,6 @@ def main():
                 patch_gclient_hook_dispatch(hook_python)
             run("gclient runhooks", check=True)
             configure_windows_legacy_toolset(ver)
-            configure_windows_legacy_compiler_flags(ver)
 
             work_dir = Path("v8/out.gn/x64.release")
             if not keep_work_dir:

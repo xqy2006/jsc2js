@@ -50,16 +50,31 @@ jobs:
           IFS=. read -r major minor patch build <<< "$VERSION"
           python2=false
           vs_year=2022
+          toolset_prefix=
+          toolset_component=
           if (( major < 9 )); then python2=true; fi
           if (( major == 5 )); then
             vs_year=2015
+            toolset_prefix=14.00
+            toolset_component=Microsoft.VisualStudio.Component.VC.140
           elif (( major == 6 )); then
             vs_year=2017
+            toolset_prefix=14.16
+            toolset_component=Microsoft.VisualStudio.Component.VC.v141.x86.x64
           elif (( major < 10 )); then
             vs_year=2019
+            if (( major == 7 )); then
+              toolset_prefix=14.16
+              toolset_component=Microsoft.VisualStudio.Component.VC.v141.x86.x64
+            else
+              toolset_prefix=14.29
+              toolset_component=Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64
+            fi
           fi
           echo "python2=$python2" >> "$GITHUB_OUTPUT"
           echo "vs_year=$vs_year" >> "$GITHUB_OUTPUT"
+          echo "toolset_prefix=$toolset_prefix" >> "$GITHUB_OUTPUT"
+          echo "toolset_component=$toolset_component" >> "$GITHUB_OUTPUT"
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux'
@@ -118,6 +133,14 @@ jobs:
           }
           if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
           $python2Dir = Split-Path $python2 -Parent
+          & $python2 -m ensurepip --upgrade
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 ensurepip failed" }
+          $wheel = Join-Path $env:RUNNER_TEMP "pywin32-228-cp27-cp27m-win_amd64.whl"
+          Invoke-WebRequest "https://files.pythonhosted.org/packages/20/41/e266bb854b3d352641a4eaafe5b6b7ea3944039a9a1014ec481418e7f982/pywin32-228-cp27-cp27m-win_amd64.whl" -OutFile $wheel
+          & $python2 -m pip install --no-index $wheel
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 pywin32 installation failed" }
+          & $python2 -c "import win32file; print(win32file.__file__)"
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 cannot import win32file" }
           $python2Dir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           "JSC2JS_PYTHON2_DIR=$python2Dir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           & $python2 --version
@@ -134,6 +157,34 @@ jobs:
           "GYP_MSVS_OVERRIDE_PATH=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "vs${compatYear}_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Output "Using VS at $vsPath through the V8 $compatYear compatibility path"
+
+      - name: Install the matching historical MSVC headers
+        if: runner.os == 'Windows' && steps.compatibility.outputs.toolset_component != ''
+        shell: pwsh
+        run: |
+          $prefix = "${{ steps.compatibility.outputs.toolset_prefix }}"
+          $component = "${{ steps.compatibility.outputs.toolset_component }}"
+          $toolsetsRoot = Join-Path $env:GYP_MSVS_OVERRIDE_PATH "VC\Tools\MSVC"
+          $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like "$prefix*" } |
+            Select-Object -First 1
+          if (-not $installed) {
+            $setup = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
+            if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe was not found" }
+            $arguments = @(
+              "modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"",
+              "--add", $component, "--quiet", "--norestart"
+            )
+            $process = Start-Process $setup -Wait -PassThru -ArgumentList $arguments
+            if ($process.ExitCode -notin @(0, 3010)) {
+              throw "Visual Studio component install failed: $($process.ExitCode)"
+            }
+            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } |
+              Select-Object -First 1
+          }
+          if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
+          Write-Output "Using historical MSVC toolset $($installed.Name)"
 
       - name: Provide historical Windows SDK aliases
         if: runner.os == 'Windows'

@@ -54,7 +54,7 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn('cmd[0] == "python"', patched)
             self.assertIn('os.environ["PATH"] = hook_dir', patched)
 
-    def test_old_windows_v8_selects_installed_v142_toolset(self):
+    def test_old_windows_v8_selects_matching_installed_toolset(self):
         templates = (
             "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
             "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64',\n"
@@ -62,18 +62,27 @@ class LegacyHookPythonTest(unittest.TestCase):
             "args = [script_path, cpu_arg]",
             "args = [script_path, cpu_arg, ]",
         )
-        for version in ("7.6.274", "9.4.146.8"):
+        versions = {
+            "5.8.283.38": ("14.00.24245", "14.00"),
+            "6.7.288.43": ("14.16.27023", "14.16"),
+            "7.6.274": ("14.16.27023", "14.16"),
+            "8.5.189": ("14.29.30133", "14.29"),
+            "9.4.146.8": ("14.29.30133", "14.29"),
+        }
+        for version, (installed, expected_vcvars) in versions.items():
             for args_line in templates:
                 with self.subTest(version=version, args_line=args_line), \
                         tempfile.TemporaryDirectory() as directory:
-                    self._assert_v142_toolset_selected(
-                        directory, args_line, version
+                    self._assert_toolset_selected(
+                        directory, args_line, version, installed, expected_vcvars
                     )
 
-    def _assert_v142_toolset_selected(self, directory, args_line, version):
+    def _assert_toolset_selected(
+        self, directory, args_line, version, installed, expected_vcvars
+    ):
         root = Path(directory)
         vs_root = root / "vs"
-        (vs_root / "VC/Tools/MSVC/14.29.30133").mkdir(parents=True)
+        (vs_root / "VC/Tools/MSVC" / installed).mkdir(parents=True)
         setup = root / "v8/build/toolchain/win/setup_toolchain.py"
         setup.parent.mkdir(parents=True)
         setup.write_text(
@@ -88,29 +97,17 @@ class LegacyHookPythonTest(unittest.TestCase):
             builder.platform, "system", return_value="Windows"
         ):
             builder.configure_windows_legacy_toolset(version, root / "v8")
-            self.assertEqual(os.environ["JSC2JS_VCVARS_VERSION"], "14.29")
+            self.assertEqual(
+                os.environ["JSC2JS_VCVARS_VERSION"], expected_vcvars
+            )
         patched = setup.read_text(encoding="utf-8")
         self.assertIn("JSC2JS_LEGACY_VCVARS_VERSION", patched)
         self.assertIn("-vcvars_ver=", patched)
         self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
         self.assertNotIn("assert vc_lib_atlmfc_path", patched)
 
-    def test_old_windows_v8_allows_historical_clang_with_v142_stl(self):
-        with mock.patch.dict(os.environ, {"CL": "/DKEEP_ME"}, clear=True), \
-                mock.patch.object(builder.platform, "system", return_value="Windows"):
-            builder.configure_windows_legacy_compiler_flags("7.6.274")
-            builder.configure_windows_legacy_compiler_flags("7.6.274")
-            flags = os.environ["CL"].split()
-            self.assertEqual(
-                flags.count(builder.WINDOWS_LEGACY_STL_DEFINE), 1
-            )
-            self.assertIn("/DKEEP_ME", flags)
-
-    def test_modern_windows_v8_does_not_change_cl_flags(self):
-        with mock.patch.dict(os.environ, {"CL": "/DKEEP_ME"}, clear=True), \
-                mock.patch.object(builder.platform, "system", return_value="Windows"):
-            builder.configure_windows_legacy_compiler_flags("9.4.146.8")
-            self.assertEqual(os.environ["CL"], "/DKEEP_ME")
+    def test_current_windows_v8_has_no_legacy_toolset(self):
+        self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))
 
 
 if __name__ == "__main__":

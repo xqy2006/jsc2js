@@ -32,6 +32,10 @@ from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 
 BUILD_ROOT = "https://chromium.googlesource.com/chromium/src/build"
 BUILD_PATH = "toolchain/win/setup_toolchain.py"
+LEGACY_VCVARS_PATH_RE = re.compile(
+    r"['\"]VC[/\\]vcvarsall\.bat['\"]|"
+    r"['\"]VC['\"]\s*,\s*['\"]vcvarsall\.bat['\"]"
+)
 
 
 def extract_build_revision(deps: str) -> str:
@@ -94,6 +98,18 @@ def normalize_template(line: str) -> str:
     return re.sub(r"\s+", " ", line.strip())
 
 
+def classify_linux_host_mode(version: str, deps: str) -> str:
+    """Describe how CI supplies a usable compiler/sysroot for this tag."""
+    if uses_in_tree_gyp(version):
+        return "hosted-clang-in-tree-gyp"
+    major, minor = (int(part) for part in version.split(".", 2)[:2])
+    if (major, minor) == (5, 2):
+        return "hosted-clang-without-sysroot-hook"
+    if "install-sysroot.py" in deps:
+        return "pinned-clang-with-sysroot-hook"
+    return "pinned-clang-without-v8-sysroot-hook"
+
+
 def classify_version(
     v8_cache: RawSourceCache, build_cache: BuildSourceCache, version: str
 ) -> dict:
@@ -103,6 +119,8 @@ def classify_version(
             raise RuntimeError("V8 DEPS file was not found")
         toolset_spec = windows_legacy_toolset_spec(version)
         required_toolset = toolset_spec[1] if toolset_spec else "current"
+        linux_host_mode = classify_linux_host_mode(version, deps)
+        deps_has_sysroot_hook = "install-sysroot.py" in deps
         if uses_in_tree_gyp(version):
             if "chromium/src/build.git" in deps:
                 raise RuntimeError("V8 5.1 unexpectedly declares an external build repo")
@@ -133,8 +151,12 @@ def classify_version(
                 "vcvars_environment_matches": 0,
                 "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
                 "required_toolset": required_toolset,
+                "legacy_vcvars_reference_present": True,
+                "legacy_vcvars_entry_point_provided": True,
                 "toolset_injection_supported": checks["vs2015_compatibility"],
                 "installed_sdk_injection_supported": checks["sdk_environment"],
+                "linux_host_mode": linux_host_mode,
+                "v8_deps_has_sysroot_hook": deps_has_sysroot_hook,
                 "in_tree_gyp_checks": checks,
             }
         revision = extract_build_revision(deps)
@@ -142,6 +164,7 @@ def classify_version(
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
         environment_matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
+        legacy_vcvars_reference = bool(LEGACY_VCVARS_PATH_RE.search(setup))
         compatible = len(matches) == 1 and len(environment_matches) == 1
         status = "ok" if compatible else "incompatible"
         return {
@@ -154,8 +177,14 @@ def classify_version(
             "vcvars_environment_matches": len(environment_matches),
             "vcvars_args_template": template,
             "required_toolset": required_toolset,
+            "legacy_vcvars_reference_present": legacy_vcvars_reference,
+            "legacy_vcvars_entry_point_provided": bool(
+                toolset_spec and legacy_vcvars_reference
+            ),
             "toolset_injection_supported": compatible,
             "installed_sdk_injection_supported": len(environment_matches) == 1,
+            "linux_host_mode": linux_host_mode,
+            "v8_deps_has_sysroot_hook": deps_has_sysroot_hook,
         }
     except Exception as error:
         return {"version": version, "status": "fetch-error", "error": str(error)}
@@ -172,6 +201,15 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         f"Windows toolchain templates: **{summary['templates']}**",
         "",
+        f"CI legacy `VC/vcvarsall.bat` bridge tags: "
+        f"**{summary['legacy_vcvars_entry_point_tags']}**",
+        "",
+        "Linux host modes: "
+        + ", ".join(
+            f"`{mode}` **{count}**"
+            for mode, count in summary["linux_host_modes"].items()
+        ),
+        "",
         "| Template | First V8 | Last V8 | Tags | Toolsets |",
         "|---|---:|---:|---:|---|",
     ]
@@ -185,12 +223,17 @@ def write_markdown(path: Path, payload: dict) -> None:
         [
         "",
         "V8 5.1 is audited against its in-tree GYP/Ninja generator and imports "
-        "the selected hosted `vcvarsall` environment directly. Every later exact "
+        "the selected hosted `vcvarsall` environment directly. V8 5.2 predates "
+        "the Linux sysroot hook, so CI disables the missing Wheezy sysroot and "
+        "routes the pinned clang paths to the hosted compiler. Every later exact "
         "tag must match one `vcvarsall` argument template and one environment-"
         "capture call, so CI can select both the historical MSVC headers and "
         "the SDK version actually installed on the runner. "
         "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
-            "6.x–7.x, and the current toolset for 10.x–11.x.",
+            "6.x–7.x, and the current toolset for 10.x–11.x. For every tag "
+            "where a historical toolset is selected and the pinned setup "
+            "script retains the legacy path, CI provides a forwarding "
+            "`VC/vcvarsall.bat` entry point.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",
         ]
@@ -283,6 +326,20 @@ def main() -> int:
                     result.get("required_toolset") == toolset for result in results
                 )
                 for toolset in ("v140", "v141", "v142", "current")
+            },
+            "legacy_vcvars_entry_point_tags": sum(
+                bool(result.get("legacy_vcvars_entry_point_provided"))
+                for result in results
+            ),
+            "linux_host_modes": {
+                mode: sum(result.get("linux_host_mode") == mode for result in results)
+                for mode in sorted(
+                    {
+                        result.get("linux_host_mode")
+                        for result in results
+                        if result.get("linux_host_mode")
+                    }
+                )
             },
         },
         "families": families,

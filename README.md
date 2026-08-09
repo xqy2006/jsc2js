@@ -61,8 +61,12 @@ View8 需要：
 
 ## 说明
 
-- 当前补丁覆盖 V8 5.8–11.9 与 V8 12+。其中 V8 5.8–11.9 使用按源码
+- 当前补丁覆盖 V8 5.1–11.9 与 V8 12+。其中 V8 5.1–11.9 使用按源码
   API 自动适配的安全补丁；V8 12+ 继续使用原有稳定补丁。
+- V8 5.1 是当前 `.jsc` 路径的审计下界：对 5.8 之前全部 69 个
+  Node/Electron 精确 tag 的复核表明，截至 5.0 的 57 个 tag 缺少本工具所需的
+  `CodeSerializer::Deserialize` 路径。V8 5.9 才默认全面启用 Ignition，因此
+  5.1–5.8 仅适用于宿主实际生成了 Ignition bytecode 的缓存。
 - 旧版兼容层为兼容同一 V8 发布线的不同宿主（例如 upstream d8 与
   Electron），跳过 version、source、flags 三个宿主相关哈希；magic、CPU
   feature（存在该字段时）、payload 长度和 checksum 校验仍保留，反序列化器
@@ -159,9 +163,14 @@ View8 requires:
 
 ## Notes
 
-- The patch set covers V8 5.8–11.9 and V8 12+. V8 5.8–11.9 uses a
+- The patch set covers V8 5.1–11.9 and V8 12+. V8 5.1–11.9 uses a
   source-aware compatibility patcher; the existing stable V8 12+ patches are
   unchanged.
+- V8 5.1 is the audited lower bound for this `.jsc` path. Of all 69 exact
+  pre-5.8 Node/Electron tags, the 57 tags through V8 5.0 lack the required
+  `CodeSerializer::Deserialize` path. Ignition became universal by default in
+  V8 5.9, so V8 5.1–5.8 applies only when the embedder actually emitted an
+  Ignition bytecode cache.
 - To support different embedders on the same V8 release line (for example,
   upstream d8 and Electron), the legacy compatibility layer bypasses the
   version, source, and flags hashes. Magic, CPU-feature (where present),

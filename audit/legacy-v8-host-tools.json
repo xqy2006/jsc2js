@@ -1,6 +1,6 @@
 {
   "scope": {
-    "minimum": "5.8.0",
+    "minimum": "5.1.0",
     "maximum_exclusive": "12.0.0",
     "sources": [
       "node",
@@ -9,26 +9,34 @@
     "v8_repository": "https://github.com/v8/v8"
   },
   "summary": {
-    "versions": 357,
-    "ok": 357,
+    "versions": 369,
+    "ok": 369,
     "incompatible": 0,
     "fetch_errors": 0,
-    "build_revisions": 167,
-    "templates": 5,
+    "build_revisions": 172,
+    "templates": 6,
     "toolset_counts": {
       "v140": 0,
       "v141": 72,
-      "v142": 147,
+      "v142": 159,
       "current": 138
     }
   },
   "families": [
     {
+      "family": "956a373cd0a3",
+      "template": "in-tree GYP/Ninja with imported vcvarsall environment",
+      "first": "5.1.281.47",
+      "last": "5.1.281.65",
+      "count": 3,
+      "toolsets": "v142"
+    },
+    {
       "family": "ae522fe12b75",
       "template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "first": "5.8.283.38",
+      "first": "5.2.361.43",
       "last": "6.2.414.46",
-      "count": 7,
+      "count": 16,
       "toolsets": "v141, v142"
     },
     {
@@ -66,8 +74,192 @@
   ],
   "versions": [
     {
+      "version": "5.1.281.47",
+      "status": "ok",
+      "generator_style": "in-tree-gyp",
+      "build_revision": null,
+      "setup_toolchain_path": "build/gyp_v8 + build/vs_toolchain.py",
+      "vcvars_args_matches": 0,
+      "vcvars_environment_matches": 0,
+      "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true,
+      "in_tree_gyp_checks": {
+        "ninja_generator": true,
+        "gyp_defines": true,
+        "vs2015_compatibility": true,
+        "vs_override": true,
+        "sdk_environment": true,
+        "object_print": true,
+        "disassembler": true
+      }
+    },
+    {
+      "version": "5.1.281.59",
+      "status": "ok",
+      "generator_style": "in-tree-gyp",
+      "build_revision": null,
+      "setup_toolchain_path": "build/gyp_v8 + build/vs_toolchain.py",
+      "vcvars_args_matches": 0,
+      "vcvars_environment_matches": 0,
+      "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true,
+      "in_tree_gyp_checks": {
+        "ninja_generator": true,
+        "gyp_defines": true,
+        "vs2015_compatibility": true,
+        "vs_override": true,
+        "sdk_environment": true,
+        "object_print": true,
+        "disassembler": true
+      }
+    },
+    {
+      "version": "5.1.281.65",
+      "status": "ok",
+      "generator_style": "in-tree-gyp",
+      "build_revision": null,
+      "setup_toolchain_path": "build/gyp_v8 + build/vs_toolchain.py",
+      "vcvars_args_matches": 0,
+      "vcvars_environment_matches": 0,
+      "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true,
+      "in_tree_gyp_checks": {
+        "ninja_generator": true,
+        "gyp_defines": true,
+        "vs2015_compatibility": true,
+        "vs_override": true,
+        "sdk_environment": true,
+        "object_print": true,
+        "disassembler": true
+      }
+    },
+    {
+      "version": "5.2.361.43",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "01ca9403e7d6ba63e9a4b6df1cb5cb8397ff7b92",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.3.332.37",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "87e063014aa0f343b15f5de495a28e5f8572bf8d",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.3.332.45",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "87e063014aa0f343b15f5de495a28e5f8572bf8d",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.3.332.47",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "87e063014aa0f343b15f5de495a28e5f8572bf8d",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.4.500.31",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "59daf502c36f20b5c9292f4bd9af85791f8a5884",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.4.500.36",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "59daf502c36f20b5c9292f4bd9af85791f8a5884",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.4.500.43",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "59daf502c36f20b5c9292f4bd9af85791f8a5884",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.5.372.40",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "475d5b37ded6589c9f8a0d19ced54ddf2e6d14a0",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
+      "version": "5.6.326.50",
+      "status": "ok",
+      "generator_style": "external-gn",
+      "build_revision": "a3b623a6eff6dc9d58a03251ae22bccf92f67cb2",
+      "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
+      "vcvars_args_matches": 1,
+      "vcvars_environment_matches": 1,
+      "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+      "required_toolset": "v142",
+      "toolset_injection_supported": true,
+      "installed_sdk_injection_supported": true
+    },
+    {
       "version": "5.8.283.38",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c7c2db69cd571523ce728c4d3dceedbd1896b519",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -80,6 +272,7 @@
     {
       "version": "5.9.211.38",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "94c06fe70f3f6429c59e3ec0f6acd4f6710050b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -92,6 +285,7 @@
     {
       "version": "6.0.286.52",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1caf3a69f3b0379c9fef2493aa1b3cda96e17d7b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -104,6 +298,7 @@
     {
       "version": "6.1.534.41",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1808a907ce42f13b224c263e9843d718fc6d9c39",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -116,6 +311,7 @@
     {
       "version": "6.1.534.42",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1808a907ce42f13b224c263e9843d718fc6d9c39",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -128,6 +324,7 @@
     {
       "version": "6.2.414.32",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "48a2b7b39debc7c77c868c9ddb0a360af1ebc367",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -140,6 +337,7 @@
     {
       "version": "6.2.414.44",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "48a2b7b39debc7c77c868c9ddb0a360af1ebc367",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -152,6 +350,7 @@
     {
       "version": "6.2.414.46",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "48a2b7b39debc7c77c868c9ddb0a360af1ebc367",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -164,6 +363,7 @@
     {
       "version": "6.6.346.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b1d6c28b4a64128ad856d9da458afda2861fddab",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -176,6 +376,7 @@
     {
       "version": "6.6.346.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b1d6c28b4a64128ad856d9da458afda2861fddab",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -188,6 +389,7 @@
     {
       "version": "6.6.346.32",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b1d6c28b4a64128ad856d9da458afda2861fddab",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -200,6 +402,7 @@
     {
       "version": "6.7.288.43",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "73e352e758d90603e23bdc84734c12aa5817ab5f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -212,6 +415,7 @@
     {
       "version": "6.7.288.45",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "73e352e758d90603e23bdc84734c12aa5817ab5f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -224,6 +428,7 @@
     {
       "version": "6.7.288.46",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "73e352e758d90603e23bdc84734c12aa5817ab5f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -236,6 +441,7 @@
     {
       "version": "6.7.288.49",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "73e352e758d90603e23bdc84734c12aa5817ab5f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -248,6 +454,7 @@
     {
       "version": "6.8.275.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b5df2518f091eea3d358f30757dec3e33db56156",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -260,6 +467,7 @@
     {
       "version": "6.8.275.30",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b5df2518f091eea3d358f30757dec3e33db56156",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -272,6 +480,7 @@
     {
       "version": "6.8.275.32",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b5df2518f091eea3d358f30757dec3e33db56156",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -284,6 +493,7 @@
     {
       "version": "6.9.427.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7315579e388589b62236ad933f09afd1e838d234",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -296,6 +506,7 @@
     {
       "version": "6.9.427.31",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7315579e388589b62236ad933f09afd1e838d234",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -308,6 +519,7 @@
     {
       "version": "7.0.276.28",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "dd6b994b32b498e9e766ce60c44da0aec3a2a188",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -320,6 +532,7 @@
     {
       "version": "7.0.276.32",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "dd6b994b32b498e9e766ce60c44da0aec3a2a188",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -332,6 +545,7 @@
     {
       "version": "7.0.276.38",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "dd6b994b32b498e9e766ce60c44da0aec3a2a188",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -344,6 +558,7 @@
     {
       "version": "7.0.276.40",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "dd6b994b32b498e9e766ce60c44da0aec3a2a188",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -356,6 +571,7 @@
     {
       "version": "7.1.302.31",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a7674eacc34947257c78fe6ba5cf0da17f60696c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -368,6 +584,7 @@
     {
       "version": "7.2.502.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbd67a350d745200e5798cace11a28edfd9fc3b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -380,6 +597,7 @@
     {
       "version": "7.2.502.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbd67a350d745200e5798cace11a28edfd9fc3b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -392,6 +610,7 @@
     {
       "version": "7.3.492.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -404,6 +623,7 @@
     {
       "version": "7.3.492.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -416,6 +636,7 @@
     {
       "version": "7.3.492.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -428,6 +649,7 @@
     {
       "version": "7.3.492.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -440,6 +662,7 @@
     {
       "version": "7.3.492.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -452,6 +675,7 @@
     {
       "version": "7.3.492.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f2ca77c3aa839107f36fed20dac81fe8b71b060e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -464,6 +688,7 @@
     {
       "version": "7.4.269",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9ed511087c03666dc1816bef412012f067de6f69",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -476,6 +701,7 @@
     {
       "version": "7.4.288.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "80892bfe019dc854c6acdbfbb7304cca63986d4f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -488,6 +714,7 @@
     {
       "version": "7.4.288.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "80892bfe019dc854c6acdbfbb7304cca63986d4f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -500,6 +727,7 @@
     {
       "version": "7.5.288.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a0b2e3b2708bcf81ec00ac1738b586bcc5e04eea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -512,6 +740,7 @@
     {
       "version": "7.6.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b5c9a270bdf9031092307207c8ab19e800141176",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -524,6 +753,7 @@
     {
       "version": "7.6.81",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4087d634b477b47b360f36ba97d97d9cb3717400",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -536,6 +766,7 @@
     {
       "version": "7.6.82",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4087d634b477b47b360f36ba97d97d9cb3717400",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -548,6 +779,7 @@
     {
       "version": "7.6.274",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "97564dfccc4e1c04a10e0840b20855a4f458e94b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -560,6 +792,7 @@
     {
       "version": "7.6.293",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "97564dfccc4e1c04a10e0840b20855a4f458e94b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -572,6 +805,7 @@
     {
       "version": "7.6.303.2",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -584,6 +818,7 @@
     {
       "version": "7.6.303.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -596,6 +831,7 @@
     {
       "version": "7.6.303.5",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -608,6 +844,7 @@
     {
       "version": "7.6.303.7",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -620,6 +857,7 @@
     {
       "version": "7.6.303.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -632,6 +870,7 @@
     {
       "version": "7.6.303.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -644,6 +883,7 @@
     {
       "version": "7.6.303.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -656,6 +896,7 @@
     {
       "version": "7.6.303.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -668,6 +909,7 @@
     {
       "version": "7.6.303.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -680,6 +922,7 @@
     {
       "version": "7.6.303.29",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -692,6 +935,7 @@
     {
       "version": "7.6.303.30",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -704,6 +948,7 @@
     {
       "version": "7.6.303.31",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4cebfa34c79bcfbce6a3f55d1b4f7628bb70ea8a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -716,6 +961,7 @@
     {
       "version": "7.7.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "355210a48ff97476b1df20bfa0130dc56d3236db",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -728,6 +974,7 @@
     {
       "version": "7.7.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c66b31df3e06f8b55b5bdc54df0d324f3a190852",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -740,6 +987,7 @@
     {
       "version": "7.7.179",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ce1ed5f837fb3db415f77ca4407b572b8991ce29",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -752,6 +1000,7 @@
     {
       "version": "7.7.192",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e10ba67e1bedeb2774b7a3d9d66dc59b8e5ec83d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -764,6 +1013,7 @@
     {
       "version": "7.7.299",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1e5d7d692f816af8136c738b79fe9e8dde8057f6",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -776,6 +1026,7 @@
     {
       "version": "7.7.299.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1e5d7d692f816af8136c738b79fe9e8dde8057f6",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -788,6 +1039,7 @@
     {
       "version": "7.7.299.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1e5d7d692f816af8136c738b79fe9e8dde8057f6",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -800,6 +1052,7 @@
     {
       "version": "7.8.36",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "496479d3f758d020888d57ad4ccc8a662c87f256",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -812,6 +1065,7 @@
     {
       "version": "7.8.77",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f3d0ca5f46b7b190dbbdc6be508ca11dd5c54302",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -824,6 +1078,7 @@
     {
       "version": "7.8.180",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "8528a36be4d7e9d379302f6089f8360f6fd57c61",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -836,6 +1091,7 @@
     {
       "version": "7.8.212.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3fe260c8e2f6ccb84e1e43ab04b321328fb8998c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -848,6 +1104,7 @@
     {
       "version": "7.8.279",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "693faeda4ee025796c7e473d953a5a7b6ad64c93",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -860,6 +1117,7 @@
     {
       "version": "7.8.279.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "693faeda4ee025796c7e473d953a5a7b6ad64c93",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -872,6 +1130,7 @@
     {
       "version": "7.8.279.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "693faeda4ee025796c7e473d953a5a7b6ad64c93",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -884,6 +1143,7 @@
     {
       "version": "7.8.279.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "693faeda4ee025796c7e473d953a5a7b6ad64c93",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -896,6 +1156,7 @@
     {
       "version": "7.9.53",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d9fa324552744383dcf0dc611f4cbc11a6c4559",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -908,6 +1169,7 @@
     {
       "version": "7.9.74",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "050608ea953d2b171561ca78a15e98e39ba9357a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -920,6 +1182,7 @@
     {
       "version": "7.9.187",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "5de2214dde49b4a40f49cac1a25f50d011133783",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -932,6 +1195,7 @@
     {
       "version": "7.9.317.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "082f11b29976c3be67dddd74bd75c6d1793201c7",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -944,6 +1208,7 @@
     {
       "version": "7.9.317.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "082f11b29976c3be67dddd74bd75c6d1793201c7",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -956,6 +1221,7 @@
     {
       "version": "8.0.76",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "66bcca0260b1a61cb0a88f7a2275e043b325a21b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -968,6 +1234,7 @@
     {
       "version": "8.0.111",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2b40e7bc8bf3e5c0d64c1f2f41bca519c11336df",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -980,6 +1247,7 @@
     {
       "version": "8.0.113",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2b40e7bc8bf3e5c0d64c1f2f41bca519c11336df",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -992,6 +1260,7 @@
     {
       "version": "8.0.426.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1004,6 +1273,7 @@
     {
       "version": "8.0.426.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1016,6 +1286,7 @@
     {
       "version": "8.0.426.14",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1028,6 +1299,7 @@
     {
       "version": "8.0.426.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1040,6 +1312,7 @@
     {
       "version": "8.0.426.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1052,6 +1325,7 @@
     {
       "version": "8.0.426.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1064,6 +1338,7 @@
     {
       "version": "8.0.426.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1076,6 +1351,7 @@
     {
       "version": "8.0.426.30",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e35470d98289c1f82179839d7657d45b59e982c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1088,6 +1364,7 @@
     {
       "version": "8.1.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c80cf17ac34eaac382967c9495b659e52d117d64",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1100,6 +1377,7 @@
     {
       "version": "8.1.197",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1bee638a8c4a9481ea06df4982d69488d0a5626d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1112,6 +1390,7 @@
     {
       "version": "8.1.307.30",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2f17606c25956e800b6c4670c294a03620e78551",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1124,6 +1403,7 @@
     {
       "version": "8.1.307.31",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2f17606c25956e800b6c4670c294a03620e78551",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1136,6 +1416,7 @@
     {
       "version": "8.2.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "67cd3fb4c08375e64f1af955dc1543c532495b9f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1148,6 +1429,7 @@
     {
       "version": "8.2.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2283658cb716ed66af0178b3b41576105097d42e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1160,6 +1442,7 @@
     {
       "version": "8.2.72",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7aa6ce14923a613cac4474c8fc1eec50c66f38a4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1172,6 +1455,7 @@
     {
       "version": "8.2.223",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b03644a571861d590327ab5a5be84a0cf7a4e176",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1184,6 +1468,7 @@
     {
       "version": "8.2.281",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9b4e0260e779403e7ecf67cc9fc632a8b7833576",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1196,6 +1481,7 @@
     {
       "version": "8.2.297",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3e210049d3196d9f0b09e975dc071f885e2f6fc4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1208,6 +1494,7 @@
     {
       "version": "8.2.297.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3e210049d3196d9f0b09e975dc071f885e2f6fc4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1220,6 +1507,7 @@
     {
       "version": "8.2.297.3",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3e210049d3196d9f0b09e975dc071f885e2f6fc4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1232,6 +1520,7 @@
     {
       "version": "8.3.62",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1244,6 +1533,7 @@
     {
       "version": "8.3.110.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1256,6 +1546,7 @@
     {
       "version": "8.3.110.5",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1268,6 +1559,7 @@
     {
       "version": "8.3.110.7",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1280,6 +1572,7 @@
     {
       "version": "8.3.110.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1292,6 +1585,7 @@
     {
       "version": "8.3.110.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1304,6 +1598,7 @@
     {
       "version": "8.3.110.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1316,6 +1611,7 @@
     {
       "version": "8.3.110.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1328,6 +1624,7 @@
     {
       "version": "8.3.122",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "de373bbc5b9121aff3bcd708c100d96d3b64bae9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1340,6 +1637,7 @@
     {
       "version": "8.4.50",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1352,6 +1650,7 @@
     {
       "version": "8.4.55",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1364,6 +1663,7 @@
     {
       "version": "8.4.138",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1376,6 +1676,7 @@
     {
       "version": "8.4.166",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1388,6 +1689,7 @@
     {
       "version": "8.4.191",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "26e9d485d01d6e0eb9dadd21df767a63494c8fea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1400,6 +1702,7 @@
     {
       "version": "8.4.371.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1b904cc30093c25d5fd48389bd58e3f7409bcf80",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1412,6 +1715,7 @@
     {
       "version": "8.4.371.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1b904cc30093c25d5fd48389bd58e3f7409bcf80",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1424,6 +1728,7 @@
     {
       "version": "8.5.34",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "99ffd3c865686d30d114d44c7d7770b6d59a0c71",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1436,6 +1741,7 @@
     {
       "version": "8.5.73",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c523c20ca356cf8149569a4aeece9922c7f05813",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1448,6 +1754,7 @@
     {
       "version": "8.5.74",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c523c20ca356cf8149569a4aeece9922c7f05813",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1460,6 +1767,7 @@
     {
       "version": "8.5.189",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1472,6 +1780,7 @@
     {
       "version": "8.5.200",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1484,6 +1793,7 @@
     {
       "version": "8.5.210.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1496,6 +1806,7 @@
     {
       "version": "8.5.210.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1508,6 +1819,7 @@
     {
       "version": "8.5.210.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1520,6 +1832,7 @@
     {
       "version": "8.5.210.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1532,6 +1845,7 @@
     {
       "version": "8.5.210.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1544,6 +1858,7 @@
     {
       "version": "8.5.210.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2dc7c7abc04253e340b60fa339151a92519f93d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1556,6 +1871,7 @@
     {
       "version": "8.6.125",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b8f14c09b76ae3bd6edabe45105527a97e1e16bd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1568,6 +1884,7 @@
     {
       "version": "8.6.198",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e2b8e15a06b8f8249fc09426225242139dafc994",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1580,6 +1897,7 @@
     {
       "version": "8.6.373",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7dff8d48fb647492bed34cfd788d3ccaf8e8da4d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1592,6 +1910,7 @@
     {
       "version": "8.6.395.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "78b2991b0494c775e437770def455fe40061038f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1604,6 +1923,7 @@
     {
       "version": "8.6.395.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "78b2991b0494c775e437770def455fe40061038f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1616,6 +1936,7 @@
     {
       "version": "8.7.37",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f9767b578459dc3fcdec1d22586d355f0f52cb80",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1628,6 +1949,7 @@
     {
       "version": "8.7.135",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "153ad0bf09eda458f1ef4f74dcac5c12d530d770",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1640,6 +1962,7 @@
     {
       "version": "8.7.220",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1652,6 +1975,7 @@
     {
       "version": "8.7.220.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1664,6 +1988,7 @@
     {
       "version": "8.7.220.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1676,6 +2001,7 @@
     {
       "version": "8.7.220.14",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1688,6 +2014,7 @@
     {
       "version": "8.7.220.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1700,6 +2027,7 @@
     {
       "version": "8.7.220.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1712,6 +2040,7 @@
     {
       "version": "8.7.220.29",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1724,6 +2053,7 @@
     {
       "version": "8.7.220.31",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38a49c12ded01dd8c4628b432cb7eebfb29e77f1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1736,6 +2066,7 @@
     {
       "version": "8.8.74",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e6351ee925d8a7a5bbbf215bc7ba4ff52bf589e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1748,6 +2079,7 @@
     {
       "version": "8.8.186",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "929bcdbb5f629629f2380294188fa2cca173eec0",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1760,6 +2092,7 @@
     {
       "version": "8.8.278",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2101eff1ac4bfd25f2dfa71ad632a600a38c1ed9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1772,6 +2105,7 @@
     {
       "version": "8.9.100",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "acf4f5e6344559c53bfc608c9fc8269e60025378",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1784,6 +2118,7 @@
     {
       "version": "8.9.163",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d50897f1350b89fc1eb313d0267df6340ac22d94",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1796,6 +2131,7 @@
     {
       "version": "8.9.231",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d1a74631f6fa60b3cc034b94a851172260e8e7cd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1808,6 +2144,7 @@
     {
       "version": "8.9.255.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1820,6 +2157,7 @@
     {
       "version": "8.9.255.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1832,6 +2170,7 @@
     {
       "version": "8.9.255.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1844,6 +2183,7 @@
     {
       "version": "8.9.255.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1856,6 +2196,7 @@
     {
       "version": "8.9.255.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1868,6 +2209,7 @@
     {
       "version": "8.9.255.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d5995537211ebc4d1bc37f215c25fa3781ba9d6e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1880,6 +2222,7 @@
     {
       "version": "8.9.270",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "787a10df3c95cead7393babc90e3ab225c10f738",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1892,6 +2235,7 @@
     {
       "version": "8.9.273",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d64e5999e338496041478aaed1759a32f2d2ff21",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1904,6 +2248,7 @@
     {
       "version": "9.0.85",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "fcaf1b1b3620b302a606f84ddae2079e0a90140c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1916,6 +2261,7 @@
     {
       "version": "9.0.161",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "6408b072a41e6f3a6f03c7f2fe70a80d17415e9a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1928,6 +2274,7 @@
     {
       "version": "9.0.257.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "446bf3e5a00bfe4fd99d91cb76ec3b3a7b34d226",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1940,6 +2287,7 @@
     {
       "version": "9.0.257.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "446bf3e5a00bfe4fd99d91cb76ec3b3a7b34d226",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1952,6 +2300,7 @@
     {
       "version": "9.0.257.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "446bf3e5a00bfe4fd99d91cb76ec3b3a7b34d226",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1964,6 +2313,7 @@
     {
       "version": "9.1.127",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "5f2e66e38e6fda3d85c91f080636b5583a7e1c9b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1976,6 +2326,7 @@
     {
       "version": "9.1.269.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -1988,6 +2339,7 @@
     {
       "version": "9.1.269.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2000,6 +2352,7 @@
     {
       "version": "9.1.269.28",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2012,6 +2365,7 @@
     {
       "version": "9.1.269.36",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2024,6 +2378,7 @@
     {
       "version": "9.1.269.38",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2036,6 +2391,7 @@
     {
       "version": "9.1.269.39",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2048,6 +2404,7 @@
     {
       "version": "9.1.269.40",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "77edba11e25386aa719d4f08c3ce2d8c4f868c15",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2060,6 +2417,7 @@
     {
       "version": "9.2.2",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "8e70b68a9898e78673039c229f7e9d71984b0232",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2072,6 +2430,7 @@
     {
       "version": "9.2.98",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "665fcc39bae0443426197bf8f0273258c88948c9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2084,6 +2443,7 @@
     {
       "version": "9.2.131",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "8cc66170453ac1ee0d82bf6c89e07ce1287c23ce",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2096,6 +2456,7 @@
     {
       "version": "9.2.146",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b0572595a7d71f41f7890311fcb06beb9326b9fb",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2108,6 +2469,7 @@
     {
       "version": "9.2.153",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "85859d61bc2e781d4ef6fe62ba3bef89f4c8214e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2120,6 +2482,7 @@
     {
       "version": "9.2.193",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "52ccb296104e3a48444450f1007e67e5fb1c8038",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2132,6 +2495,7 @@
     {
       "version": "9.2.225",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c81ea932910009ab8b785ff4a2728a2b3952a5f3",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2144,6 +2508,7 @@
     {
       "version": "9.2.230.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4036cf1b17581f5668b487a25e252d56e0321a7f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2156,6 +2521,7 @@
     {
       "version": "9.3.51",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "0f7c8421bcfbcdad36795bcca283fddc7bd8a69d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2168,6 +2534,7 @@
     {
       "version": "9.3.73",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "1da98aa3553e7c136e543767226bf74330f02abd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2180,6 +2547,7 @@
     {
       "version": "9.3.80",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e353b0262556aa23adfd23b2c13ebcaec59181a3",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2192,6 +2560,7 @@
     {
       "version": "9.3.100",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "8870cb41201b9f4a384188af6d3c110ef083dba7",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2204,6 +2573,7 @@
     {
       "version": "9.3.178",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "11f1e3d2cdf706c75ad42ec81ba80e5cd409d93e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2216,6 +2586,7 @@
     {
       "version": "9.3.213",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e589a8307b2eebca131735b6ba6afe0808d049f7",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2228,6 +2599,7 @@
     {
       "version": "9.3.234",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f8a6922b7d3fd7096dab8cdd89780ef10f13a3f4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2240,6 +2612,7 @@
     {
       "version": "9.3.239",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "aeb5c9d51647769eea951bbe927a981f15de62fd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2252,6 +2625,7 @@
     {
       "version": "9.3.278",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "dcc42e4be05659944483bbfe741ecbc74a1fbc5d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2264,6 +2638,7 @@
     {
       "version": "9.3.345.6",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d999384c270a340f592cce0a0fb3f8f94c15290",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2276,6 +2651,7 @@
     {
       "version": "9.3.345.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d999384c270a340f592cce0a0fb3f8f94c15290",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2288,6 +2664,7 @@
     {
       "version": "9.3.345.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d999384c270a340f592cce0a0fb3f8f94c15290",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2300,6 +2677,7 @@
     {
       "version": "9.3.345.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d999384c270a340f592cce0a0fb3f8f94c15290",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2312,6 +2690,7 @@
     {
       "version": "9.3.345.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2d999384c270a340f592cce0a0fb3f8f94c15290",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2324,6 +2703,7 @@
     {
       "version": "9.4.32",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "66e6c2e275b89c951a6cdbce8b5ab54e20585703",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2336,6 +2716,7 @@
     {
       "version": "9.4.66",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "96a4da9412f72c4477c2496b1d3ee2748ccd56d4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2348,6 +2729,7 @@
     {
       "version": "9.4.146.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2360,6 +2742,7 @@
     {
       "version": "9.4.146.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2372,6 +2755,7 @@
     {
       "version": "9.4.146.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2384,6 +2768,7 @@
     {
       "version": "9.4.146.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2396,6 +2781,7 @@
     {
       "version": "9.4.146.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2408,6 +2794,7 @@
     {
       "version": "9.4.146.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2420,6 +2807,7 @@
     {
       "version": "9.4.146.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2432,6 +2820,7 @@
     {
       "version": "9.4.146.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2444,6 +2833,7 @@
     {
       "version": "9.4.146.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "bbf7f0ed65548c4df862d2a2748e3a9b908a3217",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2456,6 +2846,7 @@
     {
       "version": "9.5.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "536c8823fdd4d9be7d6fbe65e903c7bb9951d32d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2468,6 +2859,7 @@
     {
       "version": "9.5.99",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "36b1f71274f5bf9a8abf7259fcf7984f10b1e3af",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2480,6 +2872,7 @@
     {
       "version": "9.5.172.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "17d097b0ffdc297f04afb54e9e3abff3f1203f06",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2492,6 +2885,7 @@
     {
       "version": "9.5.172.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "17d097b0ffdc297f04afb54e9e3abff3f1203f06",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2504,6 +2898,7 @@
     {
       "version": "9.6.56",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "48f708c0778d8a5af433b315bd6a775b009b5d03",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2516,6 +2911,7 @@
     {
       "version": "9.6.180.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2528,6 +2924,7 @@
     {
       "version": "9.6.180.7",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2540,6 +2937,7 @@
     {
       "version": "9.6.180.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2552,6 +2950,7 @@
     {
       "version": "9.6.180.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2564,6 +2963,7 @@
     {
       "version": "9.6.180.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2576,6 +2976,7 @@
     {
       "version": "9.6.180.14",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2588,6 +2989,7 @@
     {
       "version": "9.6.180.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2600,6 +3002,7 @@
     {
       "version": "9.6.180.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2612,6 +3015,7 @@
     {
       "version": "9.6.180.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ebad8533842661f66b9b905e0ee9890a32f628d5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2624,6 +3028,7 @@
     {
       "version": "9.8.44",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2c7b24673f2f523c2953e43d4b3a9e9f42b4e6ca",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2636,6 +3041,7 @@
     {
       "version": "9.8.177.2",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9cfc74504f0c5093fe6799e70f15bded2423b5b4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2648,6 +3054,7 @@
     {
       "version": "9.8.177.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9cfc74504f0c5093fe6799e70f15bded2423b5b4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2660,6 +3067,7 @@
     {
       "version": "9.8.177.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9cfc74504f0c5093fe6799e70f15bded2423b5b4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2672,6 +3080,7 @@
     {
       "version": "9.8.177.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9cfc74504f0c5093fe6799e70f15bded2423b5b4",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2684,6 +3093,7 @@
     {
       "version": "9.9.3",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "864a567d390a25fac784e634ce124fa513aa732e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2696,6 +3106,7 @@
     {
       "version": "10.0.139",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2708,6 +3119,7 @@
     {
       "version": "10.0.139.6",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2720,6 +3132,7 @@
     {
       "version": "10.0.139.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2732,6 +3145,7 @@
     {
       "version": "10.0.139.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2744,6 +3158,7 @@
     {
       "version": "10.0.139.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2756,6 +3171,7 @@
     {
       "version": "10.0.139.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62a6377648eb82cff75e3a12f689400694fbbb63",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2768,6 +3184,7 @@
     {
       "version": "10.1.124.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d9590754d5d23e62d15472c5baf6777ca59df20",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2780,6 +3197,7 @@
     {
       "version": "10.2.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3444906fc96f38ef006babefe3ebbd77890c16cc",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2792,6 +3210,7 @@
     {
       "version": "10.2.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3444906fc96f38ef006babefe3ebbd77890c16cc",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2804,6 +3223,7 @@
     {
       "version": "10.2.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3444906fc96f38ef006babefe3ebbd77890c16cc",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2816,6 +3236,7 @@
     {
       "version": "10.2.82",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e5b74ea1b04eb727aea87949783f1a990cb05ff8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2828,6 +3249,7 @@
     {
       "version": "10.2.127",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "2c3758a417ccaba55f88e4f65a237e5db3a48211",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2840,6 +3262,7 @@
     {
       "version": "10.2.154.3",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2852,6 +3275,7 @@
     {
       "version": "10.2.154.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2864,6 +3288,7 @@
     {
       "version": "10.2.154.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2876,6 +3301,7 @@
     {
       "version": "10.2.154.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2888,6 +3314,7 @@
     {
       "version": "10.2.154.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2900,6 +3327,7 @@
     {
       "version": "10.2.154.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2912,6 +3340,7 @@
     {
       "version": "10.2.154.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2924,6 +3353,7 @@
     {
       "version": "10.2.154.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b37c340767cf9e7777d4ca5a588c34c5744df9b2",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2936,6 +3366,7 @@
     {
       "version": "10.3.125",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "c812b8d22706c74e1b42f5351607ecbc9c983677",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2948,6 +3379,7 @@
     {
       "version": "10.4.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "62419bc615680a8c41e3bf591933d79a570d6413",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2960,6 +3392,7 @@
     {
       "version": "10.4.132.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2972,6 +3405,7 @@
     {
       "version": "10.4.132.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2984,6 +3418,7 @@
     {
       "version": "10.4.132.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -2996,6 +3431,7 @@
     {
       "version": "10.4.132.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3008,6 +3444,7 @@
     {
       "version": "10.4.132.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3020,6 +3457,7 @@
     {
       "version": "10.4.132.24",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a56852668f892151fc97343b57af15e82db2e798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3032,6 +3470,7 @@
     {
       "version": "10.5.29",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e8d64b089f0cd701dc98317199941cd96b897f9",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3044,6 +3483,7 @@
     {
       "version": "10.5.151",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e822edcddfd9f4c4b78767dd1a74f40296889ebd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3056,6 +3496,7 @@
     {
       "version": "10.5.196",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "5c74423e17a5eefed958ddeaffc5e7cf403d1d1d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3068,6 +3509,7 @@
     {
       "version": "10.6.82",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b1d3dcea6a61ae9c6469673e1033ea07d1193b96",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3080,6 +3522,7 @@
     {
       "version": "10.6.194.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "339f8c652787781e6dd39ce0624c1a012f69ece8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3092,6 +3535,7 @@
     {
       "version": "10.6.194.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "339f8c652787781e6dd39ce0624c1a012f69ece8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3104,6 +3548,7 @@
     {
       "version": "10.6.194.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "339f8c652787781e6dd39ce0624c1a012f69ece8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3116,6 +3561,7 @@
     {
       "version": "10.6.194.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "339f8c652787781e6dd39ce0624c1a012f69ece8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3128,6 +3574,7 @@
     {
       "version": "10.6.194.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "339f8c652787781e6dd39ce0624c1a012f69ece8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3140,6 +3587,7 @@
     {
       "version": "10.6.194.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "6180903f18b88b0263a59a547ab083c3baf1362d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3152,6 +3600,7 @@
     {
       "version": "10.6.194.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "6180903f18b88b0263a59a547ab083c3baf1362d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3164,6 +3613,7 @@
     {
       "version": "10.6.194.26",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "6180903f18b88b0263a59a547ab083c3baf1362d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3176,6 +3626,7 @@
     {
       "version": "10.7.75.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "adc338f326ca8046c5e1b8c1bfe3b0110de52776",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3188,6 +3639,7 @@
     {
       "version": "10.7.122",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "24bb6108a40a44bda3a7fa88d906c0774034df08",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3200,6 +3652,7 @@
     {
       "version": "10.7.193.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4157fb6cb44135013300168c9f4c5b95d04acf70",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3212,6 +3665,7 @@
     {
       "version": "10.7.193.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4157fb6cb44135013300168c9f4c5b95d04acf70",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3224,6 +3678,7 @@
     {
       "version": "10.8.79",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4f7a8d726692762c27650586fe4596b9de5ada43",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3236,6 +3691,7 @@
     {
       "version": "10.8.156",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3248,6 +3704,7 @@
     {
       "version": "10.8.168.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3260,6 +3717,7 @@
     {
       "version": "10.8.168.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3272,6 +3730,7 @@
     {
       "version": "10.8.168.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3284,6 +3743,7 @@
     {
       "version": "10.8.168.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3296,6 +3756,7 @@
     {
       "version": "10.8.168.21",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3308,6 +3769,7 @@
     {
       "version": "10.8.168.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3320,6 +3782,7 @@
     {
       "version": "10.8.168.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7e7c21a9ac34c4fc2b255aa44d639efec9c33b90",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3332,6 +3795,7 @@
     {
       "version": "10.9.79",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "35368b635aab6793651b488b02273cfe6775e4d0",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3344,6 +3808,7 @@
     {
       "version": "10.9.194.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "875cb19167f2e0d7b1eca89a4d5b5693421424c6",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3356,6 +3821,7 @@
     {
       "version": "11.0.133",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "0efbd89bb5dba430728c91f1b008acce8a41bee1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3368,6 +3834,7 @@
     {
       "version": "11.0.219",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3380,6 +3847,7 @@
     {
       "version": "11.0.226.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3392,6 +3860,7 @@
     {
       "version": "11.0.226.10",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3404,6 +3873,7 @@
     {
       "version": "11.0.226.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3416,6 +3886,7 @@
     {
       "version": "11.0.226.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3428,6 +3899,7 @@
     {
       "version": "11.0.226.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3440,6 +3912,7 @@
     {
       "version": "11.0.226.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3d4b0c1e773d659da18710fc4984b8195f6d5aea",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3452,6 +3925,7 @@
     {
       "version": "11.1.111",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "51292789ecae63df94fa2058407cdc7c7b886b6c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3464,6 +3938,7 @@
     {
       "version": "11.1.269",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d2dda6b06f3b514ffc02966849d32a3ef43a4b7a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3476,6 +3951,7 @@
     {
       "version": "11.1.277.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3ed59a96db823534faa93dbedce1891bef3e1ad5",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3488,6 +3964,7 @@
     {
       "version": "11.2.214.5",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3500,6 +3977,7 @@
     {
       "version": "11.2.214.7",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3512,6 +3990,7 @@
     {
       "version": "11.2.214.9",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3524,6 +4003,7 @@
     {
       "version": "11.2.214.14",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3536,6 +4016,7 @@
     {
       "version": "11.2.214.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3548,6 +4029,7 @@
     {
       "version": "11.2.214.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4d96c496d92cb76c10b201cf9affb2d2027e3a86",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3560,6 +4042,7 @@
     {
       "version": "11.3.97",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e13479c356a2d1098f18d9458d37bbbb5185b348",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3572,6 +4055,7 @@
     {
       "version": "11.3.158",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "41718779442b31a0d6812c546efd64350294f56f",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3584,6 +4068,7 @@
     {
       "version": "11.3.169",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "16f3b4685f95d7fb9581284f54f1b40b85d3f7e0",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3596,6 +4081,7 @@
     {
       "version": "11.3.202",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "38c0f80f0679af484d297d831a38050cff602483",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3608,6 +4094,7 @@
     {
       "version": "11.3.203",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a7b58d141cd15fe8c65b374a7fde18279c80ad17",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3620,6 +4107,7 @@
     {
       "version": "11.3.214",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ed5a0fcb868c817a19986d127b601508e3741c71",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3632,6 +4120,7 @@
     {
       "version": "11.3.225",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "af6080beca427570ce5aff359c8b15e0e52962d1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3644,6 +4133,7 @@
     {
       "version": "11.3.243",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "28768018cba06ca919423d32fa9403d2806296cb",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3656,6 +4146,7 @@
     {
       "version": "11.3.244.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9e9a4341dd24e68cba0f228567a6edbaff1c665b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3668,6 +4159,7 @@
     {
       "version": "11.3.244.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9e9a4341dd24e68cba0f228567a6edbaff1c665b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3680,6 +4172,7 @@
     {
       "version": "11.4.28",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "9e9a4341dd24e68cba0f228567a6edbaff1c665b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3692,6 +4185,7 @@
     {
       "version": "11.4.47",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b3fc6af816c433dd88644ff2356cfd2922b2cef0",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3704,6 +4198,7 @@
     {
       "version": "11.4.55",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b3fc6af816c433dd88644ff2356cfd2922b2cef0",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3716,6 +4211,7 @@
     {
       "version": "11.4.73",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "600ffb7757ed9e3be88b0d8652aa5dd67911672d",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3728,6 +4224,7 @@
     {
       "version": "11.4.75",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "ea62e8acd671ef18ee4fe04c5bab075ceb114b7c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3740,6 +4237,7 @@
     {
       "version": "11.4.94",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "287ad8ea71e26429114fd0f5682936cb4299ce7b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3752,6 +4250,7 @@
     {
       "version": "11.4.117",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "df52d5599b4814c4aa9c631717d85acc5a3736d8",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3764,6 +4263,7 @@
     {
       "version": "11.4.183.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3776,6 +4276,7 @@
     {
       "version": "11.4.183.8",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3788,6 +4289,7 @@
     {
       "version": "11.4.183.14",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3800,6 +4302,7 @@
     {
       "version": "11.4.183.19",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3812,6 +4315,7 @@
     {
       "version": "11.4.183.23",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3824,6 +4328,7 @@
     {
       "version": "11.4.183.25",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3836,6 +4341,7 @@
     {
       "version": "11.4.183.27",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3848,6 +4354,7 @@
     {
       "version": "11.4.183.29",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "61c4b1021222ae2951ebc26b6d6e27a240f38174",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3860,6 +4367,7 @@
     {
       "version": "11.5.75",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "d609da478eabbe14779d10c74390e1271673f4fd",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3872,6 +4380,7 @@
     {
       "version": "11.5.138",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "fef3fe31e60ceb77027560ef56e986960463f54b",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3884,6 +4393,7 @@
     {
       "version": "11.5.150",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7f93a1e7ae8de96f113834f37d01b869a74b7dd3",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3896,6 +4406,7 @@
     {
       "version": "11.6.69",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "7b01a5a9a108c3ecf76eb21af0c636bd656ad097",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3908,6 +4419,7 @@
     {
       "version": "11.6.120",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "5ff0dfa5f541a49a0d6daf9572ac97df86bcd715",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3920,6 +4432,7 @@
     {
       "version": "11.6.136",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "f0c26abe519822b2dfcf631a3ef9a75be4416e91",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3932,6 +4445,7 @@
     {
       "version": "11.6.149",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "66f08295265f69ed629b4f804d4ae5e0e9ec2a97",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3944,6 +4458,7 @@
     {
       "version": "11.6.189.2",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3956,6 +4471,7 @@
     {
       "version": "11.6.189.6",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3968,6 +4484,7 @@
     {
       "version": "11.6.189.11",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3980,6 +4497,7 @@
     {
       "version": "11.6.189.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -3992,6 +4510,7 @@
     {
       "version": "11.6.189.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4004,6 +4523,7 @@
     {
       "version": "11.6.189.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4016,6 +4536,7 @@
     {
       "version": "11.6.189.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4028,6 +4549,7 @@
     {
       "version": "11.6.189.22",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "04466898300bf849d1650cb35dcf2eb353e8e1e1",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4040,6 +4562,7 @@
     {
       "version": "11.7.20",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "a26edb043a5866dd508c20961f379d9c636fc92a",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4052,6 +4575,7 @@
     {
       "version": "11.7.153",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "143d726c8ef21c30bc50ec4436a4d10aca156f4c",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4064,6 +4588,7 @@
     {
       "version": "11.7.203",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "4e911d48537ec9ac84177d714c033e1de13fd34e",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4076,6 +4601,7 @@
     {
       "version": "11.7.228",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3b54b4b176a1a9b5588f44523638e1a3c7b94798",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4088,6 +4614,7 @@
     {
       "version": "11.7.300",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "75e95d4300c13fcf15d678791d40027464492fbc",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4100,6 +4627,7 @@
     {
       "version": "11.7.349",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e99d34ee854df6bf38d8e516a4da2e9c8932fadf",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4112,6 +4640,7 @@
     {
       "version": "11.8.29",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "cc0610015305a497947d51cd47b304184edeb801",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4124,6 +4653,7 @@
     {
       "version": "11.8.171",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4136,6 +4666,7 @@
     {
       "version": "11.8.172",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4148,6 +4679,7 @@
     {
       "version": "11.8.172.1",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4160,6 +4692,7 @@
     {
       "version": "11.8.172.2",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4172,6 +4705,7 @@
     {
       "version": "11.8.172.6",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4184,6 +4718,7 @@
     {
       "version": "11.8.172.12",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4196,6 +4731,7 @@
     {
       "version": "11.8.172.13",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4208,6 +4744,7 @@
     {
       "version": "11.8.172.15",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4220,6 +4757,7 @@
     {
       "version": "11.8.172.16",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4232,6 +4770,7 @@
     {
       "version": "11.8.172.17",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4244,6 +4783,7 @@
     {
       "version": "11.8.172.18",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "e14e0cc3b60c6ba8901741da3f9c18b7fa983880",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4256,6 +4796,7 @@
     {
       "version": "11.9.67",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "20f1a210a72b3d4c2b0eb277870dbc02eb114add",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4268,6 +4809,7 @@
     {
       "version": "11.9.100",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "be2ebca39f649f2f9527118b19898be3c5360683",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4280,6 +4822,7 @@
     {
       "version": "11.9.107",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "03b8d3cbcbd60a0d2a3a662ebda7fc070a0bc663",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4292,6 +4835,7 @@
     {
       "version": "11.9.133",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "3a0a70c7547778311a462bd42bc582eb623c4bb3",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4304,6 +4848,7 @@
     {
       "version": "11.9.168",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "84c053332cd37c52ce67b327b59ef18ea855bbfb",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4316,6 +4861,7 @@
     {
       "version": "11.9.169",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b3ac98b5aa5333fa8b1059b5bf19885923dfe050",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4328,6 +4874,7 @@
     {
       "version": "11.9.169.3",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b3ac98b5aa5333fa8b1059b5bf19885923dfe050",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
@@ -4340,6 +4887,7 @@
     {
       "version": "11.9.169.4",
       "status": "ok",
+      "generator_style": "external-gn",
       "build_revision": "b3ac98b5aa5333fa8b1059b5bf19885923dfe050",
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,

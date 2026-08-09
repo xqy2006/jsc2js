@@ -1,6 +1,6 @@
 {
   "scope": {
-    "minimum": "5.8.0",
+    "minimum": "5.1.0",
     "maximum_exclusive": "12.0.0",
     "sources": [
       "node",
@@ -9,13 +9,97 @@
     "v8_repository": "https://github.com/v8/v8"
   },
   "summary": {
-    "versions": 357,
-    "families": 14,
-    "ok": 357,
+    "versions": 369,
+    "families": 17,
+    "ok": 369,
     "incompatible": 0,
     "fetch_errors": 0
   },
   "families": [
+    {
+      "family": "42a75cdfdec1",
+      "count": 4,
+      "first": "5.1.281.47",
+      "last": "5.2.361.43",
+      "representatives": [
+        "5.1.281.47",
+        "5.2.361.43"
+      ],
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": false,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "statuses": [
+        "ok"
+      ]
+    },
+    {
+      "family": "d19f7d6df4df",
+      "count": 3,
+      "first": "5.3.332.37",
+      "last": "5.3.332.47",
+      "representatives": [
+        "5.3.332.37",
+        "5.3.332.47"
+      ],
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "statuses": [
+        "ok"
+      ]
+    },
+    {
+      "family": "86999f508e99",
+      "count": 5,
+      "first": "5.4.500.31",
+      "last": "5.6.326.50",
+      "representatives": [
+        "5.4.500.31",
+        "5.6.326.50"
+      ],
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "statuses": [
+        "ok"
+      ]
+    },
     {
       "family": "5672a998aa2a",
       "count": 5,
@@ -410,6 +494,438 @@
     }
   ],
   "versions": [
+    {
+      "version": "5.1.281.47",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": false,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "42a75cdfdec1",
+      "source_fingerprint": "4d7e3ed50f449494",
+      "errors": []
+    },
+    {
+      "version": "5.1.281.59",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": false,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "42a75cdfdec1",
+      "source_fingerprint": "4d7e3ed50f449494",
+      "errors": []
+    },
+    {
+      "version": "5.1.281.65",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": false,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "42a75cdfdec1",
+      "source_fingerprint": "4d7e3ed50f449494",
+      "errors": []
+    },
+    {
+      "version": "5.2.361.43",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": false,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "42a75cdfdec1",
+      "source_fingerprint": "d9a5965140ba624a",
+      "errors": []
+    },
+    {
+      "version": "5.3.332.37",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "d19f7d6df4df",
+      "source_fingerprint": "b6424cfc461d8420",
+      "errors": []
+    },
+    {
+      "version": "5.3.332.45",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "d19f7d6df4df",
+      "source_fingerprint": "b6424cfc461d8420",
+      "errors": []
+    },
+    {
+      "version": "5.3.332.47",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": null
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": false
+      },
+      "family": "d19f7d6df4df",
+      "source_fingerprint": "bf691658ea857a2a",
+      "errors": []
+    },
+    {
+      "version": "5.4.500.31",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": "tools/dev/v8gen.py"
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "family": "86999f508e99",
+      "source_fingerprint": "faaecf51a14885a0",
+      "errors": []
+    },
+    {
+      "version": "5.4.500.36",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": "tools/dev/v8gen.py"
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "family": "86999f508e99",
+      "source_fingerprint": "faaecf51a14885a0",
+      "errors": []
+    },
+    {
+      "version": "5.4.500.43",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": "tools/dev/v8gen.py"
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "family": "86999f508e99",
+      "source_fingerprint": "faaecf51a14885a0",
+      "errors": []
+    },
+    {
+      "version": "5.5.372.40",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": "tools/dev/v8gen.py"
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "family": "86999f508e99",
+      "source_fingerprint": "f60f9f8180c0a34e",
+      "errors": []
+    },
+    {
+      "version": "5.6.326.50",
+      "status": "ok",
+      "paths": {
+        "d8_cc": "src/d8.cc",
+        "d8_h": "src/d8.h",
+        "printer": "src/objects-printer.cc",
+        "heap": "src/objects.cc",
+        "string": "src/objects.cc",
+        "sfi_h": "src/objects.h",
+        "fixed_array_h": "src/objects.h",
+        "serializer_h": "src/snapshot/code-serializer.h",
+        "serializer_cc": "src/snapshot/code-serializer.cc",
+        "deserializer_cc": "src/snapshot/deserializer.cc",
+        "object_deserializer_cc": null,
+        "v8gen": "tools/dev/v8gen.py"
+      },
+      "api": {
+        "layout": "flat-d8",
+        "cache_type": "ScriptData",
+        "deserialize_signature": "MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "deserialize_impl": "MaybeHandle<SharedFunctionInfo> CodeSerializer::Deserialize( Isolate* isolate, ScriptData* cached_data, Handle<String> source)",
+        "has_origin_options": false,
+        "has_cached_script": false,
+        "sanity_style": "inline",
+        "object_style": "raw-pointer",
+        "bytecode_accessor": "get",
+        "flags_style": "FLAG_",
+        "string_show_details": true,
+        "has_object_deserializer": false,
+        "has_v8gen": true
+      },
+      "family": "86999f508e99",
+      "source_fingerprint": "65a783beca82d263",
+      "errors": []
+    },
     {
       "version": "5.8.283.38",
       "status": "ok",

@@ -39,7 +39,7 @@ Several PR #18 changes were plainly adapted from that stable baseline, so
 their mere presence is not enough to explain the older-branch crash. The
 high-signal differential is the missing object-validity guard:
 
-| Behavior | Stable V8 12+ | PR #18 (10.8) | New V8 5.8–11.9 path |
+| Behavior | Stable V8 12+ | PR #18 (10.8) | New V8 5.1–11.9 path |
 |---|---|---|---|
 | Full cache sanity bypass | Yes | Yes | No |
 | Relaxed deserializer checks | Yes | Yes | No |
@@ -74,7 +74,7 @@ in issue #23.
 
 ## Crash-safe legacy design
 
-The V8 5.8–11.9 patcher follows a narrower design:
+The V8 5.1–11.9 patcher follows a narrower design:
 
 | Area | Legacy behavior |
 |---|---|
@@ -92,13 +92,13 @@ printed at most once.
 
 ## Validation coverage
 
-- Source/API audit: 357 exact Node/Electron V8 tags, 14 API families,
-  357 compatible and zero fetch failures.
-- Semantic patch replay: 357/357 exact tags; exactly four V8 source files
+- Source/API audit: 369 exact Node/Electron V8 tags, 17 API families,
+  369 compatible and zero fetch failures.
+- Semantic patch replay: 369/369 exact tags; exactly four V8 source files
   change for each tag, and no deserializer file changes.
-- Host-tool audit: 357 exact tags, 167 DEPS-selected Chromium build revisions,
-  five Windows `vcvarsall` templates, and an exact per-tag toolset selection
-  (72 v141, 147 v142, 138 current); all templates are recognized
+- Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
+  six Windows generator/toolchain templates, and an exact per-tag toolset selection
+  (72 v141, 159 v142, 138 current); all templates are recognized
   before CI starts.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).

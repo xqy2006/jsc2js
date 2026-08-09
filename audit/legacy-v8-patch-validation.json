@@ -1,6 +1,6 @@
 {
   "scope": {
-    "minimum": "5.8.0",
+    "minimum": "5.1.0",
     "maximum_exclusive": "12.0.0",
     "sources": [
       "node",
@@ -9,11 +9,11 @@
     "v8_repository": "https://github.com/v8/v8"
   },
   "summary": {
-    "versions": 357,
-    "passed": 357,
+    "versions": 369,
+    "passed": 369,
     "failed": 0,
-    "source_families": 14,
-    "patch_families": 14
+    "source_families": 17,
+    "patch_families": 15
   },
   "safety_invariants": {
     "changed_files_per_version": 4,
@@ -27,6 +27,234 @@
     "recursive_heap_short_print_is_unchanged": true
   },
   "versions": [
+    {
+      "version": "5.1.281.47",
+      "status": "ok",
+      "source_family": "42a75cdfdec1",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.1.281.59",
+      "status": "ok",
+      "source_family": "42a75cdfdec1",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.1.281.65",
+      "status": "ok",
+      "source_family": "42a75cdfdec1",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.2.361.43",
+      "status": "ok",
+      "source_family": "42a75cdfdec1",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.3.332.37",
+      "status": "ok",
+      "source_family": "d19f7d6df4df",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.3.332.45",
+      "status": "ok",
+      "source_family": "d19f7d6df4df",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.3.332.47",
+      "status": "ok",
+      "source_family": "d19f7d6df4df",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.4.500.31",
+      "status": "ok",
+      "source_family": "86999f508e99",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.4.500.36",
+      "status": "ok",
+      "source_family": "86999f508e99",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.4.500.43",
+      "status": "ok",
+      "source_family": "86999f508e99",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.5.372.40",
+      "status": "ok",
+      "source_family": "86999f508e99",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
+    {
+      "version": "5.6.326.50",
+      "status": "ok",
+      "source_family": "86999f508e99",
+      "patch_family": "flat-d8-scriptdata-no-origin-no-cached-script-inline-raw-pointer-get-utf8-value-read-isolate-flag-globals",
+      "changed_files": [
+        "src/d8.cc",
+        "src/d8.h",
+        "src/objects.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "checks": {
+        "loader_marker": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
+        "deserializer_unchanged": true,
+        "expected_file_count": true
+      }
+    },
     {
       "version": "5.8.283.38",
       "status": "ok",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the crash-safe jsc2js patch to V8 5.8 through 11.9 sources.
+"""Apply the crash-safe jsc2js patch to V8 5.1 through 11.9 sources.
 
 This is a semantic patcher rather than a fuzzy unified diff.  V8 moved d8 and
 the object implementation several times in this range, so the patcher detects
@@ -526,7 +526,8 @@ def patch_serializer(text: str, features: Features) -> str:
             )
             check_pattern = re.compile(
                 r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*"
-                r"source_hash\s*!=\s*expected_source_hash\s*\)\s*"
+                r"source_hash\s*!=\s*(?:expected_source_hash|"
+                r"SourceHash\(source\))\s*\)\s*"
                 r"return\s+SOURCE_MISMATCH;[ \t]*$"
             )
             declarations = list(declaration_pattern.finditer(text))

@@ -358,6 +358,10 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         f"API families: **{payload['summary']['families']}**",
         "",
+        "Scope: exact V8 tags shipped by Node.js or Electron from V8 5.1 "
+        "inclusive through V8 11.9. Tags through V8 5.0 do not expose the "
+        "code-cache deserialization path required by jsc2js.",
+        "",
         "| Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |",
         "|---|---:|---:|---|---|---|---|---|",
     ]
@@ -394,7 +398,7 @@ def write_markdown(path: Path, payload: dict) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--min-version", default="5.8.0")
+    parser.add_argument("--min-version", default="5.1.0")
     parser.add_argument("--max-version-exclusive", default="12.0.0")
     parser.add_argument("--versions-file", type=Path)
     parser.add_argument("--output", type=Path, required=True)

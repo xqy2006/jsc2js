@@ -8,6 +8,21 @@ import build_versions_batch_v3 as builder
 
 
 class LegacyHookPythonTest(unittest.TestCase):
+    def test_v8_51_uses_in_tree_gyp_only(self):
+        self.assertTrue(builder.uses_in_tree_gyp("5.1.281.47"))
+        self.assertFalse(builder.uses_in_tree_gyp("5.2.361.43"))
+
+    def test_in_tree_gyp_batch_state_is_set_and_cleared(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertTrue(builder.configure_in_tree_gyp("5.1.281.47"))
+            self.assertEqual(os.environ["GYP_GENERATORS"], "ninja")
+            self.assertIn("v8_object_print=1", os.environ["GYP_DEFINES"])
+            self.assertIn("v8_use_external_startup_data=1", os.environ["GYP_DEFINES"])
+            self.assertFalse(builder.configure_in_tree_gyp("5.2.361.43"))
+            self.assertNotIn("GYP_GENERATORS", os.environ)
+            self.assertNotIn("GYP_GENERATOR_FLAGS", os.environ)
+            self.assertNotIn("GYP_DEFINES", os.environ)
+
     def test_legacy_hooks_force_python_2_ahead_of_depot_tools(self):
         original_path = os.environ.get("PATH", "")
         with mock.patch.dict(

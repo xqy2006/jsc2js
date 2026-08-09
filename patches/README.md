@@ -4,7 +4,7 @@ Patch names describe the V8 range they target.  Build scripts must not select a
 patch by an opaque generation suffix or by a single patch-level tag.
 
 - `current/`: the stable V8 12+ unified diffs used by normal builds.
-- `legacy/apply_legacy_patch.py`: the source-aware V8 5.8–11.9 patcher.  It
+- `legacy/apply_legacy_patch.py`: the source-aware V8 5.1–11.9 patcher.  It
   detects API/layout changes instead of applying fuzzy hunks across unrelated
   V8 versions.
 - `archive/generation-1/` and `archive/generation-2/`: retained historical

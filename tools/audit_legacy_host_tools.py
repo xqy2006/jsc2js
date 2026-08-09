@@ -24,6 +24,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from build_versions_batch_v3 import (  # noqa: E402
     WINDOWS_TOOLCHAIN_ARGS_RE,
     WINDOWS_TOOLCHAIN_ENV_RE,
+    uses_in_tree_gyp,
     windows_legacy_toolset_spec,
 )
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
@@ -100,18 +101,53 @@ def classify_version(
         deps = v8_cache.get(version, "DEPS")
         if deps is None:
             raise RuntimeError("V8 DEPS file was not found")
+        toolset_spec = windows_legacy_toolset_spec(version)
+        required_toolset = toolset_spec[1] if toolset_spec else "current"
+        if uses_in_tree_gyp(version):
+            if "chromium/src/build.git" in deps:
+                raise RuntimeError("V8 5.1 unexpectedly declares an external build repo")
+            gyp_v8 = v8_cache.get(version, "build/gyp_v8") or ""
+            vs_toolchain = v8_cache.get(version, "build/vs_toolchain.py") or ""
+            makefile = v8_cache.get(version, "Makefile") or ""
+            checks = {
+                "ninja_generator": "GYP_GENERATORS" in gyp_v8,
+                "gyp_defines": "GYP_DEFINES" in gyp_v8,
+                "vs2015_compatibility": (
+                    "GYP_MSVS_VERSION" in vs_toolchain
+                    and "elif os.environ['GYP_MSVS_VERSION'] == '2015':"
+                    in vs_toolchain
+                ),
+                "vs_override": "GYP_MSVS_OVERRIDE_PATH" in vs_toolchain,
+                "sdk_environment": "WINDOWSSDKDIR" in vs_toolchain,
+                "object_print": "v8_object_print=1" in makefile,
+                "disassembler": "v8_enable_disassembler=1" in makefile,
+            }
+            compatible = all(checks.values())
+            return {
+                "version": version,
+                "status": "ok" if compatible else "incompatible",
+                "generator_style": "in-tree-gyp",
+                "build_revision": None,
+                "setup_toolchain_path": "build/gyp_v8 + build/vs_toolchain.py",
+                "vcvars_args_matches": 0,
+                "vcvars_environment_matches": 0,
+                "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
+                "required_toolset": required_toolset,
+                "toolset_injection_supported": checks["vs2015_compatibility"],
+                "installed_sdk_injection_supported": checks["sdk_environment"],
+                "in_tree_gyp_checks": checks,
+            }
         revision = extract_build_revision(deps)
         setup = build_cache.get(revision, BUILD_PATH)
         matches = list(WINDOWS_TOOLCHAIN_ARGS_RE.finditer(setup))
         environment_matches = list(WINDOWS_TOOLCHAIN_ENV_RE.finditer(setup))
         template = normalize_template(matches[0].group(0)) if len(matches) == 1 else ""
-        toolset_spec = windows_legacy_toolset_spec(version)
-        required_toolset = toolset_spec[1] if toolset_spec else "current"
         compatible = len(matches) == 1 and len(environment_matches) == 1
         status = "ok" if compatible else "incompatible"
         return {
             "version": version,
             "status": status,
+            "generator_style": "external-gn",
             "build_revision": revision,
             "setup_toolchain_path": BUILD_PATH,
             "vcvars_args_matches": len(matches),
@@ -148,9 +184,11 @@ def write_markdown(path: Path, payload: dict) -> None:
     lines.extend(
         [
         "",
-        "Every exact tag must match exactly one `vcvarsall` argument template "
-        "and one environment-capture call, so CI can select both the historical "
-        "MSVC headers and the SDK version actually installed on the runner. "
+        "V8 5.1 is audited against its in-tree GYP/Ninja generator and imports "
+        "the selected hosted `vcvarsall` environment directly. Every later exact "
+        "tag must match one `vcvarsall` argument template and one environment-"
+        "capture call, so CI can select both the historical MSVC headers and "
+        "the SDK version actually installed on the runner. "
         "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
             "6.x–7.x, and the current toolset for 10.x–11.x.",
             "The JSON report records the exact V8 tag, Chromium build revision, "

@@ -1,11 +1,16 @@
 # Legacy V8 API audit
 
-Exact tags audited: **357**
+Exact tags audited: **369**
 
-API families: **14**
+API families: **17**
+
+Scope: exact V8 tags shipped by Node.js or Electron from V8 5.1 inclusive through V8 11.9. Tags through V8 5.0 do not expose the code-cache deserialization path required by jsc2js.
 
 | Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |
 |---|---:|---:|---|---|---|---|---|
+| `42a75cdfdec1` | 5.1.281.47–5.2.361.43 | 4 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
+| `d19f7d6df4df` | 5.3.332.37–5.3.332.47 | 3 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
+| `86999f508e99` | 5.4.500.31–5.6.326.50 | 5 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
 | `5672a998aa2a` | 5.8.283.38–6.1.534.42 | 5 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
 | `9efac280e320` | 6.2.414.32–6.6.346.32 | 6 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
 | `230889991896` | 6.7.288.43–6.8.275.32 | 7 | flat-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | raw-pointer |

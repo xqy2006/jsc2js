@@ -271,6 +271,81 @@ def windows_legacy_toolset_spec(version: str):
     return None
 
 
+def uses_in_tree_gyp(version: str) -> bool:
+    """V8 5.1 predates the standalone Chromium //build GN dependency."""
+    major, minor = (int(part) for part in version.split(".", 2)[:2])
+    return (major, minor) == (5, 1)
+
+
+def configure_in_tree_gyp(version: str) -> bool:
+    """Select V8 5.1's native GYP/Ninja generator, or clear stale batch state."""
+    if not uses_in_tree_gyp(version):
+        for name in ("GYP_GENERATORS", "GYP_GENERATOR_FLAGS", "GYP_DEFINES"):
+            os.environ.pop(name, None)
+        return False
+
+    os.environ["GYP_GENERATORS"] = "ninja"
+    os.environ["GYP_GENERATOR_FLAGS"] = "output_dir=out"
+    os.environ["GYP_DEFINES"] = " ".join(
+        (
+            "target_arch=x64",
+            "v8_target_arch=x64",
+            "v8_enable_disassembler=1",
+            "v8_object_print=1",
+            "v8_use_external_startup_data=1",
+            "component=static_library",
+        )
+    )
+    log(f"Using the in-tree GYP/Ninja generator for V8 {version}")
+    return True
+
+
+def activate_windows_vcvars(version: str):
+    """Import the selected hosted MSVC/SDK environment for the V8 5.1 GYP build."""
+    if not platform.system().lower().startswith("win"):
+        return
+    spec = windows_legacy_toolset_spec(version)
+    if spec is None:
+        return
+    toolset_glob, toolset_name = spec
+    vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
+    compatible = sorted(
+        path for path in (vs_root / "VC/Tools/MSVC").glob(toolset_glob) if path.is_dir()
+    )
+    if not compatible:
+        raise RuntimeError(f"MSVC {toolset_name} was not found under {vs_root}")
+    vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
+    vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
+    if not vcvars.is_file():
+        raise RuntimeError(f"vcvarsall.bat was not found at {vcvars}")
+    sdk_version = os.environ.get("JSC2JS_WINDOWS_SDK_VERSION", "")
+    sdk_option = f" -winsdk={sdk_version}" if sdk_version else ""
+    command = (
+        f'call "{vcvars}" amd64 -vcvars_ver={vcvars_version}'
+        f"{sdk_option} >nul && set"
+    )
+    completed = subprocess.run(
+        ["cmd.exe", "/d", "/s", "/c", command],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    for line in completed.stdout.splitlines():
+        if "=" not in line or line.startswith("="):
+            continue
+        name, value = line.split("=", 1)
+        os.environ[name] = value
+    os.environ["GYP_MSVS_VERSION"] = "2015"
+    os.environ["GYP_MSVS_OVERRIDE_PATH"] = str(vs_root)
+    log(
+        f"Imported MSVC {toolset_name} ({compatible[-1].name}) and SDK "
+        f"{sdk_version or 'default'} for V8 {version} GYP"
+    )
+
+
 def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     """Select the installed MSVC headers compatible with historical clang-cl."""
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
@@ -429,12 +504,20 @@ def main():
             hook_python = activate_legacy_hook_python(ver)
             if hook_python:
                 patch_gclient_hook_dispatch(hook_python)
-            configure_windows_legacy_toolset(ver)
+            in_tree_gyp = configure_in_tree_gyp(ver)
+            if in_tree_gyp:
+                work_dir = Path("v8/out/Release")
+                if not keep_work_dir:
+                    shutil.rmtree(work_dir, ignore_errors=True)
+                activate_windows_vcvars(ver)
+            else:
+                configure_windows_legacy_toolset(ver)
             run("gclient runhooks", check=True)
 
-            work_dir = Path("v8/out.gn/x64.release")
-            if not keep_work_dir:
-                shutil.rmtree(work_dir, ignore_errors=True)
+            if not in_tree_gyp:
+                work_dir = Path("v8/out.gn/x64.release")
+                if not keep_work_dir:
+                    shutil.rmtree(work_dir, ignore_errors=True)
 
             # Select a named V8 12+ patch, or the source-aware legacy patcher.
             try:
@@ -504,30 +587,32 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            # v8gen.py is Python-2-only before V8 7.6.  Its x64.release
-            # preset is just release+x64, so generate the same args directly
-            # with GN and avoid depending on the branch's Python dialect.
-            work_dir.mkdir(parents=True, exist_ok=True)
-            (work_dir / "args.gn").write_text(
-                'target_cpu = "x64"\n'
-                "is_debug = false\n"
-                "is_component_build = false\n"
-                "symbol_level = 0\n"
-                "v8_enable_disassembler = true\n"
-                "v8_enable_object_print = true\n"
-                + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
-                encoding="utf-8",
-                newline="\n",
-            )
             configure_host_compatibility()
-            run("gn gen out.gn/x64.release", cwd="v8", check=True)
-
-            # Build
-            run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)
+            if in_tree_gyp:
+                # gclient runhooks generated this Ninja project before source
+                # patching; the patch does not alter the build graph.
+                run("ninja -C out/Release d8", cwd="v8", check=True)
+            else:
+                # v8gen.py is Python-2-only before V8 7.6. Its x64.release
+                # preset is just release+x64, so generate the same args directly.
+                work_dir.mkdir(parents=True, exist_ok=True)
+                (work_dir / "args.gn").write_text(
+                    'target_cpu = "x64"\n'
+                    "is_debug = false\n"
+                    "is_component_build = false\n"
+                    "symbol_level = 0\n"
+                    "v8_enable_disassembler = true\n"
+                    "v8_enable_object_print = true\n"
+                    + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                run("gn gen out.gn/x64.release", cwd="v8", check=True)
+                run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)
 
             # --- FIX: Collect artifact (d8 AND snapshot_blob.bin) ---
             bin_name = "d8.exe" if os_name == "Windows" else "d8"
-            build_output_dir = Path("v8/out.gn/x64.release")
+            build_output_dir = work_dir
             built_bin = build_output_dir / bin_name
             built_snapshot = build_output_dir / "snapshot_blob.bin"
 

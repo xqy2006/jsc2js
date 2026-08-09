@@ -160,7 +160,46 @@ def activate_legacy_hook_python(version: str):
         raise RuntimeError(
             f"Historical V8 hooks resolved {resolved} as {version_output}, not Python 2.7"
         )
+    os.environ["JSC2JS_HOOK_PYTHON"] = resolved
+    os.environ["DEPOT_TOOLS_UPDATE"] = "0"
     log(f"Using {resolved} ({version_output}) for V8 {version} hooks")
+    return resolved
+
+
+def patch_gclient_hook_dispatch(hook_python: str):
+    """Make current depot_tools honor the interpreter required by old DEPS."""
+    gclient_command = shutil.which("gclient")
+    if not gclient_command:
+        raise RuntimeError("gclient command was not found")
+    gclient_py = Path(gclient_command).resolve().with_name("gclient.py")
+    if not gclient_py.is_file():
+        raise RuntimeError(f"Could not locate gclient.py beside {gclient_command}")
+
+    marker = "# JSC2JS_LEGACY_HOOK_PYTHON"
+    source = gclient_py.read_text(encoding="utf-8")
+    if marker not in source:
+        anchor_pattern = re.compile(
+            r"^(?P<indent>[ \t]+)cmd = "
+            r"(?:list\(self\._action\)|\[arg for arg in self\._action\])\s*$",
+            re.MULTILINE,
+        )
+        match = anchor_pattern.search(source)
+        if not match:
+            raise RuntimeError(
+                f"Unsupported depot_tools Hook.run layout in {gclient_py}"
+            )
+        indent = match.group("indent")
+        injection = (
+            match.group(0)
+            + f"\n{indent}{marker}\n"
+            + f'{indent}hook_python = os.environ.get("JSC2JS_HOOK_PYTHON")\n'
+            + f'{indent}if hook_python and cmd and cmd[0] == "python":\n'
+            + f"{indent}    cmd[0] = hook_python"
+        )
+        source = source[: match.start()] + injection + source[match.end() :]
+        gclient_py.write_text(source, encoding="utf-8")
+    os.environ["JSC2JS_HOOK_PYTHON"] = hook_python
+    log(f"Configured {gclient_py} to dispatch legacy hooks with {hook_python}")
 
 
 def windows_linker_arg(v8_root: Path) -> str:
@@ -223,7 +262,9 @@ def main():
             run(f"git -C v8 checkout --detach {ver}", check=True)
             # Sync + hooks
             run("gclient sync -D --no-history --nohooks", check=True)
-            activate_legacy_hook_python(ver)
+            hook_python = activate_legacy_hook_python(ver)
+            if hook_python:
+                patch_gclient_hook_dispatch(hook_python)
             run("gclient runhooks", check=True)
 
             work_dir = Path("v8/out.gn/x64.release")

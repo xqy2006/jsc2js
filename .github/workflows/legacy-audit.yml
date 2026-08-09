@@ -83,8 +83,10 @@ jobs:
       - name: Checkout infra repo
         uses: actions/checkout@v4
 
-      - name: Configure Git to use LF line endings
-        run: git config --global core.autocrlf false
+      - name: Configure Git for historical checkouts
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
 
       - name: Partition exact tags
         id: partition

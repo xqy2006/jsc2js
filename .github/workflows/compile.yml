@@ -50,8 +50,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git to use LF line endings
-        run: git config --global core.autocrlf false
+      - name: Configure Git for historical checkouts
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
 
       - name: Classify legacy host-tool requirements
         id: compatibility

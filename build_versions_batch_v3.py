@@ -748,6 +748,13 @@ def windows_linker_arg(v8_root: Path) -> str:
         return "use_lld = false\n"
     return ""
 
+
+def configure_windows_git_checkout():
+    """Allow historical DEPS checkouts containing paths beyond MAX_PATH."""
+    if platform.system().lower().startswith("win"):
+        run("git config --global core.longpaths true", check=True)
+
+
 def main():
     configure_python_compatibility()
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
@@ -771,6 +778,7 @@ def main():
         return 0
 
     os_name = "Windows" if platform.system().lower().startswith("win") else "Linux"
+    configure_windows_git_checkout()
     artifacts_dir = Path("artifacts")
     artifacts_dir.mkdir(exist_ok=True)
     backup_base.mkdir(parents=True, exist_ok=True)

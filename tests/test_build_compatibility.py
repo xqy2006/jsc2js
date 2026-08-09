@@ -39,6 +39,7 @@ class LegacyHookPythonTest(unittest.TestCase):
                 self.assertIn("os: [ubuntu-22.04, windows-2022]", workflow)
                 self.assertIn("build_versions_batch_v3.py", workflow)
                 self.assertIn("build-essential clang lld", workflow)
+                self.assertIn("git config --global core.longpaths true", workflow)
                 self.assertNotIn("python3 build_versions_batch.py", workflow)
                 self.assertNotIn("patches/archive/generation-", workflow)
         main_workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
@@ -513,6 +514,30 @@ def GetVisualStudioVersion():
                 builder.restore_version_worktrees(v8_root)
         restored = [call.args[0][2] for call in run.call_args_list]
         self.assertEqual(restored, [str(v8_root), str(v8_root / "build")])
+
+    def test_windows_checkouts_enable_git_long_path_support(self):
+        with mock.patch.object(
+            builder.platform, "system", return_value="Windows"
+        ), mock.patch.object(builder, "run") as run:
+            builder.configure_windows_git_checkout()
+        run.assert_called_once_with(
+            "git config --global core.longpaths true", check=True
+        )
+
+    def test_linux_checkouts_do_not_change_git_long_path_config(self):
+        with mock.patch.object(
+            builder.platform, "system", return_value="Linux"
+        ), mock.patch.object(builder, "run") as run:
+            builder.configure_windows_git_checkout()
+        run.assert_not_called()
+
+    def test_validation_workflows_enable_git_long_path_support(self):
+        for name in ("compile.yml", "legacy-audit.yml"):
+            with self.subTest(name=name):
+                workflow = (REPO_ROOT / ".github/workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn("git config --global core.longpaths true", workflow)
 
     def test_failed_build_preserves_patch_report_and_error(self):
         with tempfile.TemporaryDirectory() as directory:

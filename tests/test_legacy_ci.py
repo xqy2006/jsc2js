@@ -7,6 +7,7 @@ from tools.legacy_ci import (
     dispatch_has_failed_job,
     parse_run_url,
     plan_batches,
+    recent_workflow_runs,
     refreshable_dispatches,
     select_dispatched_run,
     update_summary,
@@ -136,6 +137,36 @@ class LegacyCiPlanTest(unittest.TestCase):
                 retry_delay=0.25,
             )
         self.assertEqual(record["run_id"], 42)
+        self.assertEqual(result, payload)
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(0.25)
+
+    def test_run_list_retries_a_transient_github_failure(self):
+        payload = [
+            {
+                "databaseId": 42,
+                "url": "https://example.test/42",
+                "headSha": "abc",
+                "displayTitle": "Legacy V8 8.8.74",
+            }
+        ]
+        with (
+            mock.patch(
+                "tools.legacy_ci.subprocess.run",
+                side_effect=[
+                    CalledProcessError(1, ["gh", "run", "list"]),
+                    CompletedProcess([], 0, stdout=json.dumps(payload)),
+                ],
+            ) as run,
+            mock.patch("tools.legacy_ci.time.sleep") as sleep,
+        ):
+            result = recent_workflow_runs(
+                "xqy2006/jsc2js",
+                "compile.yml",
+                "v12-legacy-support",
+                attempts=2,
+                retry_delay=0.25,
+            )
         self.assertEqual(result, payload)
         self.assertEqual(run.call_count, 2)
         sleep.assert_called_once_with(0.25)

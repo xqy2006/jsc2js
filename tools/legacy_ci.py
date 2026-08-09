@@ -145,31 +145,45 @@ def parse_run_url(output: str) -> tuple[int, str]:
     return int(match.group("run_id")), url
 
 
-def recent_workflow_runs(repo: str, workflow: str, branch: str) -> list[dict]:
-    completed = subprocess.run(
-        [
-            "gh",
-            "run",
-            "list",
-            "--repo",
-            repo,
-            "--workflow",
-            workflow,
-            "--branch",
-            branch,
-            "--event",
-            "workflow_dispatch",
-            "--limit",
-            "100",
-            "--json",
-            "databaseId,url,headSha,displayTitle",
-        ],
-        check=True,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    return json.loads(completed.stdout)
+def recent_workflow_runs(
+    repo: str,
+    workflow: str,
+    branch: str,
+    attempts: int = 3,
+    retry_delay: float = 1.0,
+) -> list[dict]:
+    command = [
+        "gh",
+        "run",
+        "list",
+        "--repo",
+        repo,
+        "--workflow",
+        workflow,
+        "--branch",
+        branch,
+        "--event",
+        "workflow_dispatch",
+        "--limit",
+        "100",
+        "--json",
+        "databaseId,url,headSha,displayTitle",
+    ]
+    for attempt in range(attempts):
+        try:
+            completed = subprocess.run(
+                command,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            return json.loads(completed.stdout)
+        except subprocess.CalledProcessError:
+            if attempt + 1 == attempts:
+                raise
+            time.sleep(retry_delay * (2**attempt))
+    raise AssertionError("unreachable")
 
 
 def select_dispatched_run(

@@ -32,7 +32,7 @@
     "legacy_vcvars_entry_point_tags": 231,
     "linux_host_modes": {
       "hosted-clang-in-tree-gyp": 3,
-      "hosted-clang-without-sysroot-hook": 1,
+      "hosted-clang-lld-without-sysroot-hook": 1,
       "pinned-clang-with-sysroot-hook": 365
     },
     "object_print_build_args": {
@@ -226,11 +226,17 @@
       ],
       "clang_keyed_dia_dll": false,
       "clang_vs_year_compatible": true,
+      "v52_hosted_linker_checks": {
+        "lld_flag_supported": true,
+        "lld_disables_gold_default": true,
+        "use_gold_forwarded": true,
+        "use_lld_not_forwarded": true
+      },
       "legacy_vcvars_reference_present": true,
       "legacy_vcvars_entry_point_provided": true,
       "toolset_injection_supported": true,
       "installed_sdk_injection_supported": true,
-      "linux_host_mode": "hosted-clang-without-sysroot-hook",
+      "linux_host_mode": "hosted-clang-lld-without-sysroot-hook",
       "v8_deps_has_sysroot_hook": false,
       "object_print_build_arg": "v8_object_print",
       "disassembler_build_arg_present": true

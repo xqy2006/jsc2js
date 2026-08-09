@@ -34,6 +34,8 @@ from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 BUILD_ROOT = "https://chromium.googlesource.com/chromium/src/build"
 BUILD_PATH = "toolchain/win/setup_toolchain.py"
 VS_TOOLCHAIN_PATH = "vs_toolchain.py"
+COMPILER_BUILD_PATH = "config/compiler/BUILD.gn"
+GCC_TOOLCHAIN_PATH = "toolchain/gcc_toolchain.gni"
 CLANG_ROOT = "https://chromium.googlesource.com/chromium/src/tools/clang.git"
 CLANG_PATH = "scripts/update.py"
 LEGACY_VCVARS_PATH_RE = re.compile(
@@ -145,7 +147,7 @@ def classify_linux_host_mode(version: str, deps: str) -> str:
         return "hosted-clang-in-tree-gyp"
     major, minor = (int(part) for part in version.split(".", 2)[:2])
     if (major, minor) == (5, 2):
-        return "hosted-clang-without-sysroot-hook"
+        return "hosted-clang-lld-without-sysroot-hook"
     if "install-sysroot.py" in deps:
         return "pinned-clang-with-sysroot-hook"
     return "pinned-clang-without-v8-sysroot-hook"
@@ -234,6 +236,16 @@ def classify_version(
         vs_toolchain = build_cache.get(revision, VS_TOOLCHAIN_PATH)
         vs_toolchain_years = extract_vs_toolchain_years(vs_toolchain)
         vs_year_compatible = selected_vs_year in vs_toolchain_years
+        v52_hosted_linker_checks = {}
+        if version.startswith("5.2."):
+            compiler_build = build_cache.get(revision, COMPILER_BUILD_PATH)
+            gcc_toolchain = build_cache.get(revision, GCC_TOOLCHAIN_PATH)
+            v52_hosted_linker_checks = {
+                "lld_flag_supported": '"-fuse-ld=lld"' in compiler_build,
+                "lld_disables_gold_default": "!use_lld && is_linux" in compiler_build,
+                "use_gold_forwarded": '"use_gold",' in gcc_toolchain,
+                "use_lld_not_forwarded": '"use_lld",' not in gcc_toolchain,
+            }
         build_gn = v8_cache.get(version, "BUILD.gn") or ""
         v8_gni = v8_cache.get(version, "gni/v8.gni") or ""
         object_print_arg = classify_object_print_gn_arg(build_gn, v8_gni)
@@ -249,6 +261,7 @@ def classify_version(
             windows_compatible
             and vs_year_compatible
             and clang_vs_year_compatible
+            and all(v52_hosted_linker_checks.values())
             and bool(object_print_arg)
             and disassembler_arg_present
         )
@@ -270,6 +283,11 @@ def classify_version(
             "clang_dia_dll_years": clang_dia_dll_years,
             "clang_keyed_dia_dll": clang_keyed_dia_dll,
             "clang_vs_year_compatible": clang_vs_year_compatible,
+            **(
+                {"v52_hosted_linker_checks": v52_hosted_linker_checks}
+                if v52_hosted_linker_checks
+                else {}
+            ),
             "legacy_vcvars_reference_present": legacy_vcvars_reference,
             "legacy_vcvars_entry_point_provided": bool(
                 toolset_spec and legacy_vcvars_reference
@@ -334,7 +352,8 @@ def write_markdown(path: Path, payload: dict) -> None:
         "V8 5.1 is audited against its in-tree GYP/Ninja generator and imports "
         "the selected hosted `vcvarsall` environment directly. V8 5.2 predates "
         "the Linux sysroot hook, so CI disables the missing Wheezy sysroot and "
-        "routes the pinned clang paths to the hosted compiler. Every later exact "
+        "routes the pinned clang and gold paths to the hosted compiler and lld. "
+        "Every later exact "
         "tag must match one `vcvarsall` argument template and one environment-"
         "capture call, so CI can select both the historical MSVC headers and "
         "the SDK version actually installed on the runner. "

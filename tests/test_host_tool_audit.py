@@ -66,7 +66,7 @@ class HostToolAuditTest(unittest.TestCase):
         )
         self.assertEqual(
             classify_linux_host_mode("5.2.361.43", ""),
-            "hosted-clang-without-sysroot-hook",
+            "hosted-clang-lld-without-sysroot-hook",
         )
         self.assertEqual(
             classify_linux_host_mode("5.3.332.37", "install-sysroot.py"),

@@ -106,7 +106,7 @@ jobs:
         run: |
           set -eux
           sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch libtinfo5
+          sudo apt-get install -y python3 python-is-python3 build-essential clang lld libglib2.0-dev flex bison git curl unzip pkg-config patch libtinfo5
           if [[ "${{ steps.compatibility.outputs.python2 }}" == "true" ]]; then
             sudo apt-get install -y python2
             mkdir -p "$RUNNER_TEMP/python2-shim"

@@ -360,6 +360,10 @@ def configure_v8_52_linux_gn(
         "use_sysroot = false\n"
         "clang_use_chrome_plugins = false\n"
         "treat_warnings_as_errors = false\n"
+        # V8 5.2's bundled gold predates relocation 42 emitted by the hosted
+        # clang. Its exact compiler config supports use_lld without forwarding
+        # that name through the conflicting clang_toolchain() invoker scope.
+        "use_lld = true\n"
         "linux_use_bundled_binutils = false\n"
     )
 

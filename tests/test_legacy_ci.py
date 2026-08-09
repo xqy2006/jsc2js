@@ -1,4 +1,7 @@
+import json
 import unittest
+from subprocess import CalledProcessError, CompletedProcess
+from unittest import mock
 
 from tools.legacy_ci import (
     dispatch_has_failed_job,
@@ -7,6 +10,7 @@ from tools.legacy_ci import (
     refreshable_dispatches,
     select_dispatched_run,
     update_summary,
+    view_run,
 )
 
 
@@ -106,6 +110,35 @@ class LegacyCiPlanTest(unittest.TestCase):
         self.assertEqual(manifest["summary"]["failed"], 1)
         self.assertEqual(manifest["summary"]["active"], 1)
         self.assertEqual(manifest["summary"]["verified_versions"], 0)
+
+    def test_run_view_retries_a_transient_github_failure(self):
+        payload = {
+            "status": "in_progress",
+            "conclusion": "",
+            "headSha": "abc",
+            "jobs": [],
+            "url": "https://example.test/42",
+        }
+        with (
+            mock.patch(
+                "tools.legacy_ci.subprocess.run",
+                side_effect=[
+                    CalledProcessError(1, ["gh", "run", "view"]),
+                    CompletedProcess([], 0, stdout=json.dumps(payload)),
+                ],
+            ) as run,
+            mock.patch("tools.legacy_ci.time.sleep") as sleep,
+        ):
+            record, result = view_run(
+                "xqy2006/jsc2js",
+                {"run_id": 42},
+                attempts=2,
+                retry_delay=0.25,
+            )
+        self.assertEqual(record["run_id"], 42)
+        self.assertEqual(result, payload)
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(0.25)
 
 
 if __name__ == "__main__":

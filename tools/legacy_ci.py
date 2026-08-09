@@ -281,24 +281,38 @@ def dispatch(args: argparse.Namespace, manifest: dict) -> None:
         print(f"[dispatch] {url}")
 
 
-def view_run(repo: str, dispatch_record: dict) -> tuple[dict, dict]:
-    completed = subprocess.run(
-        [
-            "gh",
-            "run",
-            "view",
-            str(dispatch_record["run_id"]),
-            "--repo",
-            repo,
-            "--json",
-            "status,conclusion,headSha,jobs,url",
-        ],
-        check=True,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    return dispatch_record, json.loads(completed.stdout)
+def view_run(
+    repo: str,
+    dispatch_record: dict,
+    attempts: int = 3,
+    retry_delay: float = 1.0,
+) -> tuple[dict, dict]:
+    """Read one run, tolerating short-lived GitHub API/indexing failures."""
+    command = [
+        "gh",
+        "run",
+        "view",
+        str(dispatch_record["run_id"]),
+        "--repo",
+        repo,
+        "--json",
+        "status,conclusion,headSha,jobs,url",
+    ]
+    for attempt in range(attempts):
+        try:
+            completed = subprocess.run(
+                command,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            return dispatch_record, json.loads(completed.stdout)
+        except subprocess.CalledProcessError:
+            if attempt + 1 == attempts:
+                raise
+            time.sleep(retry_delay * (2**attempt))
+    raise AssertionError("unreachable")
 
 
 def refreshable_dispatches(manifest: dict) -> list[dict]:

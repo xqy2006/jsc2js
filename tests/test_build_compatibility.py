@@ -146,10 +146,7 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertEqual(
                 os.environ["JSC2JS_VCVARS_VERSION"], expected_vcvars
             )
-            expected_year = (
-                "2015" if version.startswith("5.") else
-                "2017" if version.startswith("6.") else "2019"
-            )
+            expected_year = builder.windows_compatibility_year(version)
             self.assertEqual(os.environ["GYP_MSVS_VERSION"], expected_year)
             self.assertEqual(os.environ[f"vs{expected_year}_install"], str(vs_root))
         patched = setup.read_text(encoding="utf-8")

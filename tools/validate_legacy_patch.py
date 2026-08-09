@@ -41,8 +41,27 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
         )
         checks = {
             "loader_marker": PATCH_MARKER in transformed[d8_path],
-            "source_hash_only": "JSC2JS_SOURCE_HASH_BYPASS"
-            in transformed[SERIALIZER_CC],
+            "cross_embedder_hashes_bypassed": all(
+                marker in transformed[SERIALIZER_CC]
+                for marker in (
+                    "JSC2JS_SOURCE_HASH_BYPASS",
+                    "JSC2JS_VERSION_HASH_BYPASS",
+                    "JSC2JS_FLAGS_HASH_BYPASS",
+                )
+            ),
+            "structural_checks_preserved": all(
+                transformed[SERIALIZER_CC].count(token)
+                == sources[SERIALIZER_CC].count(token)
+                for token in (
+                    "MAGIC_NUMBER_MISMATCH",
+                    "kMagicNumberMismatch",
+                    "LENGTH_MISMATCH",
+                    "kLengthMismatch",
+                    "CHECKSUM_MISMATCH",
+                    "kChecksumMismatch",
+                    "CPU_FEATURES_MISMATCH",
+                )
+            ),
             "deserializer_unchanged": all(
                 path not in changed
                 for path in (
@@ -121,7 +140,8 @@ def main() -> int:
         },
         "safety_invariants": {
             "changed_files_per_version": 4,
-            "source_hash_is_the_only_integrity_check_bypassed": True,
+            "cross_embedder_hashes_bypassed": ["version", "source", "flags"],
+            "magic_cpu_length_checksum_checks_preserved": True,
             "deserializer_is_unchanged": True,
             "recursive_heap_short_print_is_unchanged": True,
         },

@@ -4,8 +4,9 @@
 This is a semantic patcher rather than a fuzzy unified diff.  V8 moved d8 and
 the object implementation several times in this range, so the patcher detects
 the source API that is actually present and requires every edit anchor to match
-exactly once.  It deliberately keeps all cache integrity checks except the
-source hash, which cannot match because a .jsc file does not contain its source.
+exactly once.  It keeps the structural and payload-integrity checks while
+allowing the version, source, and flags hashes that legitimately differ
+between upstream d8 and an Electron build from the same V8 release line.
 """
 
 from __future__ import annotations
@@ -256,6 +257,61 @@ def _matching_brace(text: str, opening: int) -> int:
     raise PatchError("unterminated C++ function while locating patch anchor")
 
 
+def _remove_hash_mismatch_check(
+    text: str,
+    *,
+    variable: str,
+    offset: str,
+    condition: str,
+    result_tokens: tuple[str, ...],
+    marker: str,
+) -> str:
+    """Remove one hash declaration/check without touching adjacent safeguards."""
+    declaration = re.compile(
+        rf"(?m)^(?P<indent>[ \t]*)uint32_t\s+{variable}\s*=\s*"
+        rf"GetHeaderValue\({offset}\);[ \t]*$"
+    )
+    declarations = list(declaration.finditer(text))
+    if len(declarations) != 1:
+        raise PatchError(
+            f"expected one {variable} declaration, found {len(declarations)}"
+        )
+
+    check = re.compile(
+        rf"(?m)^(?P<indent>[ \t]*)if\s*\(\s*{condition}\s*\)"
+    )
+    checks = list(check.finditer(text))
+    if len(checks) != 1:
+        raise PatchError(f"expected one {variable} check, found {len(checks)}")
+    found = checks[0]
+    line_end = text.find("\n", found.end())
+    if line_end < 0:
+        line_end = len(text)
+    opening = text.find("{", found.end(), line_end)
+    if opening >= 0:
+        end = _matching_brace(text, opening) + 1
+    else:
+        semicolon = text.find(";", found.end(), line_end)
+        if semicolon < 0:
+            raise PatchError(f"could not locate the end of the {variable} check")
+        end = semicolon + 1
+    original_check = text[found.start() : end]
+    if not any(token in original_check for token in result_tokens):
+        raise PatchError(f"unexpected {variable} mismatch result")
+    text = (
+        text[: found.start()]
+        + found.group("indent")
+        + f"// {marker}: accept matching V8 release lines across embedders."
+        + text[end:]
+    )
+    return declaration.sub(
+        lambda declaration_match: declaration_match.group("indent")
+        + f"// {marker}: cached header value intentionally ignored.",
+        text,
+        count=1,
+    )
+
+
 def _ensure_include(text: str, include: str) -> str:
     directive = f"#include {include}"
     if directive in text:
@@ -450,49 +506,68 @@ def patch_d8_h(text: str) -> str:
 
 
 def patch_serializer(text: str, features: Features) -> str:
-    if "JSC2JS_SOURCE_HASH_BYPASS" in text:
-        return text
-    if features.sanity_style in {"split", "split-readonly-checksum"}:
-        old = "return SanityCheckJustSource(expected_source_hash);"
-        if text.count(old) != 1:
-            raise PatchError(
-                "expected one split SanityCheckJustSource return, found "
-                f"{text.count(old)}"
+    if "JSC2JS_SOURCE_HASH_BYPASS" not in text:
+        if features.sanity_style in {"split", "split-readonly-checksum"}:
+            old = "return SanityCheckJustSource(expected_source_hash);"
+            if text.count(old) != 1:
+                raise PatchError(
+                    "expected one split SanityCheckJustSource return, found "
+                    f"{text.count(old)}"
+                )
+            new = (
+                "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.\n"
+                "  return result;"
             )
-        new = (
-            "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.\n"
-            "  return result;"
-        )
-        return text.replace(old, new, 1)
+            text = text.replace(old, new, 1)
+        else:
+            declaration_pattern = re.compile(
+                r"(?m)^(?P<indent>[ \t]*)uint32_t\s+source_hash\s*=\s*"
+                r"GetHeaderValue\(kSourceHashOffset\);[ \t]*$"
+            )
+            check_pattern = re.compile(
+                r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*"
+                r"source_hash\s*!=\s*expected_source_hash\s*\)\s*"
+                r"return\s+SOURCE_MISMATCH;[ \t]*$"
+            )
+            declarations = list(declaration_pattern.finditer(text))
+            checks = list(check_pattern.finditer(text))
+            if len(declarations) != 1 or len(checks) != 1:
+                raise PatchError(
+                    "expected one inline source hash declaration/check, found "
+                    f"{len(declarations)}/{len(checks)}"
+                )
+            text = declaration_pattern.sub(
+                lambda found: found.group("indent")
+                + "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.",
+                text,
+                count=1,
+            )
+            text = check_pattern.sub(
+                lambda found: found.group("indent")
+                + "// Source hash comparison intentionally omitted.",
+                text,
+                count=1,
+            )
 
-    declaration_pattern = re.compile(
-        r"(?m)^(?P<indent>[ \t]*)uint32_t\s+source_hash\s*=\s*"
-        r"GetHeaderValue\(kSourceHashOffset\);[ \t]*$"
-    )
-    check_pattern = re.compile(
-        r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*"
-        r"source_hash\s*!=\s*expected_source_hash\s*\)\s*"
-        r"return\s+SOURCE_MISMATCH;[ \t]*$"
-    )
-    declarations = list(declaration_pattern.finditer(text))
-    checks = list(check_pattern.finditer(text))
-    if len(declarations) != 1 or len(checks) != 1:
-        raise PatchError(
-            "expected one inline source hash declaration/check, found "
-            f"{len(declarations)}/{len(checks)}"
+    if "JSC2JS_VERSION_HASH_BYPASS" not in text:
+        text = _remove_hash_mismatch_check(
+            text,
+            variable="version_hash",
+            offset="kVersionHashOffset",
+            condition=r"version_hash\s*!=\s*Version::Hash\(\)",
+            result_tokens=("VERSION_MISMATCH", "kVersionMismatch"),
+            marker="JSC2JS_VERSION_HASH_BYPASS",
         )
-    text = declaration_pattern.sub(
-        lambda found: found.group("indent")
-        + "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.",
-        text,
-        count=1,
-    )
-    return check_pattern.sub(
-        lambda found: found.group("indent")
-        + "// Source hash comparison intentionally omitted.",
-        text,
-        count=1,
-    )
+    if "JSC2JS_FLAGS_HASH_BYPASS" not in text:
+        text = _remove_hash_mismatch_check(
+            text,
+            variable="flags_hash",
+            offset="kFlagHashOffset",
+            condition=r"flags_hash\s*!=\s*FlagList::Hash\(\)",
+            result_tokens=("FLAGS_MISMATCH", "kFlagsMismatch"),
+            marker="JSC2JS_FLAGS_HASH_BYPASS",
+        )
+    return text
 
 
 def patch_string_printer(text: str) -> str:
@@ -571,7 +646,8 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
         "changed_files": changed,
         "safety": {
             "source_hash_bypassed": True,
-            "magic_version_flags_length_checksum_preserved": True,
+            "version_and_flags_hashes_bypassed": True,
+            "magic_cpu_length_checksum_preserved": True,
             "deserializer_modified": False,
             "recursive_short_print_modified": False,
         },

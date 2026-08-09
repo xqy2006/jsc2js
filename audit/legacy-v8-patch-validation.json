@@ -17,7 +17,12 @@
   },
   "safety_invariants": {
     "changed_files_per_version": 4,
-    "source_hash_is_the_only_integrity_check_bypassed": true,
+    "cross_embedder_hashes_bypassed": [
+      "version",
+      "source",
+      "flags"
+    ],
+    "magic_cpu_length_checksum_checks_preserved": true,
     "deserializer_is_unchanged": true,
     "recursive_heap_short_print_is_unchanged": true
   },
@@ -35,7 +40,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -53,7 +59,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -71,7 +78,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -89,7 +97,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -107,7 +116,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -125,7 +135,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -143,7 +154,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -161,7 +173,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -179,7 +192,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -197,7 +211,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -215,7 +230,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -233,7 +249,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -251,7 +268,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -269,7 +287,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -287,7 +306,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -305,7 +325,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -323,7 +344,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -341,7 +363,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -359,7 +382,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -377,7 +401,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -395,7 +420,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -413,7 +439,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -431,7 +458,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -449,7 +477,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -467,7 +496,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -485,7 +515,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -503,7 +534,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -521,7 +553,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -539,7 +572,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -557,7 +591,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -575,7 +610,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -593,7 +629,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -611,7 +648,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -629,7 +667,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -647,7 +686,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -665,7 +705,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -683,7 +724,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -701,7 +743,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -719,7 +762,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -737,7 +781,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -755,7 +800,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -773,7 +819,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -791,7 +838,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -809,7 +857,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -827,7 +876,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -845,7 +895,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -863,7 +914,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -881,7 +933,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -899,7 +952,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -917,7 +971,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -935,7 +990,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -953,7 +1009,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -971,7 +1028,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -989,7 +1047,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1007,7 +1066,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1025,7 +1085,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1043,7 +1104,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1061,7 +1123,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1079,7 +1142,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1097,7 +1161,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1115,7 +1180,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1133,7 +1199,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1151,7 +1218,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1169,7 +1237,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1187,7 +1256,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1205,7 +1275,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1223,7 +1294,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1241,7 +1313,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1259,7 +1332,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1277,7 +1351,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1295,7 +1370,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1313,7 +1389,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1331,7 +1408,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1349,7 +1427,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1367,7 +1446,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1385,7 +1465,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1403,7 +1484,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1421,7 +1503,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1439,7 +1522,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1457,7 +1541,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1475,7 +1560,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1493,7 +1579,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1511,7 +1598,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1529,7 +1617,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1547,7 +1636,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1565,7 +1655,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1583,7 +1674,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1601,7 +1693,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1619,7 +1712,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1637,7 +1731,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1655,7 +1750,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1673,7 +1769,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1691,7 +1788,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1709,7 +1807,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1727,7 +1826,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1745,7 +1845,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1763,7 +1864,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1781,7 +1883,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1799,7 +1902,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1817,7 +1921,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1835,7 +1940,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1853,7 +1959,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1871,7 +1978,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1889,7 +1997,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1907,7 +2016,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1925,7 +2035,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1943,7 +2054,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1961,7 +2073,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1979,7 +2092,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -1997,7 +2111,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2015,7 +2130,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2033,7 +2149,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2051,7 +2168,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2069,7 +2187,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2087,7 +2206,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2105,7 +2225,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2123,7 +2244,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2141,7 +2263,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2159,7 +2282,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2177,7 +2301,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2195,7 +2320,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2213,7 +2339,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2231,7 +2358,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2249,7 +2377,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2267,7 +2396,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2285,7 +2415,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2303,7 +2434,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2321,7 +2453,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2339,7 +2472,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2357,7 +2491,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2375,7 +2510,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2393,7 +2529,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2411,7 +2548,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2429,7 +2567,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2447,7 +2586,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2465,7 +2605,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2483,7 +2624,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2501,7 +2643,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2519,7 +2662,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2537,7 +2681,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2555,7 +2700,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2573,7 +2719,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2591,7 +2738,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2609,7 +2757,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2627,7 +2776,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2645,7 +2795,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2663,7 +2814,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2681,7 +2833,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2699,7 +2852,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2717,7 +2871,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2735,7 +2890,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2753,7 +2909,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2771,7 +2928,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2789,7 +2947,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2807,7 +2966,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2825,7 +2985,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2843,7 +3004,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2861,7 +3023,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2879,7 +3042,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2897,7 +3061,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2915,7 +3080,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2933,7 +3099,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2951,7 +3118,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2969,7 +3137,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -2987,7 +3156,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3005,7 +3175,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3023,7 +3194,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3041,7 +3213,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3059,7 +3232,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3077,7 +3251,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3095,7 +3270,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3113,7 +3289,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3131,7 +3308,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3149,7 +3327,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3167,7 +3346,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3185,7 +3365,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3203,7 +3384,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3221,7 +3403,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3239,7 +3422,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3257,7 +3441,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3275,7 +3460,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3293,7 +3479,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3311,7 +3498,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3329,7 +3517,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3347,7 +3536,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3365,7 +3555,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3383,7 +3574,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3401,7 +3593,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3419,7 +3612,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3437,7 +3631,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3455,7 +3650,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3473,7 +3669,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3491,7 +3688,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3509,7 +3707,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3527,7 +3726,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3545,7 +3745,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3563,7 +3764,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3581,7 +3783,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3599,7 +3802,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3617,7 +3821,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3635,7 +3840,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3653,7 +3859,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3671,7 +3878,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3689,7 +3897,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3707,7 +3916,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3725,7 +3935,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3743,7 +3954,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3761,7 +3973,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3779,7 +3992,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3797,7 +4011,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3815,7 +4030,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3833,7 +4049,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3851,7 +4068,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3869,7 +4087,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3887,7 +4106,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3905,7 +4125,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3923,7 +4144,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3941,7 +4163,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3959,7 +4182,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3977,7 +4201,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -3995,7 +4220,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4013,7 +4239,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4031,7 +4258,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4049,7 +4277,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4067,7 +4296,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4085,7 +4315,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4103,7 +4334,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4121,7 +4353,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4139,7 +4372,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4157,7 +4391,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4175,7 +4410,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4193,7 +4429,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4211,7 +4448,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4229,7 +4467,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4247,7 +4486,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4265,7 +4505,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4283,7 +4524,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4301,7 +4543,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4319,7 +4562,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4337,7 +4581,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4355,7 +4600,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4373,7 +4619,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4391,7 +4638,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4409,7 +4657,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4427,7 +4676,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4445,7 +4695,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4463,7 +4714,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4481,7 +4733,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4499,7 +4752,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4517,7 +4771,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4535,7 +4790,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4553,7 +4809,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4571,7 +4828,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4589,7 +4847,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4607,7 +4866,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4625,7 +4885,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4643,7 +4904,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4661,7 +4923,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4679,7 +4942,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4697,7 +4961,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4715,7 +4980,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4733,7 +4999,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4751,7 +5018,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4769,7 +5037,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4787,7 +5056,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4805,7 +5075,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4823,7 +5094,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4841,7 +5113,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4859,7 +5132,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4877,7 +5151,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4895,7 +5170,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4913,7 +5189,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4931,7 +5208,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4949,7 +5227,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4967,7 +5246,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -4985,7 +5265,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5003,7 +5284,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5021,7 +5303,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5039,7 +5322,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5057,7 +5341,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5075,7 +5360,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5093,7 +5379,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5111,7 +5398,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5129,7 +5417,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5147,7 +5436,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5165,7 +5455,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5183,7 +5474,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5201,7 +5493,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5219,7 +5512,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5237,7 +5531,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5255,7 +5550,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5273,7 +5569,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5291,7 +5588,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5309,7 +5607,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5327,7 +5626,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5345,7 +5645,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5363,7 +5664,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5381,7 +5683,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5399,7 +5702,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5417,7 +5721,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5435,7 +5740,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5453,7 +5759,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5471,7 +5778,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5489,7 +5797,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5507,7 +5816,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5525,7 +5835,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5543,7 +5854,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5561,7 +5873,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5579,7 +5892,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5597,7 +5911,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5615,7 +5930,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5633,7 +5949,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5651,7 +5968,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5669,7 +5987,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5687,7 +6006,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5705,7 +6025,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5723,7 +6044,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5741,7 +6063,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5759,7 +6082,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5777,7 +6101,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5795,7 +6120,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5813,7 +6139,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5831,7 +6158,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5849,7 +6177,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5867,7 +6196,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5885,7 +6215,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5903,7 +6234,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5921,7 +6253,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5939,7 +6272,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5957,7 +6291,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5975,7 +6310,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -5993,7 +6329,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6011,7 +6348,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6029,7 +6367,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6047,7 +6386,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6065,7 +6405,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6083,7 +6424,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6101,7 +6443,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6119,7 +6462,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6137,7 +6481,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6155,7 +6500,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6173,7 +6519,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6191,7 +6538,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6209,7 +6557,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6227,7 +6576,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6245,7 +6595,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6263,7 +6614,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6281,7 +6633,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6299,7 +6652,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6317,7 +6671,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6335,7 +6690,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6353,7 +6709,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6371,7 +6728,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6389,7 +6747,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6407,7 +6766,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6425,7 +6785,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }
@@ -6443,7 +6804,8 @@
       ],
       "checks": {
         "loader_marker": true,
-        "source_hash_only": true,
+        "cross_embedder_hashes_bypassed": true,
+        "structural_checks_preserved": true,
         "deserializer_unchanged": true,
         "expected_file_count": true
       }

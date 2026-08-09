@@ -7,6 +7,11 @@ on:
         description: "V8 tag to build (e.g. 12.0.267.5)"
         required: true
         type: string
+      audit_only:
+        description: "Upload only validation records, not d8 binaries"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -248,8 +253,8 @@ jobs:
           "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Single-version build finished (see failed_versions.txt if any)."
 
-      - name: Upload artifacts
-        if: always()
+      - name: Upload build artifacts
+        if: always() && !inputs.audit_only
         uses: actions/upload-artifact@v4
         with:
           name: d8-${{ inputs.version }}-${{ matrix.os }}
@@ -258,3 +263,16 @@ jobs:
             success_versions.txt
             failed_versions.txt
           retention-days: 14
+
+      - name: Upload audit records
+        if: always() && inputs.audit_only
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-${{ inputs.version }}-${{ matrix.os }}
+          path: |
+            artifacts/**/apply_patch_report.*
+            artifacts/**/runtime_smoke.txt
+            artifacts/**/runtime_valid_cache_smoke.txt
+            success_versions.txt
+            failed_versions.txt
+          retention-days: 7

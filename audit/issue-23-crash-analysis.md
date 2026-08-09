@@ -35,6 +35,24 @@ The V8 12+ implementation remains the repository's empirically stable
 baseline and is intentionally untouched. The legacy implementation does not
 assume that the same internal-object behavior is safe on older V8 branches.
 
+Several PR #18 changes were plainly adapted from that stable baseline, so
+their mere presence is not enough to explain the older-branch crash. The
+high-signal differential is the missing object-validity guard:
+
+| Behavior | Stable V8 12+ | PR #18 (10.8) | New V8 5.8–11.9 path |
+|---|---|---|---|
+| Full cache sanity bypass | Yes | Yes | No |
+| Relaxed deserializer checks | Yes | Yes | No |
+| Recursive short-print expansion | Yes | Yes | No |
+| isolate/map/meta-map guard before short print | Yes | **No** | Short printer unchanged |
+| Explicit traversal cycle bound | visited set + depth | visited set + depth | flat visited work list |
+
+This comparison also rules out the explicit traversal's missing depth limit as
+the explanation: PR #18 already had both a visited set and a depth limit.
+Because V8 serializer layouts and heap APIs changed substantially before V8
+12, the older implementation avoids the unnecessary permissive changes rather
+than assuming their V8 12+ runtime behavior carries backward unchanged.
+
 ## Unsafe PR #18 behavior
 
 The original PR #18 patch is retained only as

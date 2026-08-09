@@ -30,6 +30,7 @@ concurrency:
 env:
   V8_REPO: https://github.com/v8/v8.git
   VERSION: ${{ inputs.version }}
+  DEPOT_TOOLS_UPDATE: "0"
 
 jobs:
   build:

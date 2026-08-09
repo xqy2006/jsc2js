@@ -239,6 +239,11 @@ def configure_python_compatibility():
     )
 
 
+def configure_depot_tools_update_policy():
+    """Use the depot_tools revision cloned by CI without network self-updates."""
+    os.environ["DEPOT_TOOLS_UPDATE"] = "0"
+
+
 def activate_legacy_hook_python(version: str):
     """Put Python 2 ahead of depot_tools only for V8 hooks that require it."""
     python2_dir = os.environ.get("JSC2JS_PYTHON2_DIR", "")
@@ -757,6 +762,7 @@ def configure_windows_git_checkout():
 
 def main():
     configure_python_compatibility()
+    configure_depot_tools_update_policy()
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
     apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
     backup_base = Path(os.environ.get("BACKUP_BASE", "v8/out.gn/version_backups"))

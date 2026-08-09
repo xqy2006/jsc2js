@@ -40,6 +40,7 @@ class LegacyHookPythonTest(unittest.TestCase):
                 self.assertIn("build_versions_batch_v3.py", workflow)
                 self.assertIn("build-essential clang lld", workflow)
                 self.assertIn("git config --global core.longpaths true", workflow)
+                self.assertIn('DEPOT_TOOLS_UPDATE: "0"', workflow)
                 self.assertNotIn("python3 build_versions_batch.py", workflow)
                 self.assertNotIn("patches/archive/generation-", workflow)
         main_workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
@@ -102,6 +103,11 @@ class LegacyHookPythonTest(unittest.TestCase):
             )
             self.assertEqual(os.environ["DEPOT_TOOLS_UPDATE"], "0")
         os.environ["PATH"] = original_path
+
+    def test_depot_tools_self_update_is_disabled_for_every_hook_generation(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            builder.configure_depot_tools_update_policy()
+            self.assertEqual(os.environ["DEPOT_TOOLS_UPDATE"], "0")
 
     def test_modern_hooks_do_not_require_python_2(self):
         with mock.patch.dict(os.environ, {}, clear=True):
@@ -538,6 +544,7 @@ def GetVisualStudioVersion():
                     encoding="utf-8"
                 )
                 self.assertIn("git config --global core.longpaths true", workflow)
+                self.assertIn('DEPOT_TOOLS_UPDATE: "0"', workflow)
 
     def test_failed_build_preserves_patch_report_and_error(self):
         with tempfile.TemporaryDirectory() as directory:

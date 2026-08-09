@@ -22,6 +22,7 @@ env:
   MIN_VERSION: 5.1.0
   MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}
   SLOTS_PER_OS: 6
+  DEPOT_TOOLS_UPDATE: "0"
 
 jobs:
   determine-versions:

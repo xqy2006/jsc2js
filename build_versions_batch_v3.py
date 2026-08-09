@@ -185,9 +185,19 @@ def configure_python_compatibility():
 
 def activate_legacy_hook_python(version: str):
     """Put Python 2 ahead of depot_tools only for V8 hooks that require it."""
-    if int(version.split(".", 1)[0]) >= 9:
-        return
     python2_dir = os.environ.get("JSC2JS_PYTHON2_DIR", "")
+    if int(version.split(".", 1)[0]) >= 9:
+        # A batch can cross the V8 8.x -> 9.x boundary. Do not leak the
+        # previous version's Python 2 interpreter into modern hooks.
+        if python2_dir:
+            normalized = os.path.normcase(os.path.normpath(python2_dir))
+            os.environ["PATH"] = os.pathsep.join(
+                entry
+                for entry in os.environ.get("PATH", "").split(os.pathsep)
+                if os.path.normcase(os.path.normpath(entry)) != normalized
+            )
+        os.environ.pop("JSC2JS_HOOK_PYTHON", None)
+        return
     if not python2_dir or not Path(python2_dir).is_dir():
         raise RuntimeError(
             f"V8 {version} requires JSC2JS_PYTHON2_DIR for its historical hooks"
@@ -266,12 +276,24 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
     if not platform.system().lower().startswith("win"):
         return
+    major = int(version.split(".", 1)[0])
+    if major == 5:
+        compatibility_year = "2015"
+    elif major == 6:
+        compatibility_year = "2017"
+    elif major < 10:
+        compatibility_year = "2019"
+    else:
+        compatibility_year = "2022"
+    vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
+    os.environ["GYP_MSVS_VERSION"] = compatibility_year
+    os.environ[f"vs{compatibility_year}_install"] = str(vs_root)
+
     spec = windows_legacy_toolset_spec(version)
     if spec is None:
         return
     toolset_glob, toolset_name = spec
 
-    vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
     toolsets_root = vs_root / "VC/Tools/MSVC"
     compatible = sorted(
         path for path in toolsets_root.glob(toolset_glob) if path.is_dir()

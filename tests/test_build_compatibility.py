@@ -37,6 +37,24 @@ class LegacyHookPythonTest(unittest.TestCase):
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertIsNone(builder.activate_legacy_hook_python("9.4.146.8"))
 
+    def test_modern_hooks_remove_python_2_left_by_previous_batch_version(self):
+        python2 = os.path.normpath("/compat/python2")
+        path = os.pathsep.join((python2, "/depot_tools", "/usr/bin"))
+        with mock.patch.dict(
+            os.environ,
+            {
+                "JSC2JS_PYTHON2_DIR": python2,
+                "JSC2JS_HOOK_PYTHON": python2 + "/python",
+                "PATH": path,
+            },
+            clear=True,
+        ):
+            self.assertIsNone(builder.activate_legacy_hook_python("9.1.269.19"))
+            self.assertEqual(
+                os.environ["PATH"], os.pathsep.join(("/depot_tools", "/usr/bin"))
+            )
+            self.assertNotIn("JSC2JS_HOOK_PYTHON", os.environ)
+
     def test_gclient_hook_dispatch_uses_absolute_legacy_interpreter(self):
         original = """class Hook:\n    def run(self):\n        cmd = list(self._action)\n        run(cmd)\n"""
         with tempfile.TemporaryDirectory() as directory:
@@ -101,6 +119,12 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertEqual(
                 os.environ["JSC2JS_VCVARS_VERSION"], expected_vcvars
             )
+            expected_year = (
+                "2015" if version.startswith("5.") else
+                "2017" if version.startswith("6.") else "2019"
+            )
+            self.assertEqual(os.environ["GYP_MSVS_VERSION"], expected_year)
+            self.assertEqual(os.environ[f"vs{expected_year}_install"], str(vs_root))
         patched = setup.read_text(encoding="utf-8")
         self.assertIn("JSC2JS_LEGACY_VCVARS_VERSION", patched)
         self.assertIn("-vcvars_ver=", patched)

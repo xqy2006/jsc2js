@@ -63,11 +63,14 @@ View8 需要：
 
 - 当前补丁覆盖 V8 5.8–11.9 与 V8 12+。其中 V8 5.8–11.9 使用按源码
   API 自动适配的安全补丁；V8 12+ 继续使用原有稳定补丁。
-- 旧版兼容层只跳过无法从 `.jsc` 还原的源码哈希校验，仍保留 magic、
-  V8 版本、flags、长度和 checksum 校验。完整的逐版本审计见
+- 旧版兼容层为兼容同一 V8 发布线的不同宿主（例如 upstream d8 与
+  Electron），跳过 version、source、flags 三个宿主相关哈希；magic、CPU
+  feature（存在该字段时）、payload 长度和 checksum 校验仍保留，反序列化器
+  的同步与边界检查也完全不改。完整的逐版本审计见
   [`audit/legacy-v8-api.md`](audit/legacy-v8-api.md)；对应 Chromium build
   模板与 Windows 工具链审计见
-  [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)。
+  [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)。Issue #23
+  的崩溃路径对照见 [`audit/issue-23-crash-analysis.md`](audit/issue-23-crash-analysis.md)。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -159,10 +162,14 @@ View8 requires:
 - The patch set covers V8 5.8–11.9 and V8 12+. V8 5.8–11.9 uses a
   source-aware compatibility patcher; the existing stable V8 12+ patches are
   unchanged.
-- The legacy compatibility layer bypasses only the unavailable source hash.
-  Magic, V8 version, flags, length, and checksum validation remain enabled.
+- To support different embedders on the same V8 release line (for example,
+  upstream d8 and Electron), the legacy compatibility layer bypasses the
+  version, source, and flags hashes. Magic, CPU-feature (where present),
+  payload-length, and checksum validation remain enabled, and the deserializer's
+  synchronization and bounds checks are unchanged.
   See the [per-version API audit](audit/legacy-v8-api.md) and
-  [host-tool template audit](audit/legacy-v8-host-tools.md).
+  [host-tool template audit](audit/legacy-v8-host-tools.md). See also the
+  [issue #23 crash-path audit](audit/issue-23-crash-analysis.md).
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:

@@ -16,9 +16,9 @@
     "build_revisions": 167,
     "templates": 5,
     "toolset_counts": {
-      "v140": 2,
+      "v140": 0,
       "v141": 72,
-      "v142": 145,
+      "v142": 147,
       "current": 138
     }
   },
@@ -29,7 +29,7 @@
       "first": "5.8.283.38",
       "last": "6.2.414.46",
       "count": 7,
-      "toolsets": "v140, v141"
+      "toolsets": "v141, v142"
     },
     {
       "family": "9b383a94e79c",
@@ -72,7 +72,7 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "required_toolset": "v140",
+      "required_toolset": "v142",
       "toolset_injection_supported": true
     },
     {
@@ -82,7 +82,7 @@
       "setup_toolchain_path": "toolchain/win/setup_toolchain.py",
       "vcvars_args_matches": 1,
       "vcvars_args_template": "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
-      "required_toolset": "v140",
+      "required_toolset": "v142",
       "toolset_injection_supported": true
     },
     {

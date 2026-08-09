@@ -55,8 +55,11 @@ jobs:
           if (( major < 9 )); then python2=true; fi
           if (( major == 5 )); then
             vs_year=2015
-            toolset_prefix=14.00
-            toolset_component=Microsoft.VisualStudio.Component.VC.140
+            # The VS 2022 installer currently accepts VC.140 but does not lay
+            # out a selectable 14.00 toolset on hosted runners. V8 5.x has
+            # been compile-tested successfully with the installed v142 STL.
+            toolset_prefix=14.29
+            toolset_component=Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64
           elif (( major == 6 )); then
             vs_year=2017
             toolset_prefix=14.16

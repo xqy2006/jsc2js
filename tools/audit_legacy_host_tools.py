@@ -145,8 +145,8 @@ def write_markdown(path: Path, payload: dict) -> None:
         [
             "",
             "Every exact tag must match exactly one `vcvarsall` argument template. "
-            "The build selects v140 for V8 5.x, v141 for 6.x–7.x, v142 for "
-            "8.x–9.x, and the current toolset for 10.x–11.x.",
+            "The build selects v142 for V8 5.x and 8.x–9.x, v141 for "
+            "6.x–7.x, and the current toolset for 10.x–11.x.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",
         ]

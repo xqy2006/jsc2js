@@ -249,7 +249,7 @@ def windows_legacy_toolset_spec(version: str):
     """Return the installed MSVC header generation matching a V8 release era."""
     major = int(version.split(".", 1)[0])
     if major == 5:
-        return "14.0*", "v140"
+        return "14.29.*", "v142"
     if major < 8:
         return "14.16.*", "v141"
     if major < 10:

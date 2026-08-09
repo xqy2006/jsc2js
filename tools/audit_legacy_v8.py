@@ -153,11 +153,24 @@ class RawSourceCache:
         digest = hashlib.sha256(source_path.encode("utf-8")).hexdigest()[:16]
         return self.directory / version / f"{digest}.txt"
 
+    @staticmethod
+    def _read_published(path: Path) -> str:
+        # Windows can briefly reject a reader while another process atomically
+        # replaces this path.  The window is normally below one scheduler tick.
+        for attempt in range(20):
+            try:
+                return path.read_text(encoding="utf-8", errors="replace")
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.01)
+        raise AssertionError("unreachable")
+
     def get(self, version: str, source_path: str) -> str | None:
         cached = self._path(version, source_path)
         missing = cached.with_suffix(".missing")
         if cached.exists():
-            return cached.read_text(encoding="utf-8", errors="replace")
+            return self._read_published(cached)
         if missing.exists():
             return None
 
@@ -170,7 +183,40 @@ class RawSourceCache:
                 with urllib.request.urlopen(request, timeout=45) as response:
                     content = response.read().decode("utf-8", errors="replace")
                 cached.parent.mkdir(parents=True, exist_ok=True)
-                cached.write_text(content, encoding="utf-8")
+                # The API audit and semantic replay may intentionally run in
+                # parallel against the same cache.  Publish a complete file
+                # atomically so the other process cannot observe a truncated
+                # first write.
+                temporary: Path | None = None
+                try:
+                    with tempfile.NamedTemporaryFile(
+                        mode="w",
+                        encoding="utf-8",
+                        dir=cached.parent,
+                        prefix=f"{cached.name}.",
+                        suffix=".tmp",
+                        delete=False,
+                    ) as stream:
+                        stream.write(content)
+                        temporary = Path(stream.name)
+                    try:
+                        os.replace(temporary, cached)
+                    except OSError:
+                        # On Windows another process may already have
+                        # atomically published, then opened, this same URL.
+                        # Its complete target is authoritative; only suppress
+                        # the replacement error when that target now contains
+                        # the exact immutable response we fetched.
+                        existing = (
+                            self._read_published(cached)
+                            if cached.is_file()
+                            else None
+                        )
+                        if existing != content:
+                            raise
+                finally:
+                    if temporary is not None:
+                        temporary.unlink(missing_ok=True)
                 return content
             except urllib.error.HTTPError as error:
                 if error.code == 404:

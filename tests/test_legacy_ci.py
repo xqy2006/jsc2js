@@ -1,6 +1,6 @@
 import unittest
 
-from tools.legacy_ci import parse_run_url, plan_batches
+from tools.legacy_ci import parse_run_url, plan_batches, select_dispatched_run
 
 
 class LegacyCiPlanTest(unittest.TestCase):
@@ -31,6 +31,38 @@ class LegacyCiPlanTest(unittest.TestCase):
         )
         self.assertEqual(run_id, 31300983444)
         self.assertTrue(url.endswith(str(run_id)))
+
+    def test_selects_only_new_matching_dispatch(self):
+        runs = [
+            {
+                "databaseId": 10,
+                "url": "https://example.test/10",
+                "headSha": "abc",
+                "displayTitle": "Legacy V8 5.1.1",
+            },
+            {
+                "databaseId": 11,
+                "url": "https://example.test/11",
+                "headSha": "other",
+                "displayTitle": "Legacy V8 5.1.1",
+            },
+            {
+                "databaseId": 12,
+                "url": "https://example.test/12",
+                "headSha": "abc",
+                "displayTitle": "Legacy V8 5.2.1",
+            },
+            {
+                "databaseId": 13,
+                "url": "https://example.test/13",
+                "headSha": "abc",
+                "displayTitle": "Legacy V8 5.1.1",
+            },
+        ]
+        selected = select_dispatched_run(
+            runs, before_ids={10}, head="abc", display_title="Legacy V8 5.1.1"
+        )
+        self.assertEqual(selected["databaseId"], 13)
 
 
 if __name__ == "__main__":

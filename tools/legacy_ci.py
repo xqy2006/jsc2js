@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -144,6 +145,72 @@ def parse_run_url(output: str) -> tuple[int, str]:
     return int(match.group("run_id")), url
 
 
+def recent_workflow_runs(repo: str, workflow: str, branch: str) -> list[dict]:
+    completed = subprocess.run(
+        [
+            "gh",
+            "run",
+            "list",
+            "--repo",
+            repo,
+            "--workflow",
+            workflow,
+            "--branch",
+            branch,
+            "--event",
+            "workflow_dispatch",
+            "--limit",
+            "100",
+            "--json",
+            "databaseId,url,headSha,displayTitle",
+        ],
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    return json.loads(completed.stdout)
+
+
+def select_dispatched_run(
+    runs: list[dict], before_ids: set[int], head: str, display_title: str
+) -> dict | None:
+    matches = [
+        run
+        for run in runs
+        if run["databaseId"] not in before_ids
+        and run["headSha"] == head
+        and run["displayTitle"] == display_title
+    ]
+    return max(matches, key=lambda run: run["databaseId"], default=None)
+
+
+def wait_for_dispatched_run(
+    repo: str,
+    workflow: str,
+    branch: str,
+    before_ids: set[int],
+    head: str,
+    display_title: str,
+    attempts: int = 15,
+) -> tuple[int, str]:
+    for attempt in range(attempts):
+        match = select_dispatched_run(
+            recent_workflow_runs(repo, workflow, branch),
+            before_ids,
+            head,
+            display_title,
+        )
+        if match:
+            return int(match["databaseId"]), match["url"]
+        if attempt + 1 < attempts:
+            time.sleep(2)
+    raise RuntimeError(
+        "workflow dispatch was accepted but its run could not be located; "
+        "inspect Actions before retrying to avoid a duplicate batch"
+    )
+
+
 def dispatch(args: argparse.Namespace, manifest: dict) -> None:
     head = require_pushed_clean_head(args.branch)
     selected = manifest["batches"][
@@ -157,6 +224,10 @@ def dispatch(args: argparse.Namespace, manifest: dict) -> None:
             continue
         versions = batch["versions"]
         compact = json.dumps(versions, separators=(",", ":"))
+        before_ids = {
+            int(run["databaseId"])
+            for run in recent_workflow_runs(args.repo, args.workflow, args.branch)
+        }
         command = [
             "gh",
             "workflow",
@@ -184,7 +255,17 @@ def dispatch(args: argparse.Namespace, manifest: dict) -> None:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        run_id, url = parse_run_url(completed.stdout)
+        try:
+            run_id, url = parse_run_url(completed.stdout)
+        except RuntimeError:
+            run_id, url = wait_for_dispatched_run(
+                args.repo,
+                args.workflow,
+                args.branch,
+                before_ids,
+                head,
+                f"Legacy V8 {versions[0]}",
+            )
         batch["dispatches"].append(
             {
                 "run_id": run_id,

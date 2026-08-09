@@ -1,0 +1,24 @@
+# Legacy V8 API audit
+
+Exact tags audited: **357**
+
+API families: **14**
+
+| Family | Range | Tags | Layout | Cache | Deserialize | Sanity | Objects |
+|---|---:|---:|---|---|---|---|---|
+| `300c443765ad` | 5.8.283.38–6.1.534.42 | 5 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
+| `6de752dc5293` | 6.2.414.32–6.6.346.32 | 6 | flat-d8 | ScriptData | `MUST_USE_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isolate, S...` | inline | raw-pointer |
+| `253088de34d6` | 6.7.288.43–6.8.275.32 | 7 | flat-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | raw-pointer |
+| `ffab20df9668` | 6.9.427.24–7.6.82 | 22 | flat-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | raw-pointer |
+| `fd4933d70286` | 7.6.274–8.5.74 | 76 | split-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | value |
+| `2cab7b92d9af` | 8.5.189–8.8.278 | 26 | split-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | value |
+| `b16f071b14ef` | 8.9.100–9.1.127 | 17 | split-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | value |
+| `9faeebfd346f` | 9.1.269.19–9.4.66 | 31 | split-d8 | ScriptData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | inline | pointer-compression |
+| `899a6e194635` | 9.4.146.8–9.6.180.23 | 23 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split-inline-source | pointer-compression |
+| `86ec417030a0` | 9.8.44–10.7.75.1 | 47 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split | pointer-compression |
+| `836d7e1f448a` | 10.7.122–10.9.194.1 | 14 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split | pointer-compression |
+| `49aab75d1966` | 11.0.133–11.5.150 | 45 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split | pointer-compression |
+| `8f367f07dd47` | 11.6.69–11.7.349 | 18 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split | tagged |
+| `ec27dc395e6e` | 11.8.29–11.9.169.4 | 20 | split-d8 | AlignedCachedData | `V8_WARN_UNUSED_RESULT static MaybeHandle<SharedFunctionInfo> Deserialize( Isolate* isol...` | split-readonly-checksum | tagged |
+
+The JSON report contains the source paths, exact API fingerprint, and compatibility result for every audited tag.

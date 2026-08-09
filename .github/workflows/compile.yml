@@ -24,6 +24,7 @@ jobs:
   build:
     name: Build ${{ matrix.os }} - ${{ inputs.version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +33,7 @@ jobs:
       ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       GYP_MSVS_VERSION: "2022"
+      SKIP_BACKUP: "1"
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
@@ -96,22 +98,15 @@ jobs:
             Write-Output "10.0.20348.0 already exists"
           }
 
-      - name: Initial sync (V8)
+      - name: Seed the requested V8 tag
         shell: bash
         run: |
           set -eux
           gclient config --name v8 --unmanaged $V8_REPO
-          gclient sync --nohooks -D --no-history
-          gclient runhooks
-
-      - name: Copy helper scripts & patches
-        run: |
-          cp apply_patch.py v8/
-          cp patch_v2.diff v8/
-          cp patch_1_v2.diff v8/
-          cp patch_old_v2.diff v8/
-          cp patch_10.8.168.25.diff v8/
-          cp partition_versions.py v8/ || true
+          git init v8
+          git -C v8 remote add origin "$V8_REPO"
+          git -C v8 fetch --depth=1 origin "refs/tags/$VERSION:refs/tags/$VERSION"
+          git -C v8 checkout --detach "$VERSION"
 
       - name: Build d8 with patch
         shell: bash
@@ -119,10 +114,11 @@ jobs:
           ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
         run: |
           set -e
-          python3 build_versions_batch_v3.py || true
+          python3 build_versions_batch_v3.py
           echo "Single-version build finished (see failed_versions.txt if any)."
 
       - name: Upload artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: d8-${{ inputs.version }}-${{ matrix.os }}

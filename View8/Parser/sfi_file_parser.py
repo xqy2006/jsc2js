@@ -16,6 +16,12 @@ current_file_name: str = ""
 # 预扫描：地址(整数) -> 数组（数字列表）
 FIXED_ARRAYS: Dict[int, List[int]] = {}
 
+# 旧版安全补丁会把每个 SharedFunctionInfo 作为独立顶层块输出，避免
+# HeapObjectShortPrint 递归遍历循环对象图。这里预先把这些块的地址映射到
+# 稳定函数名，随后常量池里的 SFI 引用即可直接链接到对应函数。
+FLAT_SFI_NAMES: Dict[int, str] = {}
+FLAT_SFI_DECLARERS: Dict[int, str] = {}
+
 VERBOSE = False
 
 
@@ -154,6 +160,73 @@ def collect_fixed_arrays(file_path: str):
             continue
 
         i += 1
+
+
+def collect_flat_shared_functions(file_path: str):
+    """预扫描独立顶层 SFI 块，建立对象地址到稳定函数名的映射。"""
+    global FLAT_SFI_NAMES, FLAT_SFI_DECLARERS
+    FLAT_SFI_NAMES.clear()
+    FLAT_SFI_DECLARERS.clear()
+
+    lines = read_file_with_best_encoding(file_path)
+    sfi_depth = 0
+    rx_addr = re.compile(
+        r'^\s*((?:0x)?[0-9a-fA-F]+):\s*\[SharedFunctionInfo\]'
+    )
+
+    for raw in lines:
+        line = raw.strip()
+        if line == "Start SharedFunctionInfo":
+            sfi_depth += 1
+            continue
+        if line == "End SharedFunctionInfo":
+            sfi_depth = max(0, sfi_depth - 1)
+            continue
+        if sfi_depth != 1:
+            continue
+
+        match = rx_addr.match(line)
+        if not match:
+            continue
+        address = normalize_addr(match.group(1))
+        if address is not None:
+            FLAT_SFI_NAMES[address] = f"func_sfi_{address:x}"
+
+    # 第二遍记录父子关系。只有引用目标本身也是独立顶层块时才建立
+    # declarer，因而不会改变 v12+ 递归内联输出的既有解析路径。
+    sfi_depth = 0
+    current_top_level: Optional[int] = None
+    rx_ref = re.compile(
+        r'^\s*\d+(?:\s*-\s*\d+)?\s*:\s*'
+        r'(0x[0-9a-fA-F]+)\s+<SharedFunctionInfo(?:\s|>)'
+    )
+    for raw in lines:
+        line = raw.strip()
+        if line == "Start SharedFunctionInfo":
+            sfi_depth += 1
+            if sfi_depth == 1:
+                current_top_level = None
+            continue
+        if line == "End SharedFunctionInfo":
+            if sfi_depth == 1:
+                current_top_level = None
+            sfi_depth = max(0, sfi_depth - 1)
+            continue
+        if sfi_depth != 1:
+            continue
+
+        address_match = rx_addr.match(line)
+        if address_match:
+            current_top_level = normalize_addr(address_match.group(1))
+            continue
+        reference_match = rx_ref.match(line)
+        if not reference_match or current_top_level is None:
+            continue
+        referenced = normalize_addr(reference_match.group(1))
+        if referenced in FLAT_SFI_NAMES:
+            FLAT_SFI_DECLARERS.setdefault(
+                referenced, FLAT_SFI_NAMES[current_top_level]
+            )
 
 
 def get_next_line(file_path: str):
@@ -316,6 +389,12 @@ def _parse_const_value_from_single(address: Optional[str], value: str, lines, fu
             return inline
 
         if val.startswith("<SharedFunctionInfo"):
+            referenced_address = normalize_addr(address)
+            if referenced_address is not None:
+                flat_name = FLAT_SFI_NAMES.get(referenced_address)
+                if flat_name is not None:
+                    return flat_name
+
             # 只有在下一行真开始时，才递归解析嵌套 SFI
             try:
                 peek = next(lines)
@@ -546,7 +625,18 @@ def parse_shared_function_info(lines, name: str, declarer: Optional[str] = None)
                 sfi.code = parse_bytecode(line, lines)
                 continue
 
-            if "[SharedFunctionInfo]" in line or "[BytecodeArray]" in line:
+            if "[SharedFunctionInfo]" in line:
+                address = parse_address(line)
+                address_int = normalize_addr(address)
+                sfi.name = FLAT_SFI_NAMES.get(
+                    address_int,
+                    f'func_{(name or "unknown")}_{address}',
+                )
+                if address_int in FLAT_SFI_DECLARERS:
+                    sfi.declarer = FLAT_SFI_DECLARERS[address_int]
+                continue
+
+            if "[BytecodeArray]" in line and sfi.name == "func_unknown":
                 address = parse_address(line)
                 sfi.name = f'func_{(name or "unknown")}_{address}'
                 continue
@@ -600,7 +690,9 @@ def parse_shared_function_info(lines, name: str, declarer: Optional[str] = None)
 
 def parse_file(file_path: str = "test.txt") -> Dict[str, SharedFunctionInfo]:
     try:
+        all_functions.clear()
         collect_fixed_arrays(file_path)
+        collect_flat_shared_functions(file_path)
         lines = get_next_line(file_path)
         for line in lines:
             if line is None:

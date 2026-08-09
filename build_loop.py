@@ -85,7 +85,7 @@ for v in assigned:
 
         # 4. apply patch
         rc = subprocess.run(
-            "python3 apply_patch.py --patch patch.diff --verbose --report apply_patch_report.txt",
+            "python3 apply_patch.py --patch patches/archive/generation-1/v8-12.6-to-13.2.134.patch --verbose --report apply_patch_report.txt",
             cwd="v8", shell=True
         ).returncode
         if rc != 0:

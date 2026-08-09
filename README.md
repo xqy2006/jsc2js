@@ -61,6 +61,11 @@ View8 需要：
 
 ## 说明
 
+- 当前补丁覆盖 V8 5.8–11.9 与 V8 12+。其中 V8 5.8–11.9 使用按源码
+  API 自动适配的安全补丁；V8 12+ 继续使用原有稳定补丁。
+- 旧版兼容层只跳过无法从 `.jsc` 还原的源码哈希校验，仍保留 magic、
+  V8 版本、flags、长度和 checksum 校验。完整的逐版本审计见
+  [`audit/legacy-v8-api.md`](audit/legacy-v8-api.md)。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -149,6 +154,12 @@ View8 requires:
 
 ## Notes
 
+- The patch set covers V8 5.8–11.9 and V8 12+. V8 5.8–11.9 uses a
+  source-aware compatibility patcher; the existing stable V8 12+ patches are
+  unchanged.
+- The legacy compatibility layer bypasses only the unavailable source hash.
+  Magic, V8 version, flags, length, and checksum validation remain enabled.
+  See the [per-version API audit](audit/legacy-v8-api.md).
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:

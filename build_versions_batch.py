@@ -132,17 +132,17 @@ def main():
                 # Check if version is greater than or equal to 12.6
                 if major > 12 or (major == 12 and minor >= 6):
                     if major > 13 or (major == 13 and minor > 2) or (major == 13 and minor == 2 and minor_2 >= 135):
-                        patch_file_to_use = "patch_1_v2.diff"
+                        patch_file_to_use = "patches/archive/generation-2/v8-13.2.135-plus.patch"
                     else:  
-                        patch_file_to_use = "patch_v2.diff"
+                        patch_file_to_use = "patches/archive/generation-2/v8-12.6-to-13.2.134.patch"
                 else:
-                    patch_file_to_use = "patch_old_v2.diff"
+                    patch_file_to_use = "patches/archive/generation-2/v8-12.0-to-12.5.patch"
                 log(f"Selected patch file for version {ver}: {patch_file_to_use}")
             
             except (ValueError, IndexError) as e:
                 # Handle cases where version string is malformed (e.g., "12" or "a.b.c")
-                log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to patch.diff")
-                patch_file_to_use = "patch.diff"
+                log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to the generation-2 midrange patch")
+                patch_file_to_use = "patches/archive/generation-2/v8-12.6-to-13.2.134.patch"
             # --- MODIFICATION END ---
 
             # Apply patch

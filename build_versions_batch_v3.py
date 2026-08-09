@@ -6,7 +6,7 @@ For each version:
   - fetch tags, checkout tag
   - gclient sync -D --no-history && gclient runhooks
   - remove existing v8/out.gn/x64.release (unless KEEP_WORK_DIR=1)
-  - run: python tools/dev/v8gen.py x64.release -- <args>
+  - write a cross-version x64.release args.gn and run gn gen directly
   - ninja -C out.gn/x64.release d8
   - copy d8 binary AND snapshot_blob.bin to artifacts/d8-<version>-<OS>/
   - backup directory:
@@ -23,10 +23,12 @@ Env vars:
   BACKUP_BASE           (default: out.gn/version_backups)
   BACKUP_COMPRESS       "1" to compress backups
   KEEP_WORK_DIR         "1" to reuse existing x64.release directory (won't delete before rebuild)
+  SKIP_BACKUP           "1" to skip copying the full build directory (validation workflows)
 """
 import json, os, platform, shutil, subprocess, sys
 from pathlib import Path
 from datetime import datetime
+import re
 
 EXPECTED_FILES = {
     "src/d8/d8.cc",
@@ -79,12 +81,41 @@ def compress_backup(path: Path):
         shutil.rmtree(path, ignore_errors=True)
         return zip_name
 
+
+def run_legacy_rejection_smoke(built_bin: Path) -> str:
+    """Verify malformed cache data is rejected without aborting the process."""
+    build_dir = built_bin.parent.resolve()
+    bad_cache = build_dir / "jsc2js-invalid-cache.jsc"
+    bad_cache.write_bytes(b"not-a-v8-code-cache\0" + bytes(64))
+    marker = "JSC2JS_SAFE_REJECTION"
+    javascript = (
+        "try { loadjsc('jsc2js-invalid-cache.jsc'); "
+        "print('JSC2JS_UNEXPECTED_ACCEPT'); quit(3); } "
+        f"catch (error) {{ print('{marker}:' + error); }}"
+    )
+    completed = subprocess.run(
+        [str(built_bin.resolve()), "-e", javascript],
+        cwd=str(build_dir),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=60,
+    )
+    output = completed.stdout or ""
+    if completed.returncode != 0 or marker not in output:
+        raise RuntimeError(
+            "legacy malformed-cache smoke test failed: "
+            f"exit={completed.returncode} output={output[-2000:]}"
+        )
+    return output
+
 def main():
     assigned_json = os.environ.get("ASSIGNED_JSON", "[]")
     apply_script = os.environ.get("APPLY_SCRIPT_NAME", "apply_patch.py")
     backup_base = Path(os.environ.get("BACKUP_BASE", "v8/out.gn/version_backups"))
     compress = os.environ.get("BACKUP_COMPRESS", "0") == "1"
     keep_work_dir = os.environ.get("KEEP_WORK_DIR", "0") == "1"
+    skip_backup = os.environ.get("SKIP_BACKUP", "0") == "1"
 
     try:
         versions = json.loads(assigned_json)
@@ -111,62 +142,105 @@ def main():
         run("git -C v8 reset --hard", check=False)
         sanitized = ver.replace(".", "_")
         try:
+            if not re.fullmatch(r"\d+\.\d+\.\d+(?:\.\d+)?", ver):
+                raise RuntimeError(f"Invalid V8 tag: {ver!r}")
             # Ensure tag
-            run("git -C v8 fetch --tags --quiet", check=True)
-            run(f"git -C v8 checkout {ver}", check=True)
+            run(
+                f"git -C v8 fetch --quiet --depth=1 origin "
+                f"refs/tags/{ver}:refs/tags/{ver}",
+                check=True,
+            )
+            run(f"git -C v8 checkout --detach {ver}", check=True)
             # Sync + hooks
-            run("gclient sync -D --no-history", check=True)
+            run("gclient sync -D --no-history --nohooks", check=True)
             run("gclient runhooks", check=True)
 
             work_dir = Path("v8/out.gn/x64.release")
             if not keep_work_dir:
                 shutil.rmtree(work_dir, ignore_errors=True)
 
-            # --- MODIFICATION START: Dynamically select patch file ---
+            # Select a named V8 12+ patch, or the source-aware legacy patcher.
             try:
                 # Split version string into parts and convert major/minor to integers
                 version_parts = ver.split('.')
                 major = int(version_parts[0])
                 minor = int(version_parts[1])
                 minor_2 = int(version_parts[2])
-                # Check if version is greater than or equal to 12.6
-                if major > 12 or (major == 12 and minor >= 6):
+                is_legacy = major < 12
+                if is_legacy:
+                    patch_file_to_use = None
+                elif major > 12 or (major == 12 and minor >= 6):
                     if major > 13 or (major == 13 and minor > 2) or (major == 13 and minor == 2 and minor_2 >= 135):
-                        patch_file_to_use = "patch_1_v3.diff"
+                        patch_file_to_use = "patches/current/v8-13.2.135-plus.patch"
                     else:  
-                        patch_file_to_use = "patch_v3.diff"
-                elif major == 10 and minor == 8:
-                    patch_file_to_use = "patch_10.8.168.25.diff"
+                        patch_file_to_use = "patches/current/v8-12.6-to-13.2.134.patch"
                 else:
-                    patch_file_to_use = "patch_old_v3.diff"
-                log(f"Selected patch file for version {ver}: {patch_file_to_use}")
+                    patch_file_to_use = "patches/current/v8-12.0-to-12.5.patch"
+                selected = patch_file_to_use or "patches/legacy/apply_legacy_patch.py"
+                log(f"Selected patch implementation for version {ver}: {selected}")
             
             except (ValueError, IndexError) as e:
                 # Handle cases where version string is malformed (e.g., "12" or "a.b.c")
-                log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to patch.diff")
-                patch_file_to_use = "patch.diff"
-            # --- MODIFICATION END ---
+                log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to the current midrange patch")
+                is_legacy = False
+                patch_file_to_use = "patches/current/v8-12.6-to-13.2.134.patch"
 
             # Apply patch
-            apply_path = Path("v8") / apply_script
-            patch_path = Path("v8") / patch_file_to_use
-            if not apply_path.exists():
-                raise RuntimeError(f"Missing apply script {apply_script}")
-            if not patch_path.exists():
-                raise RuntimeError(f"Missing patch file {patch_file_to_use}")
-
-            rc = subprocess.run(
-                f"python3 {apply_script} --patch {patch_file_to_use} --verbose --second-try-ignore-whitespace --report apply_patch_report.txt",
-                cwd="v8", shell=True).returncode
+            if is_legacy:
+                legacy_patcher = Path("patches/legacy/apply_legacy_patch.py").resolve()
+                if not legacy_patcher.exists():
+                    raise RuntimeError(f"Missing legacy patcher {legacy_patcher}")
+                rc = subprocess.run(
+                    [
+                        sys.executable,
+                        str(legacy_patcher),
+                        "--root",
+                        ".",
+                        "--report",
+                        "apply_patch_report.json",
+                    ],
+                    cwd="v8",
+                ).returncode
+            else:
+                apply_path = Path(apply_script).resolve()
+                patch_path = Path(patch_file_to_use).resolve()
+                if not apply_path.exists():
+                    raise RuntimeError(f"Missing apply script {apply_script}")
+                if not patch_path.exists():
+                    raise RuntimeError(f"Missing patch file {patch_file_to_use}")
+                rc = subprocess.run(
+                    [
+                        sys.executable,
+                        str(apply_path),
+                        "--patch",
+                        str(patch_path),
+                        "--verbose",
+                        "--second-try-ignore-whitespace",
+                        "--report",
+                        "apply_patch_report.txt",
+                    ],
+                    cwd="v8",
+                ).returncode
             if rc != 0:
                 log(f"[PATCH] Failed for {ver}")
                 failed.append(ver)
                 run("git -C v8 checkout .", check=False)
                 continue
 
-            # v8gen config
-            gn_args = "v8_enable_disassembler=true v8_enable_object_print=true is_component_build=false is_debug=false"
-            run(f"python tools/dev/v8gen.py x64.release -vv -- {gn_args}", cwd="v8", check=True)
+            # v8gen.py is Python-2-only before V8 7.6.  Its x64.release
+            # preset is just release+x64, so generate the same args directly
+            # with GN and avoid depending on the branch's Python dialect.
+            work_dir.mkdir(parents=True, exist_ok=True)
+            (work_dir / "args.gn").write_text(
+                'target_cpu = "x64"\n'
+                "is_debug = false\n"
+                "is_component_build = false\n"
+                "v8_enable_disassembler = true\n"
+                "v8_enable_object_print = true\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            run("gn gen out.gn/x64.release", cwd="v8", check=True)
 
             # Build
             run("ninja -C out.gn/x64.release d8", cwd="v8", check=True)
@@ -184,6 +258,10 @@ def main():
                 run("git -C v8 checkout .", check=False)
                 continue
 
+            smoke_output = ""
+            if is_legacy:
+                smoke_output = run_legacy_rejection_smoke(built_bin)
+
             target_dir = artifacts_dir / f"d8-{ver}-{os_name}"
             target_dir.mkdir(parents=True, exist_ok=True)
             
@@ -195,15 +273,23 @@ def main():
             report_file = Path("v8/apply_patch_report.txt")
             if report_file.exists():
                 shutil.copy2(report_file, target_dir / "apply_patch_report.txt")
+            legacy_report = Path("v8/apply_patch_report.json")
+            if legacy_report.exists():
+                shutil.copy2(legacy_report, target_dir / "apply_patch_report.json")
+            if smoke_output:
+                (target_dir / "runtime_smoke.txt").write_text(
+                    smoke_output, encoding="utf-8", newline="\n"
+                )
 
             # Backup out.gn/x64.release
-            backup_dir = backup_base / f"x64.release.{sanitized}"
-            log(f"Backing up build directory to {backup_dir}")
-            copytree(work_dir, backup_dir)
+            if not skip_backup:
+                backup_dir = backup_base / f"x64.release.{sanitized}"
+                log(f"Backing up build directory to {backup_dir}")
+                copytree(work_dir, backup_dir)
 
-            if compress:
-                artifact = compress_backup(backup_dir)
-                log(f"Compressed backup: {artifact}")
+                if compress:
+                    artifact = compress_backup(backup_dir)
+                    log(f"Compressed backup: {artifact}")
 
             # Reset source modifications (keep backups + artifacts)
             run("git -C v8 checkout .", check=False)
@@ -221,7 +307,7 @@ def main():
     log("---- SUMMARY ----")
     log(f"Success: {success}")
     log(f"Failed : {failed}")
-    return 0
+    return 1 if failed else 0
 
 if __name__ == "__main__":
     sys.exit(main())

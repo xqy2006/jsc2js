@@ -1,3 +1,6 @@
 public/*
 !public/version.json
 !public/failed.json
+
+__pycache__/
+*.py[cod]

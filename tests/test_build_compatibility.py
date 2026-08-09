@@ -57,6 +57,8 @@ class LegacyHookPythonTest(unittest.TestCase):
     def test_old_windows_v8_selects_installed_v142_toolset(self):
         templates = (
             "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64']",
+            "args = [script_path, 'amd64_x86' if cpu == 'x86' else 'amd64',\n"
+            "        '10.0.14393.0']",
             "args = [script_path, cpu_arg]",
             "args = [script_path, cpu_arg, ]",
         )
@@ -68,7 +70,9 @@ class LegacyHookPythonTest(unittest.TestCase):
                 setup = root / "v8/build/toolchain/win/setup_toolchain.py"
                 setup.parent.mkdir(parents=True)
                 setup.write_text(
-                    f"def load(cpu):\n  {args_line}\n  return args\n",
+                    f"def load(cpu):\n  {args_line}\n"
+                    "  if desktop:\n    assert vc_lib_atlmfc_path\n"
+                    "  return args\n",
                     encoding="utf-8",
                 )
                 with mock.patch.dict(
@@ -83,6 +87,8 @@ class LegacyHookPythonTest(unittest.TestCase):
                 patched = setup.read_text(encoding="utf-8")
                 self.assertIn("JSC2JS_LEGACY_VCVARS_VERSION", patched)
                 self.assertIn("-vcvars_ver=", patched)
+                self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
+                self.assertNotIn("assert vc_lib_atlmfc_path", patched)
 
 
 if __name__ == "__main__":

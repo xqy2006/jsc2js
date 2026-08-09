@@ -255,14 +255,14 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
     else:
         object_style = "raw-pointer"
 
-    if "GetActiveBytecodeArray(Isolate*" in sfi_h:
-        bytecode_accessor = "active-isolate"
-    elif "GetActiveBytecodeArray" in sfi_h:
-        bytecode_accessor = "active"
-    elif "GetBytecodeArray(Isolate*" in sfi_h:
-        bytecode_accessor = "isolate"
-    elif "GetBytecodeArray" in sfi_h or "bytecode_array" in sfi_h:
-        bytecode_accessor = "direct"
+    if re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_h):
+        bytecode_accessor = "field"
+    elif re.search(
+        r"\bGetBytecodeArray\s*\(\s*(?:Local)?Isolate(?:T)?\s*\*", sfi_h
+    ):
+        bytecode_accessor = "get-isolate"
+    elif re.search(r"\bGetBytecodeArray\s*\(", sfi_h):
+        bytecode_accessor = "get"
     else:
         bytecode_accessor = "unknown"
 

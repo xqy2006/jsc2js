@@ -128,9 +128,13 @@ def detect_features(sources: dict[str, str]) -> Features:
     signature = _serializer_signature(serializer_h)
 
     sfi_sources = "\n".join(sources.get(path, "") for path in SFI_PATHS)
-    if "GetBytecodeArray" not in sfi_sources and not re.search(
-        r"\bbytecode_array\s*\(\s*\)", sfi_sources
-    ):
+    field_bytecode_accessor = bool(
+        re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_sources)
+    )
+    get_bytecode_accessor = bool(
+        re.search(r"\bGetBytecodeArray\s*\(", sfi_sources)
+    )
+    if not field_bytecode_accessor and not get_bytecode_accessor:
         raise PatchError("SharedFunctionInfo bytecode accessor is missing")
 
     if "AlignedCachedData" in signature:
@@ -164,19 +168,24 @@ def detect_features(sources: dict[str, str]) -> Features:
 
     bytecode_needs_isolate = bool(
         re.search(
-            r"GetBytecodeArray\s*\(\s*(?:template\s*<[^>]+>\s*)?"
+            r"\bGetBytecodeArray\s*\(\s*(?:template\s*<[^>]+>\s*)?"
             r"(?:Local)?Isolate(?:T)?\s*\*",
             sfi_sources,
         )
-        or re.search(r"GetBytecodeArray\s*\(\s*IsolateT\s*\*", sfi_sources)
+        or re.search(
+            r"\bGetBytecodeArray\s*\(\s*IsolateT\s*\*", sfi_sources
+        )
     )
 
-    if bytecode_needs_isolate:
-        bytecode_accessor = "get-isolate"
-    elif "GetBytecodeArray" in sfi_sources:
-        bytecode_accessor = "get"
-    elif re.search(r"\bbytecode_array\s*\(\s*\)", sfi_sources):
+    # V8 5.x has a monolithic objects.h where AbstractCode::GetBytecodeArray
+    # coexists with SharedFunctionInfo::bytecode_array. Prefer the exact SFI
+    # field getter when present instead of matching the unrelated class.
+    if field_bytecode_accessor:
         bytecode_accessor = "field"
+    elif bytecode_needs_isolate:
+        bytecode_accessor = "get-isolate"
+    elif get_bytecode_accessor:
+        bytecode_accessor = "get"
     else:
         raise PatchError("SharedFunctionInfo bytecode accessor is missing")
 
@@ -449,19 +458,34 @@ def patch_serializer(text: str, features: Features) -> str:
         )
         return text.replace(old, new, 1)
 
-    match = re.search(
+    declaration_pattern = re.compile(
+        r"(?m)^(?P<indent>[ \t]*)uint32_t\s+source_hash\s*=\s*"
+        r"GetHeaderValue\(kSourceHashOffset\);[ \t]*$"
+    )
+    check_pattern = re.compile(
         r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*"
         r"source_hash\s*!=\s*expected_source_hash\s*\)\s*"
-        r"return\s+SOURCE_MISMATCH;[ \t]*$",
+        r"return\s+SOURCE_MISMATCH;[ \t]*$"
+    )
+    declarations = list(declaration_pattern.finditer(text))
+    checks = list(check_pattern.finditer(text))
+    if len(declarations) != 1 or len(checks) != 1:
+        raise PatchError(
+            "expected one inline source hash declaration/check, found "
+            f"{len(declarations)}/{len(checks)}"
+        )
+    text = declaration_pattern.sub(
+        lambda found: found.group("indent")
+        + "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.",
         text,
+        count=1,
     )
-    if not match:
-        raise PatchError("inline source hash return was not found")
-    replacement = (
-        match.group("indent")
-        + "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text."
+    return check_pattern.sub(
+        lambda found: found.group("indent")
+        + "// Source hash comparison intentionally omitted.",
+        text,
+        count=1,
     )
-    return text[: match.start()] + replacement + text[match.end() :]
 
 
 def patch_string_printer(text: str) -> str:

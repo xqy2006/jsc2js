@@ -39,6 +39,12 @@ EXPECTED_FILES = {
     "src/snapshot/deserializer.cc",
 }
 
+WINDOWS_TOOLCHAIN_ARGS_RE = re.compile(
+    r"^(?P<indent>[ \t]+)args = \[script_path,"
+    r"(?:[^\]\r\n]*\r?\n[ \t]+)*[^\]\r\n]*\][ \t]*$",
+    re.MULTILINE,
+)
+
 def log(msg: str):
     print(f"[{datetime.utcnow().isoformat()}] {msg}")
 
@@ -260,13 +266,11 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     if not setup_toolchain.is_file():
         raise RuntimeError(f"Missing Windows setup toolchain: {setup_toolchain}")
     marker = "# JSC2JS_LEGACY_VCVARS_VERSION"
+    atlmfc_marker = "# JSC2JS_OPTIONAL_ATLMFC"
     source = setup_toolchain.read_text(encoding="utf-8")
+    modified = False
     if marker not in source:
-        pattern = re.compile(
-            r"^(?P<indent>[ \t]+)args = \[script_path,[^\]\r\n]*\]\s*$",
-            re.MULTILINE,
-        )
-        match = pattern.search(source)
+        match = WINDOWS_TOOLCHAIN_ARGS_RE.search(source)
         if not match:
             raise RuntimeError(
                 f"Unsupported setup_toolchain.py layout in {setup_toolchain}"
@@ -281,6 +285,15 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
             + f"{indent}  args.append('-vcvars_ver=' + jsc2js_vcvars_version)"
         )
         source = source[: match.start()] + injection + source[match.end() :]
+        modified = True
+    if atlmfc_marker not in source and "assert vc_lib_atlmfc_path" in source:
+        source = source.replace(
+            "assert vc_lib_atlmfc_path",
+            f"pass  {atlmfc_marker}: d8 does not link the optional ATL/MFC libraries",
+            1,
+        )
+        modified = True
+    if modified:
         setup_toolchain.write_text(source, encoding="utf-8")
     os.environ["JSC2JS_VCVARS_VERSION"] = vcvars_version
     log(

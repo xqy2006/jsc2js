@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-22.04, windows-2022]
     env:
       ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
@@ -66,6 +66,13 @@ jobs:
           set -eux
           sudo apt-get update
           sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+          if [[ "${{ steps.compatibility.outputs.python2 }}" == "true" ]]; then
+            sudo apt-get install -y python2
+            mkdir -p "$RUNNER_TEMP/python2-shim"
+            ln -sf /usr/bin/python2 "$RUNNER_TEMP/python2-shim/python"
+            echo "$RUNNER_TEMP/python2-shim" >> "$GITHUB_PATH"
+            export PATH="$RUNNER_TEMP/python2-shim:$PATH"
+          fi
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" >> $GITHUB_PATH
           export PATH="$PWD/depot_tools:$PATH"
@@ -90,11 +97,25 @@ jobs:
         shell: bash
         run: echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
 
-      - name: Install Python 2 for historical V8 hooks
-        if: steps.compatibility.outputs.python2 == 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: "2.7"
+      - name: Install Python 2 for historical V8 hooks (Windows)
+        if: runner.os == 'Windows' && steps.compatibility.outputs.python2 == 'true'
+        shell: pwsh
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP "python-2.7.18.amd64.msi"
+          $installDir = Join-Path $env:RUNNER_TEMP "Python27"
+          Invoke-WebRequest "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi" -OutFile $installer
+          $process = Start-Process msiexec.exe -Wait -PassThru -ArgumentList @(
+            "/i", $installer, "/qn", "/norestart", "ALLUSERS=0",
+            "TARGETDIR=$installDir"
+          )
+          if ($process.ExitCode -ne 0) { throw "Python 2 MSI failed: $($process.ExitCode)" }
+          $python2 = Join-Path $installDir "python.exe"
+          if (-not (Test-Path $python2)) {
+            $python2 = "C:\Python27\python.exe"
+          }
+          if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
+          Split-Path $python2 -Parent | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & $python2 --version
 
       - name: Map installed Visual Studio to the legacy toolchain name
         if: runner.os == 'Windows'

@@ -194,7 +194,11 @@ def patch_gclient_hook_dispatch(hook_python: str):
             + f"\n{indent}{marker}\n"
             + f'{indent}hook_python = os.environ.get("JSC2JS_HOOK_PYTHON")\n'
             + f'{indent}if hook_python and cmd and cmd[0] == "python":\n'
-            + f"{indent}    cmd[0] = hook_python"
+            + f"{indent}    cmd[0] = hook_python\n"
+            + f"{indent}    hook_dir = os.path.dirname(hook_python)\n"
+            + f'{indent}    current_path = os.environ.get("PATH", "")\n'
+            + f"{indent}    if current_path.split(os.pathsep)[0] != hook_dir:\n"
+            + f'{indent}        os.environ["PATH"] = hook_dir + os.pathsep + current_path'
         )
         source = source[: match.start()] + injection + source[match.end() :]
         gclient_py.write_text(source, encoding="utf-8")

@@ -51,7 +51,9 @@ jobs:
           python2=false
           vs_year=2022
           if (( major < 9 )); then python2=true; fi
-          if (( major <= 6 )); then
+          if (( major == 5 )); then
+            vs_year=2015
+          elif (( major == 6 )); then
             vs_year=2017
           elif (( major < 10 )); then
             vs_year=2019

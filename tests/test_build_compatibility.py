@@ -52,6 +52,7 @@ class LegacyHookPythonTest(unittest.TestCase):
             patched = gclient_py.read_text(encoding="utf-8")
             self.assertEqual(patched.count("JSC2JS_LEGACY_HOOK_PYTHON"), 1)
             self.assertIn('cmd[0] == "python"', patched)
+            self.assertIn('os.environ["PATH"] = hook_dir', patched)
 
 
 if __name__ == "__main__":

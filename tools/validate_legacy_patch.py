@@ -7,6 +7,7 @@ import argparse
 import concurrent.futures
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -19,9 +20,33 @@ from patches.legacy.apply_legacy_patch import (  # noqa: E402
     PATCH_MARKER,
     SERIALIZER_CC,
     SFI_PATHS,
+    UPSTREAM_PROTECTION_TOKENS,
+    _matching_brace,
     transform_sources,
+    upstream_protections,
 )
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
+
+
+def cpp_function(text: str, qualified_name: str) -> str:
+    declaration = re.search(
+        rf"\bvoid\s+{re.escape(qualified_name)}\s*\(", text
+    )
+    if not declaration:
+        raise RuntimeError(f"function definition missing: {qualified_name}")
+    opening = text.find("{", declaration.end())
+    if opening < 0:
+        raise RuntimeError(f"function body missing: {qualified_name}")
+    closing = _matching_brace(text, opening)
+    return text[declaration.start() : closing + 1]
+
+
+def protection_tokens_unchanged(before: str, after: str) -> bool:
+    return all(
+        tuple(before.count(token) for token in tokens)
+        == tuple(after.count(token) for token in tokens)
+        for tokens in UPSTREAM_PROTECTION_TOKENS.values()
+    )
 
 
 def validate_record(cache: RawSourceCache, record: dict) -> dict:
@@ -39,6 +64,8 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
         d8_path = next(
             path for path in changed if path in {"src/d8.cc", "src/d8/d8.cc"}
         )
+        protections = upstream_protections(sources[SERIALIZER_CC])
+        heap_path = record["paths"]["heap"]
         checks = {
             "loader_marker": PATCH_MARKER in transformed[d8_path],
             "cross_embedder_hashes_bypassed": all(
@@ -49,24 +76,26 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
                     "JSC2JS_FLAGS_HASH_BYPASS",
                 )
             ),
-            "structural_checks_preserved": all(
-                transformed[SERIALIZER_CC].count(token)
-                == sources[SERIALIZER_CC].count(token)
-                for token in (
-                    "MAGIC_NUMBER_MISMATCH",
-                    "kMagicNumberMismatch",
-                    "LENGTH_MISMATCH",
-                    "kLengthMismatch",
-                    "CHECKSUM_MISMATCH",
-                    "kChecksumMismatch",
-                    "CPU_FEATURES_MISMATCH",
-                )
+            "required_magic_and_checksum_present": (
+                protections["magic"] and protections["checksum"]
+            ),
+            "upstream_cache_checks_preserved": protection_tokens_unchanged(
+                sources[SERIALIZER_CC], transformed[SERIALIZER_CC]
             ),
             "deserializer_unchanged": all(
-                path not in changed
+                transformed.get(path) == sources.get(path)
                 for path in (
                     "src/snapshot/deserializer.cc",
                     "src/snapshot/object-deserializer.cc",
+                )
+                if path in sources
+            ),
+            "heap_short_print_function_unchanged": (
+                cpp_function(
+                    sources[heap_path], "HeapObject::HeapObjectShortPrint"
+                )
+                == cpp_function(
+                    transformed[heap_path], "HeapObject::HeapObjectShortPrint"
                 )
             ),
             "expected_file_count": len(changed) == 4,
@@ -79,6 +108,7 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
             "source_family": record["family"],
             "patch_family": features.family_name,
             "changed_files": changed,
+            "upstream_checks_present": protections,
             "checks": checks,
         }
     except Exception as error:
@@ -137,13 +167,22 @@ def main() -> int:
                     if result.get("patch_family")
                 }
             ),
+            "upstream_check_coverage": {
+                name: sum(
+                    result.get("upstream_checks_present", {}).get(name, False)
+                    for result in results
+                )
+                for name in UPSTREAM_PROTECTION_TOKENS
+            },
         },
         "safety_invariants": {
             "changed_files_per_version": 4,
             "cross_embedder_hashes_bypassed": ["version", "source", "flags"],
-            "magic_cpu_length_checksum_checks_preserved": True,
+            "all_upstream_cache_checks_preserved": True,
+            "magic_and_checksum_required_on_every_audited_tag": True,
+            "header_length_cpu_and_read_only_checksum_are_version_dependent": True,
             "deserializer_is_unchanged": True,
-            "recursive_heap_short_print_is_unchanged": True,
+            "heap_short_print_function_is_byte_identical": True,
         },
         "versions": results,
     }

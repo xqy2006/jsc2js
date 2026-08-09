@@ -47,6 +47,18 @@ FIXED_ARRAY_PATHS = (
 SERIALIZER_H = "src/snapshot/code-serializer.h"
 SERIALIZER_CC = "src/snapshot/code-serializer.cc"
 
+UPSTREAM_PROTECTION_TOKENS = {
+    "magic": ("MAGIC_NUMBER_MISMATCH", "kMagicNumberMismatch"),
+    "checksum": ("CHECKSUM_MISMATCH", "kChecksumMismatch"),
+    "invalid_header": ("INVALID_HEADER", "kInvalidHeader"),
+    "payload_length": ("LENGTH_MISMATCH", "kLengthMismatch"),
+    "cpu_features": ("CPU_FEATURES_MISMATCH", "kCpuFeaturesMismatch"),
+    "read_only_snapshot_checksum": (
+        "READ_ONLY_SNAPSHOT_CHECKSUM_MISMATCH",
+        "kReadOnlySnapshotChecksumMismatch",
+    ),
+}
+
 
 class PatchError(RuntimeError):
     pass
@@ -96,6 +108,14 @@ def _read_existing(root: Path, paths: Iterable[str]) -> dict[str, str]:
         if path.is_file():
             result[relative] = path.read_text(encoding="utf-8", errors="strict")
     return result
+
+
+def upstream_protections(serializer: str) -> dict[str, bool]:
+    """Report the integrity checks that the selected upstream V8 provides."""
+    return {
+        name: any(token in serializer for token in tokens)
+        for name, tokens in UPSTREAM_PROTECTION_TOKENS.items()
+    }
 
 
 def _select(
@@ -648,7 +668,10 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
         "safety": {
             "source_hash_bypassed": True,
             "version_and_flags_hashes_bypassed": True,
-            "magic_cpu_length_checksum_preserved": True,
+            "upstream_cache_checks_preserved": True,
+            "upstream_checks_present": upstream_protections(
+                sources[SERIALIZER_CC]
+            ),
             "deserializer_modified": False,
             "recursive_short_print_modified": False,
         },

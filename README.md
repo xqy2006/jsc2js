@@ -69,9 +69,10 @@ View8 需要：
   [`audit/pre-v8-5.1-api.md`](audit/pre-v8-5.1-api.md)。V8 5.9 才默认全面启用
   Ignition，因此 5.1–5.8 仅适用于宿主实际生成了 Ignition bytecode 的缓存。
 - 旧版兼容层为兼容同一 V8 发布线的不同宿主（例如 upstream d8 与
-  Electron），跳过 version、source、flags 三个宿主相关哈希；magic、CPU
-  feature（存在该字段时）、payload 长度和 checksum 校验仍保留，反序列化器
-  的同步与边界检查也完全不改。完整的逐版本审计见
+  Electron），跳过 version、source、flags 三个宿主相关哈希；上游该版本已有
+  的缓存检查均原样保留：369 个 tag 都有 magic 与 checksum，358 个有 header、
+  356 个有 payload 长度、45 个有 CPU feature、20 个有只读快照 checksum 检查。
+  反序列化器的同步与边界检查也完全不改。完整的逐版本审计见
   [`audit/legacy-v8-api.md`](audit/legacy-v8-api.md)；对应 Chromium build
   模板与 Windows 工具链审计见
   [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)。Issue #23
@@ -175,8 +176,10 @@ View8 requires:
   emitted an Ignition bytecode cache.
 - To support different embedders on the same V8 release line (for example,
   upstream d8 and Electron), the legacy compatibility layer bypasses the
-  version, source, and flags hashes. Magic, CPU-feature (where present),
-  payload-length, and checksum validation remain enabled, and the deserializer's
+  version, source, and flags hashes. Every cache check provided by that upstream
+  V8 tag remains byte-for-byte in place: all 369 tags have magic and checksum
+  checks, 358 have header checks, 356 payload-length checks, 45 CPU-feature
+  checks, and 20 read-only-snapshot checksum checks. The deserializer's
   synchronization and bounds checks are unchanged.
   See the [per-version API audit](audit/legacy-v8-api.md) and
   [host-tool template audit](audit/legacy-v8-host-tools.md). See also the

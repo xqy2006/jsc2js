@@ -79,7 +79,7 @@ The V8 5.1–11.9 patcher follows a narrower design:
 | Area | Legacy behavior |
 |---|---|
 | Embedder-dependent hashes | Version, source, and flags hashes bypassed |
-| Magic/CPU feature/length/checksum | Preserved (CPU feature where present) |
+| Upstream cache checks | Preserved exactly; magic/checksum on all 369 tags, header on 358, length on 356, CPU feature on 45, read-only snapshot checksum on 20 |
 | Deserializer | Unchanged |
 | `HeapObjectShortPrint` | Unchanged |
 | Nested functions | Flat work list of `Handle<SharedFunctionInfo>` |

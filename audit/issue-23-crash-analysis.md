@@ -147,15 +147,23 @@ printed at most once.
 - The depot_tools bootstrap regression range completed all five V8 9.4 tags
   on both platforms in
   [Actions run 31321149072](https://github.com/xqy2006/jsc2js/actions/runs/31321149072).
-  depot_tools is allowed to bootstrap once, then `DEPOT_TOOLS_UPDATE=0` pins
-  it for the remaining fetch, hook, patch, and build steps; this avoids both
-  an uninitialized checkout and a late self-update network failure.
+  The [official depot_tools README](https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/README.md)
+  documents both the required bootstrap and the auto-update switch.
+  depot_tools is allowed to bootstrap once, then `DEPOT_TOOLS_UPDATE=0` pins it
+  for the remaining fetch, hook, patch, and build steps; this avoids both an
+  uninitialized checkout and a late self-update network failure.
 - V8 10.8.168.25 built successfully on Linux and Windows in
   [Actions run 31294049891](https://github.com/xqy2006/jsc2js/actions/runs/31294049891).
   Its malformed-cache smoke test exited normally with
   `JSC2JS_SAFE_REJECTION`.
 - V8 11.8.29 built successfully on Linux and Windows in
   [Actions run 31294051640](https://github.com/xqy2006/jsc2js/actions/runs/31294051640).
+- The exhaustive pass later exposed a compile-only source-classification edge
+  at that exact tag: `FixedArray::get` still returned `Object`, but the object
+  predicates had already become static/free functions. After the patcher was
+  changed to inspect the exact `Object` verifier declaration independently,
+  V8 11.8.29 again completed both platforms at commit `9fcf5f0` in
+  [Actions run 31326369720](https://github.com/xqy2006/jsc2js/actions/runs/31326369720).
 - V8 11.8.171 built successfully on Linux and Windows in
   [Actions run 31296954463](https://github.com/xqy2006/jsc2js/actions/runs/31296954463).
 

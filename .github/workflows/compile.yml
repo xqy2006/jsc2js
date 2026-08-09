@@ -56,49 +56,11 @@ jobs:
       - name: Classify legacy host-tool requirements
         id: compatibility
         shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          import re
-
-          versions = json.loads(os.environ["ASSIGNED_JSON"])
-          if not isinstance(versions, list) or not 1 <= len(versions) <= 5:
-              raise SystemExit("versions_json must be a JSON array of 1-5 tags")
-          if versions[0] != os.environ["VERSION"]:
-              raise SystemExit("the first versions_json tag must equal version")
-          if len(set(versions)) != len(versions):
-              raise SystemExit("versions_json must not contain duplicate tags")
-          pattern = re.compile(r"\d+\.\d+\.\d+(?:\.\d+)?\Z")
-          if any(not isinstance(version, str) or not pattern.fullmatch(version) for version in versions):
-              raise SystemExit("versions_json contains an invalid V8 tag")
-
-          majors = [int(version.split(".", 1)[0]) for version in versions]
-          first_major = majors[0]
-          if first_major == 5:
-              vs_year = 2015
-          elif first_major < 8:
-            vs_year = 2017
-          elif first_major < 10:
-              vs_year = 2019
-          else:
-              vs_year = 2022
-          values = {
-              "python2": any(major < 9 for major in majors),
-              "v141": any(6 <= major < 8 for major in majors),
-              # Hosted VS 2022 accepts VC.140 but exposes no selectable 14.00
-              # directory. V8 5.x is compile-tested with the v142 STL.
-              "v142": any(major == 5 or 8 <= major < 10 for major in majors),
-              "vs_year": vs_year,
-          }
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              for key, value in values.items():
-                  rendered = str(value).lower() if isinstance(value, bool) else value
-                  output.write(f"{key}={rendered}\n")
-          print(f"Validated {len(versions)} tag(s): {versions}")
-          print(values)
-          PY
+        run: >-
+          python3 tools/classify_legacy_host.py
+          --versions-json "$ASSIGNED_JSON"
+          --expected-first "$VERSION"
+          --github-output "$GITHUB_OUTPUT"
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux'

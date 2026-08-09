@@ -19,11 +19,13 @@ import sys
 from typing import List
 
 DEFAULT_CAP = 6
+MAX_SAFE_CAP = 30  # Six workers x at most five sequential V8 builds.
 _raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
 try:
     CAP = int(_raw_cap) if _raw_cap else DEFAULT_CAP
     if CAP <= 0:
         CAP = DEFAULT_CAP
+    CAP = min(CAP, MAX_SAFE_CAP)
 except ValueError:
     CAP = DEFAULT_CAP
 

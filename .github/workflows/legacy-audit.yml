@@ -101,22 +101,10 @@ jobs:
         shell: bash
         env:
           ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-
-          majors = [int(version.split(".", 1)[0]) for version in json.loads(os.environ["ASSIGNED_JSON"])]
-          values = {
-              "python2": any(major < 9 for major in majors),
-              "v141": any(6 <= major < 8 for major in majors),
-              "v142": any(major == 5 or 8 <= major < 10 for major in majors),
-          }
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              for key, value in values.items():
-                  output.write(f"{key}={'true' if value else 'false'}\n")
-          print(values)
-          PY
+        run: >-
+          python3 tools/classify_legacy_host.py
+          --versions-json "$ASSIGNED_JSON"
+          --github-output "$GITHUB_OUTPUT"
 
       - name: Prepare Linux host
         if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'

@@ -70,6 +70,20 @@ def write_list(path: str, items):
         for it in items:
             f.write(it + "\n")
 
+
+def restore_version_worktrees(v8_root: Path = Path("v8")):
+    """Restore tracked compatibility edits in V8 and its //build checkout."""
+    roots = [v8_root]
+    external_build = v8_root / "build"
+    if (external_build / ".git").exists():
+        roots.append(external_build)
+    for root in roots:
+        log(f"Restoring tracked files under {root}")
+        completed = subprocess.run(["git", "-C", str(root), "checkout", "."])
+        if completed.returncode != 0:
+            log(f"WARNING: could not restore tracked files under {root}")
+
+
 def copytree(src: Path, dst: Path):
     if dst.exists():
         shutil.rmtree(dst)
@@ -502,6 +516,7 @@ def main():
 
     for ver in versions:
         log(f"========== START {ver} ==========")
+        restore_version_worktrees()
         run("git -C v8 reset --hard", check=False)
         sanitized = ver.replace(".", "_")
         try:
@@ -599,7 +614,7 @@ def main():
             if rc != 0:
                 log(f"[PATCH] Failed for {ver}")
                 failed.append(ver)
-                run("git -C v8 checkout .", check=False)
+                restore_version_worktrees()
                 continue
 
             configure_host_compatibility()
@@ -635,7 +650,7 @@ def main():
             if not built_bin.exists() or not built_snapshot.exists():
                 log(f"[BUILD] Missing binary or snapshot for {ver}. d8 exists: {built_bin.exists()}, snapshot exists: {built_snapshot.exists()}")
                 failed.append(ver)
-                run("git -C v8 checkout .", check=False)
+                restore_version_worktrees()
                 continue
 
             smoke_output = ""
@@ -682,14 +697,14 @@ def main():
                     log(f"Compressed backup: {artifact}")
 
             # Reset source modifications (keep backups + artifacts)
-            run("git -C v8 checkout .", check=False)
+            restore_version_worktrees()
 
             success.append(ver)
             log(f"========== SUCCESS {ver} ==========")
         except Exception as e:
             log(f"[ERROR] {ver} failed: {e}")
             failed.append(ver)
-            run("git -C v8 checkout .", check=False)
+            restore_version_worktrees()
 
     write_list("success_versions.txt", success)
     write_list("failed_versions.txt", failed)

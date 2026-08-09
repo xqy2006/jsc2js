@@ -191,6 +191,17 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn(" x64 -vcvars_ver=14.29", command)
             self.assertNotIn("-winsdk", command)
 
+    def test_batch_restore_includes_external_build_checkout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            v8_root = Path(directory) / "v8"
+            (v8_root / ".git").mkdir(parents=True)
+            (v8_root / "build" / ".git").mkdir(parents=True)
+            with mock.patch.object(builder.subprocess, "run") as run:
+                run.return_value.returncode = 0
+                builder.restore_version_worktrees(v8_root)
+        restored = [call.args[0][2] for call in run.call_args_list]
+        self.assertEqual(restored, [str(v8_root), str(v8_root / "build")])
+
 
 if __name__ == "__main__":
     unittest.main()

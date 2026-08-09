@@ -304,6 +304,18 @@ def windows_legacy_toolset_spec(version: str):
     return None
 
 
+def windows_compatibility_year(version: str) -> str:
+    """Return the Visual Studio generation understood by this V8 branch."""
+    major = int(version.split(".", 1)[0])
+    if major == 5:
+        return "2015"
+    if major < 8:
+        return "2017"
+    if major < 10:
+        return "2019"
+    return "2022"
+
+
 def uses_in_tree_gyp(version: str) -> bool:
     """V8 5.1 predates the standalone Chromium //build GN dependency."""
     major, minor = (int(part) for part in version.split(".", 2)[:2])
@@ -477,15 +489,7 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     os.environ.pop("JSC2JS_VCVARS_VERSION", None)
     if not platform.system().lower().startswith("win"):
         return
-    major = int(version.split(".", 1)[0])
-    if major == 5:
-        compatibility_year = "2015"
-    elif major == 6:
-        compatibility_year = "2017"
-    elif major < 10:
-        compatibility_year = "2019"
-    else:
-        compatibility_year = "2022"
+    compatibility_year = windows_compatibility_year(version)
     vs_root = Path(os.environ.get("GYP_MSVS_OVERRIDE_PATH", ""))
     os.environ["GYP_MSVS_VERSION"] = compatibility_year
     os.environ[f"vs{compatibility_year}_install"] = str(vs_root)

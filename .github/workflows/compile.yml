@@ -78,8 +78,8 @@ jobs:
           first_major = majors[0]
           if first_major == 5:
               vs_year = 2015
-          elif first_major == 6:
-              vs_year = 2017
+          elif first_major < 8:
+            vs_year = 2017
           elif first_major < 10:
               vs_year = 2019
           else:

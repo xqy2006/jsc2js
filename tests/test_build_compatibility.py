@@ -214,6 +214,19 @@ class LegacyHookPythonTest(unittest.TestCase):
     def test_current_windows_v8_has_no_legacy_toolset(self):
         self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))
 
+    def test_visual_studio_compatibility_year_boundaries(self):
+        expected = {
+            "5.8.283.38": "2015",
+            "6.9.427.24": "2017",
+            "7.1.302.31": "2017",
+            "8.9.255.25": "2019",
+            "9.4.146.8": "2019",
+            "10.8.168.25": "2022",
+        }
+        for version, year in expected.items():
+            with self.subTest(version=version):
+                self.assertEqual(builder.windows_compatibility_year(version), year)
+
     def test_v8_51_vcvars_uses_default_installed_sdk(self):
         with tempfile.TemporaryDirectory() as directory:
             vs_root = Path(directory)

@@ -39,6 +39,10 @@ SFI_PATHS = (
     "src/objects/shared-function-info-inl.h",
     "src/objects.h",
 )
+FIXED_ARRAY_PATHS = (
+    "src/objects/fixed-array.h",
+    "src/objects.h",
+)
 SERIALIZER_H = "src/snapshot/code-serializer.h"
 SERIALIZER_CC = "src/snapshot/code-serializer.cc"
 
@@ -115,6 +119,17 @@ def _serializer_signature(header: str) -> str:
     return re.sub(r"\s+", " ", match.group(1)).strip()
 
 
+def fixed_array_object_style(header: str) -> str:
+    """Classify the object API from the exact FixedArray::get return type."""
+    if re.search(r"\bTagged\s*<\s*Object\s*>\s+get\s*\(", header):
+        return "tagged"
+    if re.search(r"\bObject\s+get\s*\(", header):
+        return "value"
+    if re.search(r"\bObject\s*\*\s*get\s*\(", header):
+        return "raw-pointer"
+    raise PatchError("unknown FixedArray::get return type")
+
+
 def detect_features(sources: dict[str, str]) -> Features:
     d8_path, d8 = _select(sources, D8_CC_PATHS, "Shell::CreateGlobalTemplate")
     _, printer = _select(
@@ -128,6 +143,7 @@ def detect_features(sources: dict[str, str]) -> Features:
     signature = _serializer_signature(serializer_h)
 
     sfi_sources = "\n".join(sources.get(path, "") for path in SFI_PATHS)
+    _, fixed_array = _select(sources, FIXED_ARRAY_PATHS, "FixedArray")
     field_bytecode_accessor = bool(
         re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_sources)
     )
@@ -155,16 +171,7 @@ def detect_features(sources: dict[str, str]) -> Features:
     else:
         sanity_style = "split"
 
-    if "Tagged<" in printer or "Tagged<" in heap:
-        object_style = "tagged"
-    elif re.search(r"\bFixedArray::cast\([^\n]+\)\.", heap):
-        object_style = "value"
-    elif "PtrComprCageBase" in heap:
-        # Pointer compression predates the Tagged<T> spelling.  Objects still
-        # expose the value-style IsFoo helpers in these branches.
-        object_style = "value"
-    else:
-        object_style = "raw-pointer"
+    object_style = fixed_array_object_style(fixed_array)
 
     bytecode_needs_isolate = bool(
         re.search(
@@ -545,6 +552,7 @@ def load_tree(root: Path) -> dict[str, str]:
         + HEAP_PATHS
         + STRING_PATHS
         + SFI_PATHS
+        + FIXED_ARRAY_PATHS
         + (SERIALIZER_H, SERIALIZER_CC)
     )
     return _read_existing(root, sorted(paths))

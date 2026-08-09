@@ -29,6 +29,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 import determine_versions  # noqa: E402
+from patches.legacy.apply_legacy_patch import (  # noqa: E402
+    PatchError,
+    fixed_array_object_style,
+)
 
 
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$")
@@ -53,6 +57,10 @@ SOURCE_CANDIDATES = {
         "src/objects/shared-function-info-inl.h",
         "src/objects.h",
     ),
+    "fixed_array_h": (
+        "src/objects/fixed-array.h",
+        "src/objects.h",
+    ),
     "serializer_h": ("src/snapshot/code-serializer.h",),
     "serializer_cc": ("src/snapshot/code-serializer.cc",),
     "deserializer_cc": ("src/snapshot/deserializer.cc",),
@@ -67,6 +75,7 @@ SOURCE_MARKERS = {
     "heap": "HeapObject::HeapObjectShortPrint",
     "string": "String::StringShortPrint",
     "sfi_h": "BytecodeArray",
+    "fixed_array_h": "FixedArray",
     "serializer_h": "CodeSerializer",
     "serializer_cc": "CodeSerializer::Deserialize",
     # Older branches use a non-template Deserializer, newer ones use
@@ -204,6 +213,7 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
         "printer",
         "heap",
         "string",
+        "fixed_array_h",
         "serializer_h",
         "serializer_cc",
         "deserializer_cc",
@@ -219,6 +229,7 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
     serializer_h = sources.get("serializer_h", "")
     serializer_cc = sources.get("serializer_cc", "")
     sfi_h = sources.get("sfi_h", "")
+    fixed_array_h = sources.get("fixed_array_h", "")
 
     deserialize_signature = extract_signature(
         serializer_h, "Deserialize(", terminator=";"
@@ -246,14 +257,11 @@ def classify_version(cache: RawSourceCache, version: str) -> dict:
     else:
         sanity_style = "split"
 
-    if "Tagged<" in printer or "Tagged<" in heap:
-        object_style = "tagged"
-    elif "PtrComprCageBase" in heap:
-        object_style = "pointer-compression"
-    elif re.search(r"\bFixedArray::cast\([^\n]+\)\.", heap):
-        object_style = "value"
-    else:
-        object_style = "raw-pointer"
+    try:
+        object_style = fixed_array_object_style(fixed_array_h)
+    except PatchError:
+        object_style = "unknown"
+        errors.append("unknown:fixed-array-get")
 
     if re.search(r"\bbytecode_array\s*\(\s*\)\s*const", sfi_h):
         bytecode_accessor = "field"

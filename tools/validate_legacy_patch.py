@@ -15,6 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from patches.legacy.apply_legacy_patch import (  # noqa: E402
+    FIXED_ARRAY_PATHS,
     PATCH_MARKER,
     SERIALIZER_CC,
     SFI_PATHS,
@@ -27,6 +28,7 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
     version = record["version"]
     paths = {path for path in record["paths"].values() if path}
     paths.update(SFI_PATHS)
+    paths.update(FIXED_ARRAY_PATHS)
     sources: dict[str, str] = {}
     try:
         for path in paths:

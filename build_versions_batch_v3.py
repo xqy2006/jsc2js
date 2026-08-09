@@ -25,7 +25,7 @@ Env vars:
   KEEP_WORK_DIR         "1" to reuse existing x64.release directory (won't delete before rebuild)
   SKIP_BACKUP           "1" to skip copying the full build directory (validation workflows)
 """
-import json, os, platform, shutil, subprocess, sys, traceback
+import json, os, platform, shlex, shutil, subprocess, sys, traceback
 from pathlib import Path
 from datetime import datetime
 import re
@@ -310,6 +310,43 @@ def uses_in_tree_gyp(version: str) -> bool:
     return (major, minor) == (5, 1)
 
 
+def configure_v8_52_linux_gn(
+    version: str, v8_root: Path = Path("v8")
+) -> str:
+    """Use hosted tools for V8 5.2, whose DEPS predates the sysroot hook."""
+    if not platform.system().lower().startswith("linux"):
+        return ""
+    major, minor = (int(part) for part in version.split(".", 2)[:2])
+    if (major, minor) != (5, 2):
+        return ""
+
+    clang = shutil.which("clang")
+    clangxx = shutil.which("clang++")
+    if not clang or not clangxx:
+        raise RuntimeError("V8 5.2 requires hosted clang and clang++")
+    bundled_bin = (
+        v8_root / "third_party/llvm-build/Release+Asserts/bin"
+    )
+    if not bundled_bin.is_dir():
+        raise RuntimeError(f"V8 5.2 bundled clang directory is missing: {bundled_bin}")
+    for name, executable in (("clang", clang), ("clang++", clangxx)):
+        wrapper = bundled_bin / name
+        wrapper.write_text(
+            f"#!/bin/sh\nexec {shlex.quote(executable)} \"$@\"\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        wrapper.chmod(0o755)
+    log(f"Using hosted clang for V8 {version}: {clang}, {clangxx}")
+    return (
+        "use_sysroot = false\n"
+        "clang_use_chrome_plugins = false\n"
+        "treat_warnings_as_errors = false\n"
+        "use_gold = false\n"
+        "linux_use_bundled_binutils = false\n"
+    )
+
+
 def configure_in_tree_gyp(version: str) -> bool:
     """Select V8 5.1's native GYP/Ninja generator, or clear stale batch state."""
     if not uses_in_tree_gyp(version):
@@ -345,6 +382,22 @@ def configure_in_tree_gyp(version: str) -> bool:
     return True
 
 
+def provide_legacy_vcvars_entry_point(vs_root: Path) -> Path:
+    """Bridge pre-VS-2017 vcvars paths to a current hosted VS installation."""
+    vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
+    if not vcvars.is_file():
+        raise RuntimeError(f"vcvarsall.bat was not found at {vcvars}")
+    legacy_vcvars = vs_root / "VC/vcvarsall.bat"
+    if not legacy_vcvars.is_file():
+        legacy_vcvars.write_text(
+            '@call "%~dp0Auxiliary\\Build\\vcvarsall.bat" %*\n',
+            encoding="ascii",
+            newline="\r\n",
+        )
+        log(f"Provided the legacy GYP/GN vcvars entry point at {legacy_vcvars}")
+    return legacy_vcvars
+
+
 def activate_windows_vcvars(version: str):
     """Import the selected hosted MSVC/SDK environment for the V8 5.1 GYP build."""
     if not platform.system().lower().startswith("win"):
@@ -361,19 +414,7 @@ def activate_windows_vcvars(version: str):
         raise RuntimeError(f"MSVC {toolset_name} was not found under {vs_root}")
     vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
     vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
-    if not vcvars.is_file():
-        raise RuntimeError(f"vcvarsall.bat was not found at {vcvars}")
-    legacy_vcvars = vs_root / "VC/vcvarsall.bat"
-    if not legacy_vcvars.is_file():
-        # The GYP revision pinned by V8 5.1 hard-codes the pre-VS-2017
-        # location. The hosted VS installation keeps the real entry point
-        # under VC/Auxiliary/Build, so provide the forwarding path it expects.
-        legacy_vcvars.write_text(
-            '@call "%~dp0Auxiliary\\Build\\vcvarsall.bat" %*\n',
-            encoding="ascii",
-            newline="\r\n",
-        )
-        log(f"Provided the legacy GYP vcvars entry point at {legacy_vcvars}")
+    provide_legacy_vcvars_entry_point(vs_root)
     sdk_version = os.environ.get("JSC2JS_WINDOWS_SDK_VERSION", "")
     # Let vcvarsall select its installed default SDK. Passing a current SDK
     # through the historical -winsdk switch makes VS 2022's v142 setup fail
@@ -437,6 +478,7 @@ def configure_windows_legacy_toolset(version: str, v8_root: Path = Path("v8")):
     if not compatible:
         raise RuntimeError(f"MSVC {toolset_name} was not found under {toolsets_root}")
     vcvars_version = ".".join(compatible[-1].name.split(".")[:2])
+    provide_legacy_vcvars_entry_point(vs_root)
 
     setup_toolchain = v8_root / "build/toolchain/win/setup_toolchain.py"
     if not setup_toolchain.is_file():
@@ -658,6 +700,7 @@ def main():
                 continue
 
             configure_host_compatibility()
+            linux_legacy_gn_args = configure_v8_52_linux_gn(ver)
             if in_tree_gyp:
                 # gclient runhooks generated this Ninja project before source
                 # patching; the patch does not alter the build graph.
@@ -673,6 +716,7 @@ def main():
                     "symbol_level = 0\n"
                     "v8_enable_disassembler = true\n"
                     "v8_enable_object_print = true\n"
+                    + linux_legacy_gn_args
                     + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
                     encoding="utf-8",
                     newline="\n",

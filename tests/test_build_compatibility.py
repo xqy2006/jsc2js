@@ -125,6 +125,9 @@ class LegacyHookPythonTest(unittest.TestCase):
         root = Path(directory)
         vs_root = root / "vs"
         (vs_root / "VC/Tools/MSVC" / installed).mkdir(parents=True)
+        vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
+        vcvars.parent.mkdir(parents=True)
+        vcvars.touch()
         setup = root / "v8/build/toolchain/win/setup_toolchain.py"
         setup.parent.mkdir(parents=True)
         setup.write_text(
@@ -156,6 +159,37 @@ class LegacyHookPythonTest(unittest.TestCase):
         self.assertIn("JSC2JS_WINDOWS_SDK_VERSION", patched)
         self.assertIn("JSC2JS_OPTIONAL_ATLMFC", patched)
         self.assertNotIn("assert vc_lib_atlmfc_path", patched)
+        legacy_vcvars = vs_root / "VC/vcvarsall.bat"
+        self.assertTrue(legacy_vcvars.is_file())
+        self.assertIn("Auxiliary\\Build", legacy_vcvars.read_text())
+
+    def test_v8_52_linux_uses_hosted_clang_without_wheezy_sysroot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bundled = root / "third_party/llvm-build/Release+Asserts/bin"
+            bundled.mkdir(parents=True)
+            with mock.patch.object(
+                builder.platform, "system", return_value="Linux"
+            ), mock.patch.object(
+                builder.shutil,
+                "which",
+                side_effect=lambda name: f"/usr/bin/{name}",
+            ):
+                args = builder.configure_v8_52_linux_gn("5.2.361.43", root)
+            self.assertIn("use_sysroot = false", args)
+            self.assertIn("clang_use_chrome_plugins = false", args)
+            self.assertIn("treat_warnings_as_errors = false", args)
+            self.assertIn("use_gold = false", args)
+            self.assertIn("exec /usr/bin/clang", (bundled / "clang").read_text())
+            self.assertIn(
+                "exec /usr/bin/clang++", (bundled / "clang++").read_text()
+            )
+
+    def test_v8_53_keeps_its_downloaded_sysroot_and_clang(self):
+        with mock.patch.object(builder.platform, "system", return_value="Linux"):
+            self.assertEqual(
+                builder.configure_v8_52_linux_gn("5.3.332.37"), ""
+            )
 
     def test_current_windows_v8_has_no_legacy_toolset(self):
         self.assertIsNone(builder.windows_legacy_toolset_spec("10.8.168.25"))

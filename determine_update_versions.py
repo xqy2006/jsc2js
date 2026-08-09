@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-从 public/update_needed.json 读取需要用 v2 补丁重新构建的版本列表，
+从 public/update_needed.json 读取需要用当前命名补丁重新构建的版本列表，
 按批次输出。支持分片模式用于多 workflow 并行。
 
 分片逻辑：先按 max_per_run 切成等大的块，再由 shard_index 选取对应的块。

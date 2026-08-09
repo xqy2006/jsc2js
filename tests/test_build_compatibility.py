@@ -1,3 +1,4 @@
+import hashlib
 import os
 import tempfile
 import unittest
@@ -7,7 +8,51 @@ from pathlib import Path
 import build_versions_batch_v3 as builder
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
 class LegacyHookPythonTest(unittest.TestCase):
+    def test_stable_v12_patch_blobs_are_locked(self):
+        expected = {
+            "v8-12.0-to-12.5.patch": "baa4e8f1cc4e5465fbe797a641b3e7e8c1ae1246",
+            "v8-12.6-to-13.2.134.patch": "cddc24c96135bafd720bcb428023eea0dfb93262",
+            "v8-13.2.135-plus.patch": "3ec516d1cbf30e54e2f25879db21a7d4a429fca5",
+        }
+        for name, blob in expected.items():
+            with self.subTest(name=name):
+                data = (REPO_ROOT / "patches" / "current" / name).read_bytes()
+                # Git stores these text patches with LF even when a Windows
+                # checkout materializes them as CRLF.
+                data = data.replace(b"\r\n", b"\n")
+                actual = hashlib.sha1(
+                    f"blob {len(data)}\0".encode("ascii") + data
+                ).hexdigest()
+                self.assertEqual(actual, blob)
+
+    def test_production_workflow_uses_the_legacy_compatible_builder(self):
+        for name in ("main.yml", "update_worker.yml"):
+            with self.subTest(name=name):
+                workflow = (REPO_ROOT / ".github/workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn("timeout-minutes: 330", workflow)
+                self.assertIn("os: [ubuntu-22.04, windows-2022]", workflow)
+                self.assertIn("build_versions_batch_v3.py", workflow)
+                self.assertIn("build-essential clang lld", workflow)
+                self.assertNotIn("python3 build_versions_batch.py", workflow)
+                self.assertNotIn("patches/archive/generation-", workflow)
+        main_workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("MIN_VERSION: 5.1.0", main_workflow)
+
+    def test_old_batch_entry_points_delegate_to_the_current_builder(self):
+        for name in ("build_versions_batch.py", "build_loop.py"):
+            with self.subTest(name=name):
+                source = (REPO_ROOT / name).read_text(encoding="utf-8")
+                self.assertIn("from build_versions_batch_v3 import main", source)
+                self.assertNotIn("patches/archive/", source)
+
     def test_v8_51_uses_in_tree_gyp_only(self):
         self.assertTrue(builder.uses_in_tree_gyp("5.1.281.47"))
         self.assertFalse(builder.uses_in_tree_gyp("5.2.361.43"))

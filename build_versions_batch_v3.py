@@ -342,6 +342,17 @@ def activate_windows_vcvars(version: str):
     vcvars = vs_root / "VC/Auxiliary/Build/vcvarsall.bat"
     if not vcvars.is_file():
         raise RuntimeError(f"vcvarsall.bat was not found at {vcvars}")
+    legacy_vcvars = vs_root / "VC/vcvarsall.bat"
+    if not legacy_vcvars.is_file():
+        # The GYP revision pinned by V8 5.1 hard-codes the pre-VS-2017
+        # location. The hosted VS installation keeps the real entry point
+        # under VC/Auxiliary/Build, so provide the forwarding path it expects.
+        legacy_vcvars.write_text(
+            '@call "%~dp0Auxiliary\\Build\\vcvarsall.bat" %*\n',
+            encoding="ascii",
+            newline="\r\n",
+        )
+        log(f"Provided the legacy GYP vcvars entry point at {legacy_vcvars}")
     sdk_version = os.environ.get("JSC2JS_WINDOWS_SDK_VERSION", "")
     # Let vcvarsall select its installed default SDK. Passing a current SDK
     # through the historical -winsdk switch makes VS 2022's v142 setup fail

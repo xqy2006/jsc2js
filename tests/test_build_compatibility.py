@@ -190,6 +190,9 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn("cmd.exe /d /s /c", command)
             self.assertIn(" x64 -vcvars_ver=14.29", command)
             self.assertNotIn("-winsdk", command)
+            legacy_vcvars = vs_root / "VC/vcvarsall.bat"
+            self.assertTrue(legacy_vcvars.is_file())
+            self.assertIn("Auxiliary\\Build", legacy_vcvars.read_text())
 
     def test_batch_restore_includes_external_build_checkout(self):
         with tempfile.TemporaryDirectory() as directory:

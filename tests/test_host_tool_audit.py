@@ -4,7 +4,11 @@ from tools.audit_legacy_host_tools import (
     LEGACY_VCVARS_PATH_RE,
     classify_linux_host_mode,
     classify_object_print_gn_arg,
+    clang_hook_uses_keyed_dia_dll,
+    extract_clang_revision,
+    extract_dia_dll_years,
     extract_build_revision,
+    extract_vs_toolchain_years,
     normalize_template,
 )
 
@@ -19,6 +23,35 @@ class HostToolAuditTest(unittest.TestCase):
                     f"'/chromium/src/build.git' + '@' + '{revision}',"
                 )
                 self.assertEqual(extract_build_revision(deps), revision)
+
+    def test_extracts_clang_hook_revision(self):
+        revision = "fedcba9876543210fedcba9876543210fedcba98"
+        deps = (
+            "'v8/tools/clang': Var('chromium_url') + "
+            f"'/chromium/src/tools/clang.git' + '@' + '{revision}',"
+        )
+        self.assertEqual(extract_clang_revision(deps), revision)
+
+    def test_extracts_visual_studio_years_from_exact_host_scripts(self):
+        vs_toolchain = """
+        SUPPORTED = [
+          ('2019', '16.0'),
+          ('2022', '17.0'),
+        ]
+        MSVC_TOOLSET_VERSION = {'2019': 'VC142', '2022': 'VC143'}
+        """
+        self.assertEqual(extract_vs_toolchain_years(vs_toolchain), ["2019", "2022"])
+
+        clang_update = """
+        DIA_DLL = {
+          '2015': 'msdia140.dll',
+          '2017': 'msdia140.dll',
+        }
+        dia_dll = DIA_DLL[msvs_version]
+        """
+        self.assertEqual(extract_dia_dll_years(clang_update), ["2015", "2017"])
+        self.assertTrue(clang_hook_uses_keyed_dia_dll(clang_update))
+        self.assertFalse(clang_hook_uses_keyed_dia_dll("dia_dll = GetDiaPath()"))
 
     def test_normalizes_vcvars_argument_template(self):
         self.assertEqual(

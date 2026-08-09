@@ -25,6 +25,7 @@ from build_versions_batch_v3 import (  # noqa: E402
     WINDOWS_TOOLCHAIN_ARGS_RE,
     WINDOWS_TOOLCHAIN_ENV_RE,
     uses_in_tree_gyp,
+    windows_compatibility_year,
     windows_legacy_toolset_spec,
 )
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
@@ -32,27 +33,40 @@ from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 
 BUILD_ROOT = "https://chromium.googlesource.com/chromium/src/build"
 BUILD_PATH = "toolchain/win/setup_toolchain.py"
+VS_TOOLCHAIN_PATH = "vs_toolchain.py"
+CLANG_ROOT = "https://chromium.googlesource.com/chromium/src/tools/clang.git"
+CLANG_PATH = "scripts/update.py"
 LEGACY_VCVARS_PATH_RE = re.compile(
     r"['\"]VC[/\\]vcvarsall\.bat['\"]|"
     r"['\"]VC['\"]\s*,\s*['\"]vcvarsall\.bat['\"]"
 )
 
 
-def extract_build_revision(deps: str) -> str:
-    """Return the chromium/src/build revision from a V8 DEPS file."""
-    marker = "chromium/src/build.git"
+def extract_dependency_revision(deps: str, marker: str) -> str:
+    """Return the exact revision following a repository marker in DEPS."""
     position = deps.find(marker)
     if position < 0:
-        raise ValueError("chromium/src/build.git dependency was not found")
+        raise ValueError(f"{marker} dependency was not found")
     match = re.search(r"[0-9a-f]{40}", deps[position + len(marker) : position + 400])
     if not match:
-        raise ValueError("chromium/src/build revision was not found")
+        raise ValueError(f"{marker} revision was not found")
     return match.group(0)
 
 
+def extract_build_revision(deps: str) -> str:
+    """Return the chromium/src/build revision from a V8 DEPS file."""
+    return extract_dependency_revision(deps, "chromium/src/build.git")
+
+
+def extract_clang_revision(deps: str) -> str:
+    """Return the chromium/src/tools/clang revision from a V8 DEPS file."""
+    return extract_dependency_revision(deps, "chromium/src/tools/clang.git")
+
+
 class BuildSourceCache:
-    def __init__(self, directory: Path, retries: int = 5):
+    def __init__(self, directory: Path, root: str = BUILD_ROOT, retries: int = 5):
         self.directory = directory
+        self.root = root.rstrip("/")
         self.retries = retries
         self._locks: dict[tuple[str, str], threading.Lock] = {}
         self._locks_guard = threading.Lock()
@@ -73,7 +87,7 @@ class BuildSourceCache:
         cached = self._path(revision, source_path)
         if cached.exists():
             return cached.read_text(encoding="utf-8", errors="replace")
-        url = f"{BUILD_ROOT}/+/{revision}/{source_path}?format=TEXT"
+        url = f"{self.root}/+/{revision}/{source_path}?format=TEXT"
         for attempt in range(self.retries):
             try:
                 request = urllib.request.Request(
@@ -96,6 +110,33 @@ class BuildSourceCache:
 
 def normalize_template(line: str) -> str:
     return re.sub(r"\s+", " ", line.strip())
+
+
+def extract_vs_toolchain_years(source: str) -> list[str]:
+    """Return VS year keys accepted by an exact Chromium build checkout."""
+    return sorted(
+        set(
+            re.findall(
+                r"(?m)^\s*\(?['\"](20(?:13|15|17|19|22))['\"]\s*(?:[:,]|\))",
+                source,
+            )
+        )
+    )
+
+
+def extract_dia_dll_years(source: str) -> list[str]:
+    """Return the VS year keys used by the clang hook's DIA_DLL lookup."""
+    match = re.search(r"(?ms)^\s*DIA_DLL\s*=\s*\{(?P<body>.*?)^\s*\}", source)
+    if not match:
+        return []
+    return sorted(
+        set(re.findall(r"['\"](20(?:13|15|17|19|22))['\"]\s*:", match.group("body")))
+    )
+
+
+def clang_hook_uses_keyed_dia_dll(source: str) -> bool:
+    """Return whether the hook indexes DIA_DLL with GetVisualStudioVersion()."""
+    return bool(re.search(r"DIA_DLL\s*\[\s*msvs_version\s*\]", source))
 
 
 def classify_linux_host_mode(version: str, deps: str) -> str:
@@ -121,7 +162,10 @@ def classify_object_print_gn_arg(build_gn: str, v8_gni: str = "") -> str:
 
 
 def classify_version(
-    v8_cache: RawSourceCache, build_cache: BuildSourceCache, version: str
+    v8_cache: RawSourceCache,
+    build_cache: BuildSourceCache,
+    clang_cache: BuildSourceCache,
+    version: str,
 ) -> dict:
     try:
         deps = v8_cache.get(version, "DEPS")
@@ -129,6 +173,14 @@ def classify_version(
             raise RuntimeError("V8 DEPS file was not found")
         toolset_spec = windows_legacy_toolset_spec(version)
         required_toolset = toolset_spec[1] if toolset_spec else "current"
+        selected_vs_year = windows_compatibility_year(version)
+        clang_revision = extract_clang_revision(deps)
+        clang_update = clang_cache.get(clang_revision, CLANG_PATH)
+        clang_dia_dll_years = extract_dia_dll_years(clang_update)
+        clang_keyed_dia_dll = clang_hook_uses_keyed_dia_dll(clang_update)
+        clang_vs_year_compatible = (
+            not clang_keyed_dia_dll or selected_vs_year in clang_dia_dll_years
+        )
         linux_host_mode = classify_linux_host_mode(version, deps)
         deps_has_sysroot_hook = "install-sysroot.py" in deps
         if uses_in_tree_gyp(version):
@@ -150,7 +202,7 @@ def classify_version(
                 "object_print": "v8_object_print=1" in makefile,
                 "disassembler": "v8_enable_disassembler=1" in makefile,
             }
-            compatible = all(checks.values())
+            compatible = all(checks.values()) and clang_vs_year_compatible
             return {
                 "version": version,
                 "status": "ok" if compatible else "incompatible",
@@ -161,6 +213,13 @@ def classify_version(
                 "vcvars_environment_matches": 0,
                 "vcvars_args_template": "in-tree GYP/Ninja with imported vcvarsall environment",
                 "required_toolset": required_toolset,
+                "selected_vs_year": selected_vs_year,
+                "vs_toolchain_years": ["2013", "2015"],
+                "vs_year_compatible": selected_vs_year == "2015",
+                "clang_revision": clang_revision,
+                "clang_dia_dll_years": clang_dia_dll_years,
+                "clang_keyed_dia_dll": clang_keyed_dia_dll,
+                "clang_vs_year_compatible": clang_vs_year_compatible,
                 "legacy_vcvars_reference_present": True,
                 "legacy_vcvars_entry_point_provided": True,
                 "toolset_injection_supported": checks["vs2015_compatibility"],
@@ -172,6 +231,9 @@ def classify_version(
             }
         revision = extract_build_revision(deps)
         setup = build_cache.get(revision, BUILD_PATH)
+        vs_toolchain = build_cache.get(revision, VS_TOOLCHAIN_PATH)
+        vs_toolchain_years = extract_vs_toolchain_years(vs_toolchain)
+        vs_year_compatible = selected_vs_year in vs_toolchain_years
         build_gn = v8_cache.get(version, "BUILD.gn") or ""
         v8_gni = v8_cache.get(version, "gni/v8.gni") or ""
         object_print_arg = classify_object_print_gn_arg(build_gn, v8_gni)
@@ -184,7 +246,11 @@ def classify_version(
         legacy_vcvars_reference = bool(LEGACY_VCVARS_PATH_RE.search(setup))
         windows_compatible = len(matches) == 1 and len(environment_matches) == 1
         compatible = (
-            windows_compatible and bool(object_print_arg) and disassembler_arg_present
+            windows_compatible
+            and vs_year_compatible
+            and clang_vs_year_compatible
+            and bool(object_print_arg)
+            and disassembler_arg_present
         )
         status = "ok" if compatible else "incompatible"
         return {
@@ -197,6 +263,13 @@ def classify_version(
             "vcvars_environment_matches": len(environment_matches),
             "vcvars_args_template": template,
             "required_toolset": required_toolset,
+            "selected_vs_year": selected_vs_year,
+            "vs_toolchain_years": vs_toolchain_years,
+            "vs_year_compatible": vs_year_compatible,
+            "clang_revision": clang_revision,
+            "clang_dia_dll_years": clang_dia_dll_years,
+            "clang_keyed_dia_dll": clang_keyed_dia_dll,
+            "clang_vs_year_compatible": clang_vs_year_compatible,
             "legacy_vcvars_reference_present": legacy_vcvars_reference,
             "legacy_vcvars_entry_point_provided": bool(
                 toolset_spec and legacy_vcvars_reference
@@ -221,6 +294,8 @@ def write_markdown(path: Path, payload: dict) -> None:
         "",
         f"Chromium build revisions: **{summary['build_revisions']}**",
         "",
+        f"Chromium clang-hook revisions: **{summary['clang_revisions']}**",
+        "",
         f"Windows toolchain templates: **{summary['templates']}**",
         "",
         f"CI legacy `VC/vcvarsall.bat` bridge tags: "
@@ -236,6 +311,12 @@ def write_markdown(path: Path, payload: dict) -> None:
         + ", ".join(
             f"`{name}` **{count}**"
             for name, count in summary["object_print_build_args"].items()
+        ),
+        "",
+        "Selected Visual Studio compatibility years: "
+        + ", ".join(
+            f"`{year}` **{count}**"
+            for year, count in summary["vs_year_counts"].items()
         ),
         "",
         "| Template | First V8 | Last V8 | Tags | Toolsets |",
@@ -261,7 +342,10 @@ def write_markdown(path: Path, payload: dict) -> None:
             "6.x–7.x, and the current toolset for 10.x–11.x. For every tag "
             "where a historical toolset is selected and the pinned setup "
             "script retains the legacy path, CI provides a forwarding "
-            "`VC/vcvarsall.bat` entry point.",
+            "`VC/vcvarsall.bat` entry point. The exact Chromium build and "
+            "tools/clang revisions are also checked to ensure the selected "
+            "Visual Studio year is accepted by both `vs_toolchain.py` and "
+            "the clang hook's keyed DIA DLL table.",
             "The JSON report records the exact V8 tag, Chromium build revision, "
             "template, and compatibility result.",
         ]
@@ -290,6 +374,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path(tempfile.gettempdir()) / "jsc2js-v8-host-audit",
     )
+    parser.add_argument(
+        "--clang-cache-dir",
+        type=Path,
+        default=Path(tempfile.gettempdir()) / "jsc2js-v8-clang-hook-audit",
+    )
     return parser.parse_args()
 
 
@@ -299,10 +388,13 @@ def main() -> int:
     versions = [record["version"] for record in api_audit["versions"]]
     v8_cache = RawSourceCache(args.v8_cache_dir)
     build_cache = BuildSourceCache(args.build_cache_dir)
+    clang_cache = BuildSourceCache(args.clang_cache_dir, root=CLANG_ROOT)
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
         results = list(
             executor.map(
-                lambda version: classify_version(v8_cache, build_cache, version),
+                lambda version: classify_version(
+                    v8_cache, build_cache, clang_cache, version
+                ),
                 versions,
             )
         )
@@ -348,6 +440,13 @@ def main() -> int:
                     if result.get("build_revision")
                 }
             ),
+            "clang_revisions": len(
+                {
+                    result.get("clang_revision")
+                    for result in results
+                    if result.get("clang_revision")
+                }
+            ),
             "templates": len(families),
             "toolset_counts": {
                 toolset: sum(
@@ -355,6 +454,13 @@ def main() -> int:
                 )
                 for toolset in ("v140", "v141", "v142", "current")
             },
+            "vs_year_counts": {
+                year: sum(result.get("selected_vs_year") == year for result in results)
+                for year in ("2015", "2017", "2019", "2022")
+            },
+            "keyed_clang_dia_dll_tags": sum(
+                bool(result.get("clang_keyed_dia_dll")) for result in results
+            ),
             "legacy_vcvars_entry_point_tags": sum(
                 bool(result.get("legacy_vcvars_entry_point_provided"))
                 for result in results

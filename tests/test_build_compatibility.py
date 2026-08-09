@@ -168,6 +168,8 @@ class LegacyHookPythonTest(unittest.TestCase):
             root = Path(directory)
             bundled = root / "third_party/llvm-build/Release+Asserts/bin"
             bundled.mkdir(parents=True)
+            (bundled / "clang").write_text("downloaded-clang")
+            os.link(bundled / "clang", bundled / "clang++")
             with mock.patch.object(
                 builder.platform, "system", return_value="Linux"
             ), mock.patch.object(
@@ -180,15 +182,33 @@ class LegacyHookPythonTest(unittest.TestCase):
             self.assertIn("clang_use_chrome_plugins = false", args)
             self.assertIn("treat_warnings_as_errors = false", args)
             self.assertNotIn("use_gold", args)
-            self.assertIn("exec /usr/bin/clang", (bundled / "clang").read_text())
-            self.assertIn(
-                "exec /usr/bin/clang++", (bundled / "clang++").read_text()
+            self.assertEqual(
+                (bundled / "clang").read_text(),
+                '#!/bin/sh\nexec /usr/bin/clang "$@"\n',
+            )
+            self.assertEqual(
+                (bundled / "clang++").read_text(),
+                '#!/bin/sh\nexec /usr/bin/clang++ "$@"\n',
             )
 
     def test_v8_53_keeps_its_downloaded_sysroot_and_clang(self):
         with mock.patch.object(builder.platform, "system", return_value="Linux"):
             self.assertEqual(
                 builder.configure_v8_52_linux_gn("5.3.332.37"), ""
+            )
+
+    def test_selects_the_object_print_arg_declared_by_the_tag(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_gn = root / "BUILD.gn"
+            build_gn.write_text("declare_args() {\n  v8_object_print = false\n}\n")
+            self.assertEqual(
+                builder.object_print_gn_arg(root), "v8_object_print = true\n"
+            )
+            build_gn.write_text("declare_args() {\n  other_arg = false\n}\n")
+            self.assertEqual(
+                builder.object_print_gn_arg(root),
+                "v8_enable_object_print = true\n",
             )
 
     def test_current_windows_v8_has_no_legacy_toolset(self):

@@ -331,6 +331,9 @@ def configure_v8_52_linux_gn(
         raise RuntimeError(f"V8 5.2 bundled clang directory is missing: {bundled_bin}")
     for name, executable in (("clang", clang), ("clang++", clangxx)):
         wrapper = bundled_bin / name
+        # The historical clang archive may store clang and clang++ as hard
+        # links. Unlink first so writing one wrapper cannot replace both.
+        wrapper.unlink(missing_ok=True)
         wrapper.write_text(
             f"#!/bin/sh\nexec {shlex.quote(executable)} \"$@\"\n",
             encoding="utf-8",
@@ -347,6 +350,17 @@ def configure_v8_52_linux_gn(
         "treat_warnings_as_errors = false\n"
         "linux_use_bundled_binutils = false\n"
     )
+
+
+def object_print_gn_arg(v8_root: Path = Path("v8")) -> str:
+    """Select the object-print build-arg spelling declared by this V8 tag."""
+    build_gn = v8_root / "BUILD.gn"
+    if not build_gn.is_file():
+        raise RuntimeError(f"V8 BUILD.gn is missing: {build_gn}")
+    source = build_gn.read_text(encoding="utf-8", errors="replace")
+    if re.search(r"(?m)^\s*v8_object_print\s*=\s*(?:true|false)\s*$", source):
+        return "v8_object_print = true\n"
+    return "v8_enable_object_print = true\n"
 
 
 def configure_in_tree_gyp(version: str) -> bool:
@@ -725,7 +739,7 @@ def main():
                     "is_component_build = false\n"
                     "symbol_level = 0\n"
                     "v8_enable_disassembler = true\n"
-                    "v8_enable_object_print = true\n"
+                    + object_print_gn_arg(Path("v8"))
                     + linux_legacy_gn_args
                     + (windows_linker_arg(Path("v8")) if os_name == "Windows" else ""),
                     encoding="utf-8",

@@ -406,8 +406,13 @@ def update_summary(manifest: dict) -> None:
 
 def write_markdown(path: Path, manifest: dict) -> None:
     summary = manifest["summary"]
+    scope_name = (
+        "Modern V8"
+        if "modern" in manifest.get("source_audit", "").lower()
+        else "Legacy V8"
+    )
     lines = [
-        "# Legacy V8 GitHub Actions audit",
+        f"# {scope_name} GitHub Actions audit",
         "",
         f"Exact tags: **{summary['versions']}**",
         "",

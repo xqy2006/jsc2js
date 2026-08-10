@@ -145,10 +145,17 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
         loader = _loadjsc_definition()
         self.assertIn("base::OwnedVector<char> file_data", loader)
         self.assertIn("i::MaybeDirectHandle<i::SharedFunctionInfo>", loader)
+        self.assertIn(
+            "i::DirectHandleVector<i::SharedFunctionInfo> pending(isolate)", loader
+        )
+        self.assertIn(
+            "i::DirectHandleVector<i::SharedFunctionInfo> printed(isolate)", loader
+        )
         self.assertIn("previous.is_identical_to(current)", loader)
         self.assertIn("pending.emplace_back", loader)
         self.assertIn("auto constants = bytecode->constant_pool();", loader)
         self.assertNotIn("i::Tagged<i::FixedArray> constants", loader)
+        self.assertNotIn("std::vector<i::DirectHandle", loader)
         self.assertNotIn("void Disassemble(", loader)
         self.assertNotIn("HeapObjectShortPrint(", loader)
 

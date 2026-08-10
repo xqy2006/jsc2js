@@ -80,10 +80,10 @@ View8 需要：
   [`audit/legacy-v8-ci.md`](audit/legacy-v8-ci.md)。Issue #23
   的崩溃路径对照见 [`audit/issue-23-crash-analysis.md`](audit/issue-23-crash-analysis.md)。
 - 对 V8 14.7.84–15.3.25 的 57 个精确失败 tag，现代兼容层识别
-  `OwnedVector`、`DirectHandle`、对象谓词生成和 `TrustedFixedArray` 三组 API
-  边界。它只跳过 source、version、flags 哈希，保留 magic、header、只读快照、
+  `OwnedVector`、`DirectHandleVector`、对象谓词生成和 `TrustedFixedArray`，并识别
+  出三种组合的 API 边界。它只跳过 source、version、flags 哈希，保留 magic、header、只读快照、
   payload 长度、checksum 以及全部反序列化协议检查；嵌套函数通过去重的平面
-  工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
+  GC 强根工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
   [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
   [`audit/modern-v8-patch-validation.json`](audit/modern-v8-patch-validation.json)
   和 [`audit/modern-v8-ci.md`](audit/modern-v8-ci.md)。
@@ -197,12 +197,12 @@ View8 requires:
   Linux and Windows builds for all 369 exact tags. See also the
   [issue #23 crash-path audit](audit/issue-23-crash-analysis.md).
 - For the 57 exact failed tags from V8 14.7.84 through 15.3.25, the modern
-  compatibility layer detects the `OwnedVector`, `DirectHandle`, generated
-  object-predicate, and `TrustedFixedArray` API boundaries. It bypasses only
+  compatibility layer detects the `OwnedVector`, `DirectHandleVector`,
+  generated object-predicate, and `TrustedFixedArray` API boundaries. It bypasses only
   the source, version, and flags hashes while preserving magic, header,
   read-only-snapshot, payload-length, checksum, and every deserializer protocol
-  check. Nested functions are printed with a deduplicated flat worklist instead
-  of recursively expanding `HeapObjectShortPrint`. See the
+  check. Nested functions are printed with a GC-rooted, deduplicated flat
+  worklist instead of recursively expanding `HeapObjectShortPrint`. See the
   [modern API audit](audit/modern-v8-api.md),
   [semantic replay](audit/modern-v8-patch-validation.json), and
   [cross-platform build audit](audit/modern-v8-ci.md).

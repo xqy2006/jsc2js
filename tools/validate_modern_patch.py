@@ -70,14 +70,16 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 and "i::Tagged<i::FixedArray> constants" not in d8
             ),
             "owned_vector_reader_used": "base::OwnedVector<char> file_data" in d8,
-            "flat_non_recursive_worklist": all(
+            "gc_rooted_flat_non_recursive_worklist": all(
                 token in d8
                 for token in (
-                    "std::vector<i::DirectHandle<i::SharedFunctionInfo>> pending",
+                    "i::DirectHandleVector<i::SharedFunctionInfo> pending(isolate)",
+                    "i::DirectHandleVector<i::SharedFunctionInfo> printed(isolate)",
                     "previous.is_identical_to(current)",
                     "pending.emplace_back(i::Cast<i::SharedFunctionInfo>(object), isolate)",
                 )
-            ),
+            )
+            and "std::vector<i::DirectHandle<i::SharedFunctionInfo>>" not in d8,
             "source_version_flags_bypassed": all(
                 marker in serializer
                 for marker in (
@@ -180,6 +182,7 @@ def main() -> int:
             "heap_short_print_preserved": True,
             "missing_source_print_disabled": True,
             "nested_functions_use_a_flat_deduplicated_worklist": True,
+            "worklist_uses_v8_strong_root_allocator": True,
         },
         "versions": records,
     }

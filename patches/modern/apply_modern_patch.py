@@ -41,6 +41,7 @@ MINIMUM_VERSION = "14.7.84"
 
 D8_CC = "src/d8/d8.cc"
 D8_H = "src/d8/d8.h"
+HANDLES_H = "src/handles/handles.h"
 STRING_CC = "src/objects/string.cc"
 PRINTER_CC = "src/diagnostics/objects-printer.cc"
 SFI_H = "src/objects/shared-function-info.h"
@@ -56,6 +57,7 @@ OBJECT_DESERIALIZER_CC = "src/snapshot/object-deserializer.cc"
 SOURCE_PATHS = (
     D8_CC,
     D8_H,
+    HANDLES_H,
     STRING_CC,
     PRINTER_CC,
     SFI_H,
@@ -74,6 +76,7 @@ SOURCE_PATHS = (
 class ModernFeatures:
     cache_type: str
     handle_type: str
+    handle_container: str
     script_details: bool
     cached_script: bool
     read_chars_type: str
@@ -88,6 +91,7 @@ class ModernFeatures:
             (
                 self.cache_type.lower(),
                 self.handle_type.lower(),
+                self.handle_container.lower(),
                 self.read_chars_type.lower().replace("::", "-"),
                 self.object_predicate_generation,
                 self.bytecode_accessor,
@@ -126,6 +130,7 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
 
     d8 = sources[D8_CC]
     d8_h = sources[D8_H]
+    handles_h = sources[HANDLES_H]
     serializer_h = sources[SERIALIZER_H]
     serializer_cc = sources[SERIALIZER_CC]
     sfi_h = sources[SFI_H]
@@ -153,6 +158,14 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         r"static\s+base::OwnedVector\s*<\s*char\s*>\s+ReadChars\s*\(", d8_h
     ):
         raise PatchError("unsupported modern d8 ReadChars declaration")
+    for token in (
+        "class DirectHandleVector",
+        "explicit DirectHandleVector(IsolateT* isolate)",
+        "void push_back(const DirectHandle<T>& x)",
+        "void pop_back()",
+    ):
+        if token not in handles_h:
+            raise PatchError(f"modern DirectHandleVector API is missing: {token}")
     if "GetBytecodeArray(IsolateT* isolate)" not in sfi_h:
         raise PatchError("SharedFunctionInfo::GetBytecodeArray(IsolateT*) is missing")
     if "HasBytecodeArray" not in sfi_h:
@@ -188,6 +201,7 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
     return ModernFeatures(
         cache_type="AlignedCachedData",
         handle_type="DirectHandle",
+        handle_container="DirectHandleVector",
         script_details=True,
         cached_script="maybe_cached_script" in signature,
         read_chars_type="base::OwnedVector<char>",
@@ -250,8 +264,10 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
 
     // A flat worklist avoids recursive HeapObjectShortPrint expansion and the
     // stack-overflow cycle reported in issue #23.
-    std::vector<i::DirectHandle<i::SharedFunctionInfo>> pending;
-    std::vector<i::DirectHandle<i::SharedFunctionInfo>> printed;
+    // DirectHandle cannot safely live in a normal std::vector. V8's dedicated
+    // container registers its backing storage as strong roots across GC.
+    i::DirectHandleVector<i::SharedFunctionInfo> pending(isolate);
+    i::DirectHandleVector<i::SharedFunctionInfo> printed(isolate);
     pending.push_back(function);
     while (!pending.empty()) {{
       i::DirectHandle<i::SharedFunctionInfo> current = pending.back();
@@ -292,7 +308,11 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
 def patch_d8_cc(text: str) -> str:
     if PATCH_MARKER in text:
         return text
-    for include in ('"src/snapshot/code-serializer.h"', "<iostream>", "<vector>"):
+    for include in (
+        '"src/handles/handles.h"',
+        '"src/snapshot/code-serializer.h"',
+        "<iostream>",
+    ):
         text = _ensure_include(text, include)
 
     read_chars = re.search(

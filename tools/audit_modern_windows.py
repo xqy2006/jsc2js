@@ -26,6 +26,8 @@ from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 SETUP_TOOLCHAIN = "toolchain/win/setup_toolchain.py"
 VS_TOOLCHAIN = "vs_toolchain.py"
 RUNNER_NATIVE_SDK = "10.0.26100.0"
+SDK_INSTALLER = "tools/install_windows_sdk.ps1"
+SDK_INSTALLER_URL = "https://go.microsoft.com/fwlink/?linkid=2372508"
 WORKFLOWS = (
     ".github/workflows/compile.yml",
     ".github/workflows/main.yml",
@@ -95,11 +97,24 @@ def sdk_ranges(records: list[dict]) -> list[dict]:
 
 
 def workflow_coverage(required_sdks: set[str]) -> dict[str, dict[str, bool]]:
-    aliases = required_sdks - {RUNNER_NATIVE_SDK}
+    non_native_sdks = required_sdks - {RUNNER_NATIVE_SDK}
+    installer = (REPO_ROOT / SDK_INSTALLER).read_text(encoding="utf-8")
+    installer_support = {
+        sdk: (
+            sdk in installer
+            and SDK_INSTALLER_URL in installer
+            and "Get-AuthenticodeSignature" in installer
+        )
+        for sdk in non_native_sdks
+    }
     return {
         workflow: {
-            sdk: f'"{sdk}"' in (REPO_ROOT / workflow).read_text(encoding="utf-8")
-            for sdk in sorted(aliases)
+            sdk: (
+                installer_support[sdk]
+                and SDK_INSTALLER
+                in (REPO_ROOT / workflow).read_text(encoding="utf-8")
+            )
+            for sdk in sorted(non_native_sdks)
         }
         for workflow in WORKFLOWS
     }
@@ -127,7 +142,7 @@ def markdown_report(payload: dict) -> str:
         handling = (
             "native"
             if item["windows_sdk"] == RUNNER_NATIVE_SDK
-            else f"checked alias to installed `{RUNNER_NATIVE_SDK}`"
+            else "official Microsoft SDK installed on demand"
         )
         lines.append(
             f"| `{item['first']}` – `{item['last']}` | {item['count']} | "
@@ -138,7 +153,12 @@ def markdown_report(payload: dict) -> str:
             "",
             "Both `setup_toolchain.py` and `vs_toolchain.py` must carry the "
             "same SDK pin for every exact build revision. Non-native SDK pins "
-            "must be present in compile, production, and rebuild workflows.",
+            "must be supported by the signed installer helper and invoked by "
+            "compile, production, and rebuild workflows.",
+            "",
+            "The 10.0.28000 installer is pinned from the "
+            "[Microsoft Windows SDK download page]"
+            "(https://learn.microsoft.com/en-us/windows/apps/windows-sdk/downloads).",
             "",
             "Only individual immutable V8 and Chromium build files were read; "
             "neither repository was cloned.",
@@ -204,6 +224,8 @@ def main() -> int:
             "first": versions[0],
             "last": versions[-1],
             "runner_native_sdk": RUNNER_NATIVE_SDK,
+            "sdk_installer": SDK_INSTALLER,
+            "sdk_installer_url": SDK_INSTALLER_URL,
             "repository_cloned": False,
         },
         "summary": {
@@ -214,10 +236,10 @@ def main() -> int:
                 {record["build_revision"] for record in records if "build_revision" in record}
             ),
             "sdk_pins": sorted(required_sdks),
-            "uncovered_workflow_aliases": uncovered,
+            "uncovered_workflow_installers": uncovered,
         },
         "sdk_ranges": sdk_ranges(records),
-        "workflow_alias_coverage": coverage,
+        "workflow_install_coverage": coverage,
         "versions": records,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -229,7 +251,10 @@ def main() -> int:
     for record in failed:
         print(json.dumps(record, ensure_ascii=False), file=sys.stderr)
     if uncovered:
-        print(f"uncovered workflow aliases: {', '.join(uncovered)}", file=sys.stderr)
+        print(
+            f"uncovered workflow installers: {', '.join(uncovered)}",
+            file=sys.stderr,
+        )
     return 0 if not failed and not uncovered else 1
 
 

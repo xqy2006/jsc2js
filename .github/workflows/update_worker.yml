@@ -218,7 +218,14 @@ jobs:
             if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
           }
 
-      - name: Provide required Windows SDK aliases
+      - name: Install required modern Windows SDK
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: ./tools/install_windows_sdk.ps1 -VersionsJson $env:ASSIGNED_JSON
+
+      - name: Provide historical Windows SDK aliases
         if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
         shell: pwsh
         run: |
@@ -232,7 +239,7 @@ jobs:
           foreach ($requiredVersion in @(
             "10.0.14393.0", "10.0.15063.0", "10.0.16299.0", "10.0.17134.0",
             "10.0.17763.0", "10.0.18362.0", "10.0.19041.0", "10.0.20348.0",
-            "10.0.22000.0", "10.0.22621.0", "10.0.28000.0"
+            "10.0.22000.0", "10.0.22621.0"
           )) {
             foreach ($section in @("Include", "Lib", "Bin", "UnionMetadata", "References")) {
               $actual = Join-Path (Join-Path $sdkBase $section) $actualVer

@@ -3,6 +3,8 @@
     "first": "14.7.84",
     "last": "15.3.25",
     "runner_native_sdk": "10.0.26100.0",
+    "sdk_installer": "tools/install_windows_sdk.ps1",
+    "sdk_installer_url": "https://go.microsoft.com/fwlink/?linkid=2372508",
     "repository_cloned": false
   },
   "summary": {
@@ -14,7 +16,7 @@
       "10.0.26100.0",
       "10.0.28000.0"
     ],
-    "uncovered_workflow_aliases": []
+    "uncovered_workflow_installers": []
   },
   "sdk_ranges": [
     {
@@ -30,7 +32,7 @@
       "windows_sdk": "10.0.28000.0"
     }
   ],
-  "workflow_alias_coverage": {
+  "workflow_install_coverage": {
     ".github/workflows/compile.yml": {
       "10.0.28000.0": true
     },

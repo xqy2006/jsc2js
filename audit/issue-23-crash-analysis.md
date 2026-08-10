@@ -153,8 +153,9 @@ failure rather than a long, misleading V8 build.
   deserializer files byte-for-byte.
 - Modern Windows SDK audit: all 57 exact V8 tags resolve through DEPS to 33
   immutable Chromium build revisions. The first 56 tags pin SDK 10.0.26100.0;
-  V8 15.3.25 alone pins 10.0.28000.0. All three workflows provide the audited
-  non-native SDK alias before generation.
+  V8 15.3.25 alone pins 10.0.28000.0. All three workflows install that exact
+  SDK family from Microsoft's pinned installer after validating its
+  Authenticode signature; an older SDK is never relabeled as 10.0.28000.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded

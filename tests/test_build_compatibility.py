@@ -41,7 +41,7 @@ class LegacyHookPythonTest(unittest.TestCase):
                 self.assertIn("build_versions_batch_v3.py", workflow)
                 self.assertIn("build-essential clang lld", workflow)
                 self.assertIn("git config --global core.longpaths true", workflow)
-                self.assertIn('"10.0.28000.0"', workflow)
+                self.assertIn("tools/install_windows_sdk.ps1", workflow)
                 self.assertNotIn("python3 build_versions_batch.py", workflow)
                 self.assertNotIn("patches/archive/generation-", workflow)
         main_workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
@@ -51,7 +51,13 @@ class LegacyHookPythonTest(unittest.TestCase):
         compile_workflow = (REPO_ROOT / ".github/workflows/compile.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn('"10.0.28000.0"', compile_workflow)
+        self.assertIn("tools/install_windows_sdk.ps1", compile_workflow)
+        sdk_installer = (REPO_ROOT / "tools/install_windows_sdk.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('"10.0.28000.0"', sdk_installer)
+        self.assertIn("https://go.microsoft.com/fwlink/?linkid=2372508", sdk_installer)
+        self.assertIn("Get-AuthenticodeSignature", sdk_installer)
 
     def test_workflows_propagate_builder_failures_and_keep_diagnostics(self):
         for name in ("compile.yml", "main.yml", "update_worker.yml"):

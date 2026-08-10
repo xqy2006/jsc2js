@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "created_at": "2026-08-10T03:38:40.545731+00:00",
-  "updated_at": "2026-08-10T03:38:40.545731+00:00",
+  "updated_at": "2026-08-10T05:08:30.667334+00:00",
   "repository": "xqy2006/jsc2js",
   "branch": "v12-legacy-support",
   "workflow": "compile.yml",
@@ -11,10 +11,10 @@
   "summary": {
     "versions": 57,
     "batches": 14,
-    "dispatched": 0,
+    "dispatched": 14,
     "successful": 0,
     "failed": 0,
-    "active": 0,
+    "active": 14,
     "verified_versions": 0
   },
   "batches": [
@@ -32,7 +32,17 @@
         "14.7.127",
         "14.7.128"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357586030,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357586030",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:16.197930+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 1,
@@ -44,7 +54,17 @@
       "versions": [
         "14.7.142"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357589955,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357589955",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:21.260057+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 2,
@@ -60,7 +80,17 @@
         "14.8.51",
         "14.8.67"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357593902,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357593902",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:26.333654+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 3,
@@ -76,7 +106,17 @@
         "14.8.172",
         "14.8.178"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357598228,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357598228",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:32.010137+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 4,
@@ -92,7 +132,17 @@
         "14.8.178.22",
         "14.8.178.28"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357602090,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357602090",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:37.215614+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 5,
@@ -108,7 +158,17 @@
         "14.8.178.38",
         "14.9.195"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357606491,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357606491",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:42.639570+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 6,
@@ -120,7 +180,17 @@
       "versions": [
         "14.9.197"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357610319,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357610319",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:47.746886+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 7,
@@ -133,7 +203,17 @@
         "14.9.205",
         "14.9.207"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357614981,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357614981",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:53.778107+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 8,
@@ -149,7 +229,17 @@
         "15.0.108",
         "15.0.129"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357619898,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357619898",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:07:59.955298+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 9,
@@ -165,7 +255,17 @@
         "15.0.245.4",
         "15.0.245.5"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357629087,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357629087",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:08:09.933770+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 10,
@@ -180,7 +280,17 @@
         "15.0.245.23",
         "15.0.1240245"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357633905,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357633905",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:08:15.166392+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 11,
@@ -196,7 +306,17 @@
         "15.2.38",
         "15.2.61"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357638967,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357638967",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:08:20.545847+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 12,
@@ -212,7 +332,17 @@
         "15.2.116",
         "15.2.124"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357643349,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357643349",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:08:25.422666+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     },
     {
       "index": 13,
@@ -227,7 +357,17 @@
         "15.3.14",
         "15.3.25"
       ],
-      "dispatches": []
+      "dispatches": [
+        {
+          "run_id": 31357648137,
+          "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357648137",
+          "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
+          "dispatched_at": "2026-08-10T05:08:30.662336+00:00",
+          "status": "queued",
+          "conclusion": "",
+          "jobs": []
+        }
+      ]
     }
   ]
 }

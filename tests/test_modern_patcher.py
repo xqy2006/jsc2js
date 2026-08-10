@@ -6,7 +6,11 @@ import unittest
 from unittest import mock
 
 import build_versions_batch_v3 as builder
-from patches.modern.apply_modern_patch import _loadjsc_definition, patch_serializer
+from patches.modern.apply_modern_patch import (
+    _loadjsc_definition,
+    patch_serializer,
+    patch_sfi_printer,
+)
 from tools.update_failed_versions import update_failed_versions
 
 
@@ -76,6 +80,23 @@ class ModernPatchRoutingTest(unittest.TestCase):
 
 
 class ModernPatchSafetyTest(unittest.TestCase):
+    def test_disables_only_the_missing_source_print_call(self):
+        source = """\
+void SharedFunctionInfo::SharedFunctionInfoPrint(std::ostream& os) {
+  PrintHeader(os, "SharedFunctionInfo");
+  PrintSourceCode(os);
+  os << "\\n";
+}
+
+void HeapObject::HeapObjectShortPrint(std::ostream& os) {
+  PrintSourceCode(os);
+}
+"""
+        patched = patch_sfi_printer(source)
+        self.assertIn("JSC2JS_SOURCE_PRINT_BYPASS", patched)
+        self.assertEqual(patched.count("PrintSourceCode(os);"), 1)
+        self.assertIn("void HeapObject::HeapObjectShortPrint", patched)
+
     def test_serializer_keeps_structural_and_integrity_checks(self):
         source = """\
   uint32_t version_hash = GetHeaderValue(kVersionHashOffset);

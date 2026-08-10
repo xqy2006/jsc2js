@@ -52,8 +52,8 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
         d8 = transformed[D8_CC]
         serializer = transformed[SERIALIZER_CC]
         checks = {
-            "exactly_four_files_changed": changed
-            == sorted((D8_CC, D8_H, STRING_CC, SERIALIZER_CC)),
+            "exactly_five_files_changed": changed
+            == sorted((D8_CC, D8_H, PRINTER_CC, STRING_CC, SERIALIZER_CC)),
             "loader_registered": (
                 PATCH_MARKER in d8 and 'global_template->Set(isolate, "loadjsc"' in d8
             ),
@@ -93,8 +93,13 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 transformed[path] == sources[path]
                 for path in (DESERIALIZER_CC, OBJECT_DESERIALIZER_CC)
             ),
-            "heap_and_sfi_printer_byte_identical": (
-                transformed[PRINTER_CC] == sources[PRINTER_CC]
+            "only_missing_source_print_disabled": (
+                transformed[PRINTER_CC]
+                == sources[PRINTER_CC].replace(
+                    "  PrintSourceCode(os);",
+                    "  // JSC2JS_SOURCE_PRINT_BYPASS: source text is absent from .jsc.",
+                    1,
+                )
             ),
             "string_truncation_only_printer_edit": (
                 "JSC2JS_FULL_STRING_PRINT" in transformed[STRING_CC]
@@ -163,12 +168,13 @@ def main() -> int:
             ),
         },
         "safety_invariants": {
-            "changed_files_per_version": 4,
+            "changed_files_per_version": 5,
             "cross_embedder_hashes_bypassed": ["source", "version", "flags"],
             "read_only_snapshot_checksum_preserved": True,
             "magic_header_length_and_checksum_preserved": True,
             "deserializer_protocol_checks_preserved": True,
-            "heap_short_print_and_sfi_printer_preserved": True,
+            "heap_short_print_preserved": True,
+            "missing_source_print_disabled": True,
             "nested_functions_use_a_flat_deduplicated_worklist": True,
         },
         "versions": records,

@@ -8,7 +8,8 @@ the exact APIs before making four narrowly-scoped edits.
 
 Only the source, version, and flags hashes are relaxed for source-less caches
 from another embedder.  V8's header, magic, read-only snapshot, payload length,
-checksum, and deserializer protocol checks remain intact.
+checksum, and deserializer protocol checks remain intact.  Printing the absent
+source text is disabled so cached source positions cannot index the dummy text.
 """
 
 from __future__ import annotations
@@ -365,6 +366,29 @@ def patch_serializer(text: str) -> str:
     return text
 
 
+def patch_sfi_printer(text: str) -> str:
+    if "JSC2JS_SOURCE_PRINT_BYPASS" in text:
+        return text
+    declaration = text.find("void SharedFunctionInfo::SharedFunctionInfoPrint")
+    if declaration < 0:
+        raise PatchError("SharedFunctionInfoPrint function is missing")
+    opening = text.find("{", declaration)
+    closing = _matching_brace(text, opening)
+    body = text[opening:closing]
+    call = "  PrintSourceCode(os);"
+    if body.count(call) != 1:
+        raise PatchError(
+            "expected one SharedFunctionInfoPrint source call, found "
+            f"{body.count(call)}"
+        )
+    patched_body = body.replace(
+        call,
+        "  // JSC2JS_SOURCE_PRINT_BYPASS: source text is absent from .jsc.",
+        1,
+    )
+    return text[:opening] + patched_body + text[closing:]
+
+
 def transform_sources(
     sources: dict[str, str]
 ) -> tuple[dict[str, str], ModernFeatures, list[str]]:
@@ -374,8 +398,9 @@ def transform_sources(
     result[D8_H] = patch_d8_h(sources[D8_H])
     result[SERIALIZER_CC] = patch_serializer(sources[SERIALIZER_CC])
     result[STRING_CC] = patch_string_printer(sources[STRING_CC])
+    result[PRINTER_CC] = patch_sfi_printer(sources[PRINTER_CC])
     changed = sorted(path for path in result if result[path] != sources.get(path))
-    expected = sorted((D8_CC, D8_H, SERIALIZER_CC, STRING_CC))
+    expected = sorted((D8_CC, D8_H, PRINTER_CC, SERIALIZER_CC, STRING_CC))
     if changed != expected:
         raise PatchError(
             f"unexpected changed files: expected={expected} actual={changed}"
@@ -408,6 +433,7 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
             ),
             "deserializer_modified": False,
             "recursive_short_print_modified": False,
+            "missing_source_print_disabled": True,
         },
     }
     report_path.parent.mkdir(parents=True, exist_ok=True)

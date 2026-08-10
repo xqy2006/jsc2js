@@ -7,7 +7,7 @@
 环境变量：
   MIN_VERSION        (默认为 5.1.0 或 workflow 里传入)
   V8_REPO            (默认 https://github.com/v8/v8.git)
-  MAX_PER_RUN        (批次上限，默认为 20)
+  MAX_PER_RUN        (批次安全上限，默认为 18)
   SOURCES            (逗号分隔: node, electron；默认 "node,electron")
   public/retry_needed.json
                      (保留失败状态、但允许重新进入正式构建的版本队列)
@@ -24,8 +24,11 @@ from typing import List, Set, Iterable
 
 MIN_VERSION = os.environ.get("MIN_VERSION", "5.1.0").strip()
 REPO_URL = os.environ.get("V8_REPO", "https://github.com/v8/v8.git")
-DEFAULT_CAP = 20
-MAX_SAFE_CAP = 30  # Six workers x at most five sequential V8 builds.
+DEFAULT_CAP = 18
+# The first modern validation pass showed that five sequential V8 builds can
+# reach the 330-minute job timeout. Production uses six workers per OS, so keep
+# every worker at the validated maximum of three exact versions.
+MAX_SAFE_CAP = 18
 _raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
 try:
     CAP = int(_raw_cap) if _raw_cap else DEFAULT_CAP

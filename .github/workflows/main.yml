@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       max_per_run:
-        description: "本次最多处理多少个新版本（默认 24）"
+        description: "本次最多处理多少个版本（安全上限 18）"
         required: false
-        default: "24"
+        default: "18"
 permissions:
   contents: write
   actions: write
@@ -20,7 +20,7 @@ concurrency:
 env:
   V8_REPO: https://github.com/v8/v8.git
   MIN_VERSION: 5.1.0
-  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '18' }}
   SLOTS_PER_OS: 6
 
 jobs:

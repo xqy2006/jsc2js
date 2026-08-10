@@ -164,6 +164,12 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
     def test_loader_uses_flat_direct_handle_worklist(self):
         loader = _loadjsc_definition()
         self.assertIn("base::OwnedVector<char> file_data", loader)
+        self.assertIn("JSC2JS_EMBEDDER_MAGIC_NORMALIZATION", loader)
+        self.assertIn(
+            "i::SerializedData::kMagicNumberOffset == 0", loader
+        )
+        self.assertIn("i::SerializedData::kMagicNumber", loader)
+        self.assertIn("base::WriteLittleEndianValue(", loader)
         self.assertIn("i::MaybeDirectHandle<i::SharedFunctionInfo>", loader)
         self.assertIn(
             "i::DirectHandleVector<i::SharedFunctionInfo> pending(isolate)", loader

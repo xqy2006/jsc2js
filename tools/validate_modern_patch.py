@@ -26,6 +26,7 @@ from patches.modern.apply_modern_patch import (  # noqa: E402
     PATCH_MARKER,
     PRINTER_CC,
     SERIALIZER_CC,
+    SERIALIZER_H,
     SOURCE_PATHS,
     STRING_CC,
     transform_sources,
@@ -90,15 +91,28 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
             )
             and "std::vector<i::DirectHandle<i::SharedFunctionInfo>>" not in d8,
-            "cross_embedder_identity_checks_bypassed": all(
-                marker in serializer
-                for marker in (
-                    "JSC2JS_SOURCE_HASH_BYPASS",
-                    "JSC2JS_VERSION_HASH_BYPASS",
-                    "JSC2JS_FLAGS_HASH_BYPASS",
-                    "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS",
+            "cross_embedder_identity_checks_bypassed": (
+                "JSC2JS_EMBEDDER_MAGIC_NORMALIZATION" in d8
+                and all(
+                    marker in serializer
+                    for marker in (
+                        "JSC2JS_SOURCE_HASH_BYPASS",
+                        "JSC2JS_VERSION_HASH_BYPASS",
+                        "JSC2JS_FLAGS_HASH_BYPASS",
+                        "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS",
+                    )
                 )
             ),
+            "magic_normalization_uses_upstream_local_constant": all(
+                token in d8
+                for token in (
+                    "i::SerializedData::kMagicNumberOffset == 0",
+                    "i::SerializedData::kMagicNumber",
+                    "base::WriteLittleEndianValue(",
+                )
+            )
+            and '"src/snapshot/snapshot-data.h"'
+            in sources[SERIALIZER_H],
             "protected_cache_checks_byte_preserved": protected_token_counts_unchanged(
                 sources[SERIALIZER_CC], serializer
             ),
@@ -189,13 +203,16 @@ def main() -> int:
         "safety_invariants": {
             "changed_files_per_version": 5,
             "cross_embedder_identity_checks_bypassed": [
+                "external_reference_table_size_magic",
                 "source",
                 "version",
                 "flags",
                 "read_only_snapshot",
             ],
+            "loader_magic_normalized_to_local_table": True,
+            "upstream_magic_checks_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
-            "magic_header_length_and_checksum_preserved": True,
+            "header_length_checksum_and_normalized_magic_checked": True,
             "deserializer_protocol_checks_preserved": True,
             "heap_short_print_preserved": True,
             "missing_source_print_disabled": True,

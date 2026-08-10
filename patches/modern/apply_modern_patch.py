@@ -4,13 +4,14 @@
 V8 14.7 replaced the d8 file reader and completed the DirectHandle migration;
 V8 14.9 then moved the generated object predicates.  A unified diff tied to
 one checkout cannot safely span those changes.  This semantic patcher checks
-the exact APIs before making four narrowly-scoped edits.
+the exact APIs before making five narrowly-scoped edits.
 
-The source, version, flags, and embedder-specific read-only snapshot identity
-are relaxed for source-less caches from another embedder.  V8's header, magic,
-payload length, payload checksum, and deserializer protocol checks remain
-intact.  Printing the absent source text is disabled so cached source positions
-cannot index the dummy text.
+The source, version, flags, embedder-specific read-only snapshot identity, and
+the embedder-sized part of the cache magic are relaxed for source-less caches
+from another embedder.  The loader normalizes only its private in-memory magic
+copy, so V8's header, magic, payload length, payload checksum, and deserializer
+protocol checks still execute.  Printing the absent source text is disabled so
+cached source positions cannot index the dummy text.
 """
 
 from __future__ import annotations
@@ -289,6 +290,17 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
                               NewStringType::kNormal)
               .ToLocalChecked()));
       return;
+    }}
+
+    // JSC2JS_EMBEDDER_MAGIC_NORMALIZATION: V8 folds the compile-time
+    // ExternalReferenceTable size into this identity value. Electron and d8
+    // can use different table sizes at the same V8 tag. Normalize only the
+    // private file copy; the upstream magic checks still execute twice.
+    if (file_data.size() >= sizeof(uint32_t)) {{
+      static_assert(i::SerializedData::kMagicNumberOffset == 0);
+      base::WriteLittleEndianValue(
+          reinterpret_cast<i::Address>(file_data.data()),
+          i::SerializedData::kMagicNumber);
     }}
 
     i::AlignedCachedData cached_data(
@@ -574,18 +586,21 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
         "changed_files": changed,
         "safety": {
             "cross_embedder_identity_checks_bypassed": [
+                "external_reference_table_size_magic",
                 "source",
                 "version",
                 "flags",
                 "read_only_snapshot",
             ],
+            "loader_magic_normalized_to_local_table": True,
+            "upstream_magic_checks_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
             "upstream_cache_checks_detected_before_patch": upstream_protections(
                 sources[SERIALIZER_CC]
             ),
             "preserved_cache_checks": [
                 "header",
-                "magic",
+                "magic_after_loader_normalization",
                 "payload_length",
                 "payload_checksum",
             ],

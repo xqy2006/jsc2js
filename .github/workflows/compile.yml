@@ -44,6 +44,9 @@ jobs:
       ASSIGNED_JSON: ${{ inputs.versions_json || format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       SKIP_BACKUP: "1"
+      # Validation batches stay within one audited API family. Reusing Ninja
+      # outputs makes tags 2-5 incremental while `gn gen` still runs per tag.
+      KEEP_WORK_DIR: "1"
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4

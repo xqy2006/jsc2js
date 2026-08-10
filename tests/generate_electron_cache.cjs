@@ -3,8 +3,17 @@ const vm = require("vm");
 const v8 = require("v8");
 
 const output = process.argv[2];
+const expectedV8 = process.argv[3];
 if (!output) {
-  throw new Error("usage: electron generate_electron_cache.cjs OUTPUT.jsc");
+  throw new Error(
+    "usage: electron generate_electron_cache.cjs OUTPUT.jsc [EXPECTED_V8]",
+  );
+}
+const actualV8 = process.versions.v8.replace(/-.*$/, "");
+if (expectedV8 && actualV8 !== expectedV8) {
+  throw new Error(
+    `Electron V8 mismatch: expected ${expectedV8}, got ${process.versions.v8}`,
+  );
 }
 
 // Match the d8 smoke invocation and force nested functions into the cache.
@@ -33,5 +42,5 @@ if (!Buffer.isBuffer(cachedData) || cachedData.length === 0) {
 }
 fs.writeFileSync(output, cachedData);
 console.log(
-  `wrote ${cachedData.length} bytes with V8 ${process.versions.v8} to ${output}`,
+  `wrote ${cachedData.length} bytes with verified V8 ${process.versions.v8} to ${output}`,
 );

@@ -78,6 +78,18 @@ class ModernPatchRoutingTest(unittest.TestCase):
                 )
                 self.assertIsNone(builder.valid_cache_for_version("14.9.205"))
 
+    def test_electron_fixtures_assert_the_exact_runtime_v8(self):
+        root = Path(__file__).resolve().parents[1]
+        generator = (root / "tests/generate_electron_cache.cjs").read_text(
+            encoding="utf-8"
+        )
+        workflow = (root / ".github/workflows/compile.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Electron V8 mismatch", generator)
+        self.assertIn('"$cache_path" "10.8.168.25"', workflow)
+        self.assertIn('"$cache_path" "$v8_version"', workflow)
+
 
 class ModernPatchSafetyTest(unittest.TestCase):
     def test_disables_only_the_missing_source_print_call(self):

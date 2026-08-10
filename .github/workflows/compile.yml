@@ -233,7 +233,7 @@ jobs:
           set -eux
           cache_path="$RUNNER_TEMP/issue-23-electron-22.3.27.jsc"
           ELECTRON_RUN_AS_NODE=1 npx --yes electron@22.3.27 \
-            tests/generate_electron_cache.cjs "$cache_path"
+            tests/generate_electron_cache.cjs "$cache_path" "10.8.168.25"
           test -s "$cache_path"
           echo "JSC2JS_VALID_CACHE=$cache_path" >> "$GITHUB_ENV"
           echo "JSC2JS_VALID_CACHE_VERSION=10.8.168.25" >> "$GITHUB_ENV"
@@ -256,7 +256,7 @@ jobs:
             fi
             local cache_path="$RUNNER_TEMP/electron-${electron_version}-v8-${v8_version}.jsc"
             ELECTRON_RUN_AS_NODE=1 npx --yes "electron@${electron_version}" \
-              tests/generate_electron_cache.cjs "$cache_path"
+              tests/generate_electron_cache.cjs "$cache_path" "$v8_version"
             test -s "$cache_path"
             "$JSC2JS_PYTHON3" -c \
               'import json, pathlib, sys; p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()); d[sys.argv[2]]=sys.argv[3]; p.write_text(json.dumps(d))' \

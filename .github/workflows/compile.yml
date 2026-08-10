@@ -233,6 +233,36 @@ jobs:
             tests/generate_electron_cache.cjs "$cache_path"
           test -s "$cache_path"
           echo "JSC2JS_VALID_CACHE=$cache_path" >> "$GITHUB_ENV"
+          echo "JSC2JS_VALID_CACHE_VERSION=10.8.168.25" >> "$GITHUB_ENV"
+
+      - name: Generate modern cross-embedder cache fixtures
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
+        run: |
+          set -eux
+          mapping="$RUNNER_TEMP/jsc2js-valid-cache-map.json"
+          echo '{}' > "$mapping"
+          generate_fixture() {
+            local v8_version="$1"
+            local electron_version="$2"
+            if ! "$JSC2JS_PYTHON3" -c \
+              'import json, os, sys; sys.exit(0 if sys.argv[1] in json.loads(os.environ["ASSIGNED_JSON"]) else 1)' \
+              "$v8_version"; then
+              return
+            fi
+            local cache_path="$RUNNER_TEMP/electron-${electron_version}-v8-${v8_version}.jsc"
+            ELECTRON_RUN_AS_NODE=1 npx --yes "electron@${electron_version}" \
+              tests/generate_electron_cache.cjs "$cache_path"
+            test -s "$cache_path"
+            "$JSC2JS_PYTHON3" -c \
+              'import json, pathlib, sys; p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()); d[sys.argv[2]]=sys.argv[3]; p.write_text(json.dumps(d))' \
+              "$mapping" "$v8_version" "$cache_path"
+          }
+          generate_fixture "14.8.178.38" "42.8.1"
+          generate_fixture "15.0.1240245" "43.2.0"
+          generate_fixture "15.2.124.5" "44.0.0-beta.2"
+          echo "JSC2JS_VALID_CACHE_MAP_FILE=$mapping" >> "$GITHUB_ENV"
 
       - name: Build d8 with patch
         shell: bash

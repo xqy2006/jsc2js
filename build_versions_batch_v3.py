@@ -229,6 +229,25 @@ def run_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
     return output
 
 
+def valid_cache_for_version(version: str) -> Path | None:
+    """Resolve an optional per-version cross-embedder cache fixture."""
+    mapping_file = os.environ.get("JSC2JS_VALID_CACHE_MAP_FILE", "").strip()
+    if mapping_file:
+        path = Path(mapping_file)
+        try:
+            mapping = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise RuntimeError(f"invalid valid-cache mapping {path}: {error}")
+        fixture = mapping.get(version) if isinstance(mapping, dict) else None
+        if fixture:
+            return Path(fixture).resolve()
+    fallback = os.environ.get("JSC2JS_VALID_CACHE", "").strip()
+    fallback_version = os.environ.get("JSC2JS_VALID_CACHE_VERSION", "").strip()
+    if fallback and (not fallback_version or fallback_version == version):
+        return Path(fallback).resolve()
+    return None
+
+
 def configure_host_compatibility():
     """Make historical LLVM binaries usable on current Linux runners."""
     if not platform.system().lower().startswith("linux"):
@@ -970,10 +989,10 @@ def main():
             valid_cache_output = ""
             if is_legacy or is_modern_semantic:
                 smoke_output = run_rejection_smoke(built_bin)
-                valid_cache = os.environ.get("JSC2JS_VALID_CACHE")
-                if valid_cache:
+                valid_cache = valid_cache_for_version(ver)
+                if valid_cache is not None:
                     valid_cache_output = run_valid_cache_smoke(
-                        built_bin, Path(valid_cache).resolve()
+                        built_bin, valid_cache
                     )
 
             target_dir = collect_audit_records(artifacts_dir, ver, os_name)

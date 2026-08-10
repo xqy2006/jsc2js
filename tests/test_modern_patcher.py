@@ -1,7 +1,9 @@
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 import build_versions_batch_v3 as builder
 from patches.modern.apply_modern_patch import _loadjsc_definition, patch_serializer
@@ -52,6 +54,25 @@ class ModernPatchRoutingTest(unittest.TestCase):
         for version in ("14.7", "v14.7.84", "14.7.84-beta"):
             with self.subTest(version=version), self.assertRaises(ValueError):
                 builder.select_patch_implementation(version)
+
+    def test_resolves_only_the_matching_cache_fixture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture = root / "fixture.jsc"
+            mapping = root / "mapping.json"
+            mapping.write_text(
+                json.dumps({"15.0.1240245": str(fixture)}), encoding="utf-8"
+            )
+            with mock.patch.dict(
+                os.environ,
+                {"JSC2JS_VALID_CACHE_MAP_FILE": str(mapping)},
+                clear=True,
+            ):
+                self.assertEqual(
+                    builder.valid_cache_for_version("15.0.1240245"),
+                    fixture.resolve(),
+                )
+                self.assertIsNone(builder.valid_cache_for_version("14.9.205"))
 
 
 class ModernPatchSafetyTest(unittest.TestCase):

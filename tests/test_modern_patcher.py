@@ -90,6 +90,10 @@ class ModernPatchRoutingTest(unittest.TestCase):
         self.assertIn('"$cache_path" "10.8.168.25"', workflow)
         self.assertIn('"$cache_path" "$v8_version"', workflow)
 
+    def test_cross_embedder_failure_reports_the_sanity_reason(self):
+        source = Path(builder.__file__).read_text(encoding="utf-8")
+        self.assertIn('"--profile-deserialization"', source)
+
 
 class ModernPatchSafetyTest(unittest.TestCase):
     def test_disables_only_the_missing_source_print_call(self):
@@ -141,17 +145,21 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
             "JSC2JS_SOURCE_HASH_BYPASS",
             "JSC2JS_VERSION_HASH_BYPASS",
             "JSC2JS_FLAGS_HASH_BYPASS",
+            "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS",
         ):
             self.assertIn(marker, patched)
         for required in (
-            "kReadOnlySnapshotChecksumOffset",
-            "kReadOnlySnapshotChecksumMismatch",
             "kInvalidHeader",
             "kMagicNumberMismatch",
             "kLengthMismatch",
             "kChecksumMismatch",
         ):
             self.assertIn(required, patched)
+        self.assertNotIn("kReadOnlySnapshotChecksumOffset", patched)
+        self.assertNotIn("kReadOnlySnapshotChecksumMismatch", patched)
+        self.assertIn(
+            "static_cast<void>(expected_ro_snapshot_checksum);", patched
+        )
 
     def test_loader_uses_flat_direct_handle_worklist(self):
         loader = _loadjsc_definition()

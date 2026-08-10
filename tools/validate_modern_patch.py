@@ -37,7 +37,8 @@ def protected_token_counts_unchanged(before: str, after: str) -> bool:
     return all(
         tuple(before.count(token) for token in tokens)
         == tuple(after.count(token) for token in tokens)
-        for tokens in UPSTREAM_PROTECTION_TOKENS.values()
+        for name, tokens in UPSTREAM_PROTECTION_TOKENS.items()
+        if name != "read_only_snapshot_checksum"
     )
 
 
@@ -89,20 +90,23 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
             )
             and "std::vector<i::DirectHandle<i::SharedFunctionInfo>>" not in d8,
-            "source_version_flags_bypassed": all(
+            "cross_embedder_identity_checks_bypassed": all(
                 marker in serializer
                 for marker in (
                     "JSC2JS_SOURCE_HASH_BYPASS",
                     "JSC2JS_VERSION_HASH_BYPASS",
                     "JSC2JS_FLAGS_HASH_BYPASS",
+                    "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS",
                 )
             ),
             "protected_cache_checks_byte_preserved": protected_token_counts_unchanged(
                 sources[SERIALIZER_CC], serializer
             ),
-            "read_only_checksum_preserved": (
-                "kReadOnlySnapshotChecksumOffset" in serializer
-                and "kReadOnlySnapshotChecksumMismatch" in serializer
+            "only_read_only_snapshot_mismatch_check_removed": (
+                sources[SERIALIZER_CC].count(
+                    "kReadOnlySnapshotChecksumMismatch"
+                )
+                == serializer.count("kReadOnlySnapshotChecksumMismatch") + 1
             ),
             "deserializers_byte_identical": all(
                 transformed[path] == sources[path]
@@ -184,8 +188,13 @@ def main() -> int:
         },
         "safety_invariants": {
             "changed_files_per_version": 5,
-            "cross_embedder_hashes_bypassed": ["source", "version", "flags"],
-            "read_only_snapshot_checksum_preserved": True,
+            "cross_embedder_identity_checks_bypassed": [
+                "source",
+                "version",
+                "flags",
+                "read_only_snapshot",
+            ],
+            "read_only_snapshot_checksum_preserved": False,
             "magic_header_length_and_checksum_preserved": True,
             "deserializer_protocol_checks_preserved": True,
             "heap_short_print_preserved": True,

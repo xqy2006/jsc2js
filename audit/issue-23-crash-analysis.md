@@ -98,8 +98,8 @@ using the modern handle APIs:
 
 | Area | Modern behavior |
 |---|---|
-| Embedder-dependent hashes | Version, source, and flags hashes bypassed |
-| Upstream cache checks | Magic, header, read-only snapshot checksum, payload length, and checksum preserved |
+| Embedder-dependent identity | Version, source, flags, and read-only snapshot checks bypassed |
+| Upstream cache checks | Magic, header, payload length, and payload checksum preserved |
 | Deserializer | Unchanged |
 | `HeapObjectShortPrint` | Unchanged |
 | Missing source text | Only `SharedFunctionInfoPrint`'s source-text call is disabled |

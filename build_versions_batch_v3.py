@@ -209,7 +209,13 @@ def run_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
         f"print('{marker}');"
     )
     completed = subprocess.run(
-        [str(built_bin.resolve()), "--no-lazy", "-e", javascript],
+        [
+            str(built_bin.resolve()),
+            "--no-lazy",
+            "--profile-deserialization",
+            "-e",
+            javascript,
+        ],
         cwd=str(build_dir),
         text=True,
         stdout=subprocess.PIPE,

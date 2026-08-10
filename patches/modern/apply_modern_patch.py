@@ -6,10 +6,11 @@ V8 14.9 then moved the generated object predicates.  A unified diff tied to
 one checkout cannot safely span those changes.  This semantic patcher checks
 the exact APIs before making four narrowly-scoped edits.
 
-Only the source, version, and flags hashes are relaxed for source-less caches
-from another embedder.  V8's header, magic, read-only snapshot, payload length,
-checksum, and deserializer protocol checks remain intact.  Printing the absent
-source text is disabled so cached source positions cannot index the dummy text.
+The source, version, flags, and embedder-specific read-only snapshot identity
+are relaxed for source-less caches from another embedder.  V8's header, magic,
+payload length, payload checksum, and deserializer protocol checks remain
+intact.  Printing the absent source text is disabled so cached source positions
+cannot index the dummy text.
 """
 
 from __future__ import annotations
@@ -306,7 +307,7 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
       args.GetIsolate()->ThrowException(Exception::Error(
           String::NewFromUtf8(
               args.GetIsolate(),
-              "JSC deserialization failed (wrong V8 version, flags, or corrupt data)",
+              "JSC deserialization failed (incompatible cache header or corrupt data)",
               NewStringType::kNormal)
               .ToLocalChecked()));
       return;
@@ -416,6 +417,66 @@ def patch_d8_h(text: str) -> str:
     return text[: anchor.start()] + declaration + text[anchor.start() :]
 
 
+def _bypass_read_only_snapshot_checksum(text: str) -> str:
+    marker = "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS"
+    if marker in text:
+        return text
+    declaration = re.compile(
+        r"(?m)^(?P<indent>[ \t]*)uint32_t\s+ro_snapshot_checksum\s*=\s*"
+        r"(?:\r?\n[ \t]*)?GetHeaderValue\("
+        r"kReadOnlySnapshotChecksumOffset\);[ \t]*$"
+    )
+    declarations = list(declaration.finditer(text))
+    if len(declarations) != 1:
+        raise PatchError(
+            "expected one modern read-only snapshot checksum declaration, "
+            f"found {len(declarations)}"
+        )
+    check = re.compile(
+        r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*ro_snapshot_checksum\s*!=\s*"
+        r"expected_ro_snapshot_checksum\s*\)"
+    )
+    checks = list(check.finditer(text))
+    if len(checks) != 1:
+        raise PatchError(
+            "expected one modern read-only snapshot checksum check, "
+            f"found {len(checks)}"
+        )
+    found = checks[0]
+    line_end = text.find("\n", found.end())
+    if line_end < 0:
+        line_end = len(text)
+    opening = text.find("{", found.end(), line_end)
+    if opening < 0:
+        raise PatchError("read-only snapshot checksum check has no body")
+    end = _matching_brace(text, opening) + 1
+    original_check = text[found.start() : end]
+    if not any(
+        token in original_check
+        for token in (
+            "kReadOnlySnapshotChecksumMismatch",
+            "READ_ONLY_SNAPSHOT_CHECKSUM_MISMATCH",
+        )
+    ):
+        raise PatchError("unexpected read-only snapshot checksum mismatch result")
+    text = (
+        text[: found.start()]
+        + found.group("indent")
+        + f"// {marker}: accept matching V8 releases across embedder snapshots."
+        + text[end:]
+    )
+    return declaration.sub(
+        lambda match: (
+            match.group("indent")
+            + "static_cast<void>(expected_ro_snapshot_checksum);\n"
+            + match.group("indent")
+            + f"// {marker}: cached embedder snapshot identity ignored."
+        ),
+        text,
+        count=1,
+    )
+
+
 def patch_serializer(text: str) -> str:
     if "JSC2JS_SOURCE_HASH_BYPASS" not in text:
         old = "return SanityCheckJustSource(expected_source_hash);"
@@ -448,6 +509,7 @@ def patch_serializer(text: str) -> str:
             result_tokens=("kFlagsMismatch", "FLAGS_MISMATCH"),
             marker="JSC2JS_FLAGS_HASH_BYPASS",
         )
+    text = _bypass_read_only_snapshot_checksum(text)
     return text
 
 
@@ -511,11 +573,22 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
         "features": asdict(features),
         "changed_files": changed,
         "safety": {
-            "source_version_flags_hashes_bypassed": True,
-            "read_only_snapshot_checksum_preserved": True,
-            "upstream_cache_checks_present": upstream_protections(
+            "cross_embedder_identity_checks_bypassed": [
+                "source",
+                "version",
+                "flags",
+                "read_only_snapshot",
+            ],
+            "read_only_snapshot_checksum_preserved": False,
+            "upstream_cache_checks_detected_before_patch": upstream_protections(
                 sources[SERIALIZER_CC]
             ),
+            "preserved_cache_checks": [
+                "header",
+                "magic",
+                "payload_length",
+                "payload_checksum",
+            ],
             "deserializer_modified": False,
             "recursive_short_print_modified": False,
             "missing_source_print_disabled": True,

@@ -82,8 +82,8 @@ View8 需要：
 - 对 V8 14.7.84–15.3.25 的 57 个精确失败 tag，现代兼容层识别
   `OwnedVector`、`DirectHandleVector`、对象谓词生成、`TrustedFixedArray` 及其
   强类型长度，并识别出四种组合的 API 边界。它只跳过 source、version、flags
-  哈希，保留 magic、header、只读快照、
-  payload 长度、checksum 以及全部反序列化协议检查；嵌套函数通过去重的平面
+  和宿主特定的只读快照身份校验，保留 magic、header、payload 长度、payload
+  checksum 以及全部反序列化协议检查；嵌套函数通过去重的平面
   GC 强根工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
   [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
   [`audit/modern-v8-windows.md`](audit/modern-v8-windows.md)、
@@ -201,9 +201,9 @@ View8 requires:
 - For the 57 exact failed tags from V8 14.7.84 through 15.3.25, the modern
   compatibility layer detects the `OwnedVector`, `DirectHandleVector`,
   generated object-predicate, `TrustedFixedArray`, and strong length API
-  boundaries. It bypasses only the source, version, and flags hashes while
-  preserving magic, header,
-  read-only-snapshot, payload-length, checksum, and every deserializer protocol
+  boundaries. It bypasses only the source, version, flags, and embedder-specific
+  read-only-snapshot identity checks while preserving magic, header,
+  payload-length, payload checksum, and every deserializer protocol
   check. Nested functions are printed with a GC-rooted, deduplicated flat
   worklist instead of recursively expanding `HeapObjectShortPrint`. See the
   [modern API audit](audit/modern-v8-api.md),

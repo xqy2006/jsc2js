@@ -91,6 +91,29 @@ The default V8 short printer therefore remains brief and non-recursive. Nested
 functions are discovered only from bytecode constant pools, and each SFI is
 printed at most once.
 
+## Crash-safe modern design
+
+The V8 14.7.84–15.3.25 semantic patch keeps the same non-recursive shape while
+using the modern handle APIs:
+
+| Area | Modern behavior |
+|---|---|
+| Embedder-dependent hashes | Version, source, and flags hashes bypassed |
+| Upstream cache checks | Magic, header, read-only snapshot checksum, payload length, and checksum preserved |
+| Deserializer | Unchanged |
+| `HeapObjectShortPrint` | Unchanged |
+| Missing source text | Only `SharedFunctionInfoPrint`'s source-text call is disabled |
+| Nested functions | Flat `DirectHandleVector<SharedFunctionInfo>` work list |
+| GC and cycle handling | V8 strong-root allocator plus handle-identity deduplication |
+| Invalid cache | JavaScript exception; process must remain alive |
+
+`DirectHandle` is stack-allocated in direct-handle builds, so putting it in a
+normal `std::vector` is not a valid persistent work list. The source audit now
+requires V8's dedicated `DirectHandleVector` API for every exact modern tag;
+its `StrongRootAllocator` keeps the entries valid if garbage collection moves
+objects. The semantic replay also rejects any generated loader that contains a
+`std::vector<DirectHandle<...>>` work list.
+
 ## Validation coverage
 
 - Source/API audit: 369 exact Node/Electron V8 tags, 17 API families,
@@ -106,6 +129,11 @@ printed at most once.
   contains `EXPORT_DECL_VERIFIER(Object)`, so that macro is not a valid proxy
   for the callable predicate API. All 21 audited tags from V8 11.7.349 through
   V8 11.9 use the free-function form.
+- Modern source/API audit: 57 exact V8 tags from 14.7.84 through 15.3.25,
+  three API families, 57 compatible and zero fetch failures. Fourteen exact
+  source files are hashed per tag, including the `DirectHandleVector` and
+  `TrustedFixedArray` declarations. Semantic replay passes 57/57 tags, changes
+  exactly five files, and preserves both deserializer files byte-for-byte.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded

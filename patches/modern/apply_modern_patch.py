@@ -43,6 +43,7 @@ MINIMUM_VERSION = "14.7.84"
 
 D8_CC = "src/d8/d8.cc"
 D8_H = "src/d8/d8.h"
+BASE_MEMORY_H = "src/base/memory.h"
 HANDLES_H = "src/handles/handles.h"
 STRING_CC = "src/objects/string.cc"
 PRINTER_CC = "src/diagnostics/objects-printer.cc"
@@ -53,12 +54,14 @@ OBJECTS_H = "src/objects/objects.h"
 OBJECTS_INL_H = "src/objects/objects-inl.h"
 SERIALIZER_H = "src/snapshot/code-serializer.h"
 SERIALIZER_CC = "src/snapshot/code-serializer.cc"
+SNAPSHOT_DATA_H = "src/snapshot/snapshot-data.h"
 DESERIALIZER_CC = "src/snapshot/deserializer.cc"
 OBJECT_DESERIALIZER_CC = "src/snapshot/object-deserializer.cc"
 
 SOURCE_PATHS = (
     D8_CC,
     D8_H,
+    BASE_MEMORY_H,
     HANDLES_H,
     STRING_CC,
     PRINTER_CC,
@@ -69,6 +72,7 @@ SOURCE_PATHS = (
     OBJECTS_INL_H,
     SERIALIZER_H,
     SERIALIZER_CC,
+    SNAPSHOT_DATA_H,
     DESERIALIZER_CC,
     OBJECT_DESERIALIZER_CC,
 )
@@ -87,6 +91,9 @@ class ModernFeatures:
     constant_pool_type: str
     constant_pool_length_type: str
     sanity_style: str
+    magic_number_offset: int
+    magic_number_uses_external_reference_table_size: bool
+    little_endian_write_api: str
 
     @property
     def family_name(self) -> str:
@@ -169,15 +176,38 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
 
     d8 = sources[D8_CC]
     d8_h = sources[D8_H]
+    base_memory_h = sources[BASE_MEMORY_H]
     handles_h = sources[HANDLES_H]
     serializer_h = sources[SERIALIZER_H]
     serializer_cc = sources[SERIALIZER_CC]
+    snapshot_data_h = sources[SNAPSHOT_DATA_H]
     sfi_h = sources[SFI_H]
     bytecode_array_h = sources[BYTECODE_ARRAY_H]
     objects_h = sources[OBJECTS_H]
     objects_inl_h = sources[OBJECTS_INL_H]
     fixed_array_h = sources[FIXED_ARRAY_H]
     signature = _deserialize_signature(serializer_h)
+
+    if '"src/snapshot/snapshot-data.h"' not in serializer_h:
+        raise PatchError("CodeSerializer does not expose the SerializedData layout")
+    magic_offset = re.search(
+        r"kMagicNumberOffset\s*=\s*(?P<offset>\d+)\s*;", snapshot_data_h
+    )
+    if not magic_offset or int(magic_offset.group("offset")) != 0:
+        raise PatchError("modern cache magic is not the first uint32_t header field")
+    if not re.search(
+        r"kMagicNumber\s*=\s*0xC0DE0000\s*\^\s*"
+        r"ExternalReferenceTable::kSize\s*;",
+        snapshot_data_h,
+    ):
+        raise PatchError("modern cache magic no longer uses ExternalReferenceTable::kSize")
+    if not re.search(
+        r"template\s*<\s*typename\s+V\s*>\s*"
+        r"static\s+inline\s+void\s+WriteLittleEndianValue\s*\(\s*"
+        r"Address\s+p\s*,\s*V\s+value\s*\)",
+        base_memory_h,
+    ):
+        raise PatchError("modern little-endian Address write API is missing")
 
     required_signature = (
         "AlignedCachedData",
@@ -250,6 +280,9 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         constant_pool_type="TrustedFixedArray",
         constant_pool_length_type=constant_pool_length_type,
         sanity_style="split-readonly-checksum",
+        magic_number_offset=0,
+        magic_number_uses_external_reference_table_size=True,
+        little_endian_write_api="WriteLittleEndianValue(Address, V)",
     )
 
 

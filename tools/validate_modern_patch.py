@@ -19,6 +19,7 @@ from patches.legacy.apply_legacy_patch import (  # noqa: E402
     upstream_protections,
 )
 from patches.modern.apply_modern_patch import (  # noqa: E402
+    BASE_MEMORY_H,
     DESERIALIZER_CC,
     D8_CC,
     D8_H,
@@ -27,6 +28,7 @@ from patches.modern.apply_modern_patch import (  # noqa: E402
     PRINTER_CC,
     SERIALIZER_CC,
     SERIALIZER_H,
+    SNAPSHOT_DATA_H,
     SOURCE_PATHS,
     STRING_CC,
     transform_sources,
@@ -112,7 +114,15 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
             )
             and '"src/snapshot/snapshot-data.h"'
-            in sources[SERIALIZER_H],
+            in sources[SERIALIZER_H]
+            and features.magic_number_offset == 0
+            and features.magic_number_uses_external_reference_table_size
+            and features.little_endian_write_api
+            == "WriteLittleEndianValue(Address, V)",
+            "magic_layout_dependencies_byte_identical": all(
+                transformed[path] == sources[path]
+                for path in (BASE_MEMORY_H, SNAPSHOT_DATA_H)
+            ),
             "protected_cache_checks_byte_preserved": protected_token_counts_unchanged(
                 sources[SERIALIZER_CC], serializer
             ),
@@ -210,6 +220,7 @@ def main() -> int:
                 "read_only_snapshot",
             ],
             "loader_magic_normalized_to_local_table": True,
+            "exact_tag_magic_layout_and_write_api_verified": True,
             "upstream_magic_checks_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
             "header_length_checksum_and_normalized_magic_checked": True,

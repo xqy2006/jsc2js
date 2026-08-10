@@ -114,6 +114,13 @@ def markdown_report(payload: dict) -> str:
             f"**{summary['families']} detected API families**."
         ),
         "",
+        (
+            "Every tag also exposes cache magic at byte offset 0, derives it "
+            "from `ExternalReferenceTable::kSize`, and provides "
+            "`WriteLittleEndianValue(Address, V)` for the loader's private "
+            "in-memory normalization."
+        ),
+        "",
         "| Family boundary | Tags | Object predicate generation | Reader / handle / rooted container | Constant pool / length |",
         "|---|---:|---|---|---|",
     ]

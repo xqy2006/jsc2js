@@ -4,6 +4,8 @@ Audited **57** exact V8 tags from 14.7.84 through 15.3.25 using raw GitHub sourc
 
 Result: **57 passed**, **0 failed**, across **4 detected API families**.
 
+Every tag also exposes cache magic at byte offset 0, derives it from `ExternalReferenceTable::kSize`, and provides `WriteLittleEndianValue(Address, V)` for the loader's private in-memory normalization.
+
 | Family boundary | Tags | Object predicate generation | Reader / handle / rooted container | Constant pool / length |
 |---|---:|---|---|---|
 | `14.7.84` – `14.7.142` | 6 | `objects-h-macro` | `base::OwnedVector<char>` / `DirectHandle` / `DirectHandleVector` | `TrustedFixedArray` / `int` |

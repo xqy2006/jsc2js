@@ -114,6 +114,20 @@ its `StrongRootAllocator` keeps the entries valid if garbage collection moves
 objects. The semantic replay also rejects any generated loader that contains a
 `std::vector<DirectHandle<...>>` work list.
 
+The modern real-cache fixtures are pinned through each embedder's exact
+dependency chain:
+
+| Electron | Chromium pin | V8 tag | V8 commit |
+|---|---|---|---|
+| 42.8.1 | 148.0.7778.280 | 14.8.178.38 | `ba595dc892d82059793fe9e9af5d6bf6be43f8ca` |
+| 43.2.0 | 150.0.7871.129 | 15.0.1240245 | `2b2f69158528fdd9d86b778cfcc2d0a1c4f8c59f` |
+| 44.0.0-beta.2 | 152.0.7977.30 | 15.2.124.5 | `25c2c5496524021fd5734fedcd2db4258ab76922` |
+
+The cache generator additionally compares the base value of
+`process.versions.v8` with the requested exact tag before writing a fixture.
+This turns an incorrect or drifting Electron mapping into an immediate setup
+failure rather than a long, misleading V8 build.
+
 ## Validation coverage
 
 - Source/API audit: 369 exact Node/Electron V8 tags, 17 API families,

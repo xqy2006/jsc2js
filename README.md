@@ -61,8 +61,8 @@ View8 需要：
 
 ## 说明
 
-- 当前补丁覆盖 V8 5.1–11.9 与 V8 12+。其中 V8 5.1–11.9 使用按源码
-  API 自动适配的安全补丁；V8 12+ 继续使用原有稳定补丁。
+- 当前补丁覆盖 V8 5.1 及之后版本。V8 5.1–11.9 与 14.7.84+ 使用按源码
+  API 自动适配的安全补丁；V8 12.0–14.7.83 继续使用内容未改动的稳定补丁。
 - V8 5.1 是当前 `.jsc` 路径的审计下界：对 5.8 之前全部 69 个
   Node/Electron 精确 tag 的复核表明，截至 5.0 的 57 个 tag 缺少本工具所需的
   `CodeSerializer::Deserialize` 路径；逐 tag 结果见
@@ -79,6 +79,14 @@ View8 需要：
   tag 的 Linux/Windows 双平台构建结果见
   [`audit/legacy-v8-ci.md`](audit/legacy-v8-ci.md)。Issue #23
   的崩溃路径对照见 [`audit/issue-23-crash-analysis.md`](audit/issue-23-crash-analysis.md)。
+- 对 V8 14.7.84–15.3.25 的 57 个精确失败 tag，现代兼容层识别
+  `OwnedVector`、`DirectHandle`、对象谓词生成和 `TrustedFixedArray` 三组 API
+  边界。它只跳过 source、version、flags 哈希，保留 magic、header、只读快照、
+  payload 长度、checksum 以及全部反序列化协议检查；嵌套函数通过去重的平面
+  工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
+  [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
+  [`audit/modern-v8-patch-validation.json`](audit/modern-v8-patch-validation.json)
+  和 [`audit/modern-v8-ci.md`](audit/modern-v8-ci.md)。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -167,9 +175,9 @@ View8 requires:
 
 ## Notes
 
-- The patch set covers V8 5.1–11.9 and V8 12+. V8 5.1–11.9 uses a
-  source-aware compatibility patcher; the existing stable V8 12+ patches are
-  unchanged.
+- The patch set covers V8 5.1 and later. V8 5.1–11.9 and 14.7.84+ use
+  source-aware compatibility patchers; the stable V8 12.0–14.7.83 patch
+  contents remain unchanged.
 - V8 5.1 is the audited lower bound for this `.jsc` path. Of all 69 exact
   pre-5.8 Node/Electron tags, the 57 tags through V8 5.0 lack the required
   `CodeSerializer::Deserialize` path; see the
@@ -188,6 +196,16 @@ View8 requires:
   [cross-platform Actions audit](audit/legacy-v8-ci.md) records successful
   Linux and Windows builds for all 369 exact tags. See also the
   [issue #23 crash-path audit](audit/issue-23-crash-analysis.md).
+- For the 57 exact failed tags from V8 14.7.84 through 15.3.25, the modern
+  compatibility layer detects the `OwnedVector`, `DirectHandle`, generated
+  object-predicate, and `TrustedFixedArray` API boundaries. It bypasses only
+  the source, version, and flags hashes while preserving magic, header,
+  read-only-snapshot, payload-length, checksum, and every deserializer protocol
+  check. Nested functions are printed with a deduplicated flat worklist instead
+  of recursively expanding `HeapObjectShortPrint`. See the
+  [modern API audit](audit/modern-v8-api.md),
+  [semantic replay](audit/modern-v8-patch-validation.json), and
+  [cross-platform build audit](audit/modern-v8-ci.md).
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:

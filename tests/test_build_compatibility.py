@@ -48,6 +48,24 @@ class LegacyHookPythonTest(unittest.TestCase):
         )
         self.assertIn("MIN_VERSION: 5.1.0", main_workflow)
 
+    def test_workflows_propagate_builder_failures_and_keep_diagnostics(self):
+        for name in ("compile.yml", "main.yml", "update_worker.yml"):
+            with self.subTest(name=name):
+                workflow = (REPO_ROOT / ".github/workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn('"$JSC2JS_PYTHON3" build_versions_batch_v3.py', workflow)
+                self.assertNotRegex(
+                    workflow, r"build_versions_batch_v3\.py\s*\|\|\s*true"
+                )
+                self.assertIn("if: always()", workflow)
+        for name in ("main.yml", "update_worker.yml"):
+            with self.subTest(normalization=name):
+                workflow = (REPO_ROOT / ".github/workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn("tr -d '\\r'", workflow)
+
     def test_old_batch_entry_points_delegate_to_the_current_builder(self):
         for name in ("build_versions_batch.py", "build_loop.py"):
             with self.subTest(name=name):

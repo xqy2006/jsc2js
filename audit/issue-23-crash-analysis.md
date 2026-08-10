@@ -23,7 +23,7 @@ before and after the rename are identical:
 |---|---|---|
 | `patches/current/v8-12.0-to-12.5.patch` | `patch_old_v3.diff` | `baa4e8f1cc4e5465fbe797a641b3e7e8c1ae1246` |
 | `patches/current/v8-12.6-to-13.2.134.patch` | `patch_v3.diff` | `cddc24c96135bafd720bcb428023eea0dfb93262` |
-| `patches/current/v8-13.2.135-plus.patch` | `patch_1_v3.diff` | `3ec516d1cbf30e54e2f25879db21a7d4a429fca5` |
+| `patches/current/v8-13.2.135-to-14.7.83.patch` | `patch_1_v3.diff` | `3ec516d1cbf30e54e2f25879db21a7d4a429fca5` |
 
 All three V8 12+ patches validate an object before expanded short printing by
 recovering its isolate, checking the map pointer, and checking the map against

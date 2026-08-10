@@ -83,6 +83,7 @@ class ModernFeatures:
     object_predicate_generation: str
     bytecode_accessor: str
     constant_pool_type: str
+    constant_pool_length_type: str
     sanity_style: str
 
     @property
@@ -96,6 +97,7 @@ class ModernFeatures:
                 self.object_predicate_generation,
                 self.bytecode_accessor,
                 self.constant_pool_type.lower(),
+                self.constant_pool_length_type.lower(),
                 self.sanity_style,
             )
         )
@@ -121,6 +123,41 @@ def _deserialize_signature(header: str) -> str:
     if not match:
         raise PatchError("modern CodeSerializer::Deserialize signature is missing")
     return re.sub(r"\s+", " ", match.group(1)).strip()
+
+
+def _trusted_fixed_array_length_type(fixed_array_h: str) -> str:
+    """Classify the exact length() return used by TrustedFixedArray."""
+    header = re.search(
+        r"class ArrayHeaderBase<Super, true>.*?V8_OBJECT_END;",
+        fixed_array_h,
+        flags=re.DOTALL,
+    )
+    if header:
+        body = header.group(0)
+        if re.search(r"inline\s+int\s+length\(\)\s+const", body):
+            return "int"
+        if re.search(
+            r"inline\s+SafeHeapObjectSize\s+length\(\)\s+const", body
+        ):
+            return "SafeHeapObjectSize"
+
+    tagged_array = re.search(
+        r"class TaggedArrayBase\s*:\s*public Super.*?"
+        r"(?=V8_OBJECT class FixedArray)",
+        fixed_array_h,
+        flags=re.DOTALL,
+    )
+    if tagged_array and re.search(
+        r"(?:inline\s+)?SafeHeapObjectSize\s+length\(\)\s+const",
+        tagged_array.group(0),
+    ):
+        return "SafeHeapObjectSize"
+
+    if "TrustedFixedArrayBase" in fixed_array_h and re.search(
+        r"inline\s+SafeHeapObjectSize\s+length\(\)\s+const", fixed_array_h
+    ):
+        return "SafeHeapObjectSize"
+    raise PatchError("modern TrustedFixedArray length API is unknown")
 
 
 def detect_features(sources: dict[str, str]) -> ModernFeatures:
@@ -176,6 +213,7 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         raise PatchError("modern TrustedFixedArray constant-pool API is missing")
     if "Tagged<ElementT> get(uint32_t index)" not in fixed_array_h:
         raise PatchError("modern tagged-array get API is missing")
+    constant_pool_length_type = _trusted_fixed_array_length_type(fixed_array_h)
 
     if "IS_TYPE_FUNCTION_DECL" in objects_h and "Tagged<Object> obj" in objects_h:
         predicate_generation = "objects-h-macro"
@@ -208,11 +246,23 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         object_predicate_generation=predicate_generation,
         bytecode_accessor="GetBytecodeArray(IsolateT*)",
         constant_pool_type="TrustedFixedArray",
+        constant_pool_length_type=constant_pool_length_type,
         sanity_style="split-readonly-checksum",
     )
 
 
-def _loadjsc_definition() -> str:
+def _loadjsc_definition(
+    constant_pool_length_type: str = "SafeHeapObjectSize",
+) -> str:
+    if constant_pool_length_type == "int":
+        constant_count = "static_cast<uint32_t>(constants->length())"
+    elif constant_pool_length_type == "SafeHeapObjectSize":
+        constant_count = "constants->length().value()"
+    else:
+        raise PatchError(
+            "unsupported TrustedFixedArray length type: "
+            f"{constant_pool_length_type}"
+        )
     return f"""
 
 // {PATCH_MARKER}: crash-safe loader for source-less V8 code caches.
@@ -293,7 +343,8 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
       std::cout << "End SharedFunctionInfo\\n" << std::flush;
 
       auto constants = bytecode->constant_pool();
-      for (int index = 0; index < constants->length(); ++index) {{
+      const uint32_t constant_count = {constant_count};
+      for (uint32_t index = 0; index < constant_count; ++index) {{
         i::Tagged<i::Object> object = constants->get(index);
         if (i::IsSharedFunctionInfo(object)) {{
           pending.emplace_back(i::Cast<i::SharedFunctionInfo>(object), isolate);
@@ -305,7 +356,7 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
 """
 
 
-def patch_d8_cc(text: str) -> str:
+def patch_d8_cc(text: str, features: ModernFeatures) -> str:
     if PATCH_MARKER in text:
         return text
     for include in (
@@ -324,7 +375,11 @@ def patch_d8_cc(text: str) -> str:
     if opening < 0:
         raise PatchError("could not locate modern Shell::ReadChars body")
     closing = _matching_brace(text, opening)
-    text = text[: closing + 1] + _loadjsc_definition() + text[closing + 1 :]
+    text = (
+        text[: closing + 1]
+        + _loadjsc_definition(features.constant_pool_length_type)
+        + text[closing + 1 :]
+    )
 
     create_global = text.find("Shell::CreateGlobalTemplate")
     if create_global < 0:
@@ -424,7 +479,7 @@ def transform_sources(
 ) -> tuple[dict[str, str], ModernFeatures, list[str]]:
     features = detect_features(sources)
     result = dict(sources)
-    result[D8_CC] = patch_d8_cc(sources[D8_CC])
+    result[D8_CC] = patch_d8_cc(sources[D8_CC], features)
     result[D8_H] = patch_d8_h(sources[D8_H])
     result[SERIALIZER_CC] = patch_serializer(sources[SERIALIZER_CC])
     result[STRING_CC] = patch_string_printer(sources[STRING_CC])

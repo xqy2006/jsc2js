@@ -51,6 +51,11 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
         transformed, features, changed = transform_sources(sources)
         d8 = transformed[D8_CC]
         serializer = transformed[SERIALIZER_CC]
+        expected_constant_count = (
+            "static_cast<uint32_t>(constants->length())"
+            if features.constant_pool_length_type == "int"
+            else "constants->length().value()"
+        )
         checks = {
             "exactly_five_files_changed": changed
             == sorted((D8_CC, D8_H, PRINTER_CC, STRING_CC, SERIALIZER_CC)),
@@ -68,6 +73,10 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
             "trusted_constant_pool_inferred": (
                 "auto constants = bytecode->constant_pool();" in d8
                 and "i::Tagged<i::FixedArray> constants" not in d8
+            ),
+            "constant_pool_length_api_used": (
+                f"const uint32_t constant_count = {expected_constant_count};" in d8
+                and "index < constants->length()" not in d8
             ),
             "owned_vector_reader_used": "base::OwnedVector<char> file_data" in d8,
             "gc_rooted_flat_non_recursive_worklist": all(

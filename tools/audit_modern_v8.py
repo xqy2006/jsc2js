@@ -114,7 +114,7 @@ def markdown_report(payload: dict) -> str:
             f"**{summary['families']} detected API families**."
         ),
         "",
-        "| Family boundary | Tags | Object predicate generation | Reader / handle / rooted container | Constant pool |",
+        "| Family boundary | Tags | Object predicate generation | Reader / handle / rooted container | Constant pool / length |",
         "|---|---:|---|---|---|",
     ]
     for family in payload["families"]:
@@ -124,7 +124,8 @@ def markdown_report(payload: dict) -> str:
             f"`{api['object_predicate_generation']}` | "
             f"`{api['read_chars_type']}` / `{api['handle_type']}` / "
             f"`{api['handle_container']}` | "
-            f"`{api['constant_pool_type']}` |"
+            f"`{api['constant_pool_type']}` / "
+            f"`{api['constant_pool_length_type']}` |"
         )
     lines.extend(
         (

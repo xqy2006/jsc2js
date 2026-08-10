@@ -105,6 +105,7 @@ using the modern handle APIs:
 | Missing source text | Only `SharedFunctionInfoPrint`'s source-text call is disabled |
 | Nested functions | Flat `DirectHandleVector<SharedFunctionInfo>` work list |
 | GC and cycle handling | V8 strong-root allocator plus handle-identity deduplication |
+| Constant-pool length | Exact `int` or `SafeHeapObjectSize` API selected from source |
 | Invalid cache | JavaScript exception; process must remain alive |
 
 `DirectHandle` is stack-allocated in direct-handle builds, so putting it in a
@@ -144,10 +145,16 @@ failure rather than a long, misleading V8 build.
   for the callable predicate API. All 21 audited tags from V8 11.7.349 through
   V8 11.9 use the free-function form.
 - Modern source/API audit: 57 exact V8 tags from 14.7.84 through 15.3.25,
-  three API families, 57 compatible and zero fetch failures. Fourteen exact
+  four API families, 57 compatible and zero fetch failures. Fourteen exact
   source files are hashed per tag, including the `DirectHandleVector` and
-  `TrustedFixedArray` declarations. Semantic replay passes 57/57 tags, changes
-  exactly five files, and preserves both deserializer files byte-for-byte.
+  `TrustedFixedArray` declarations. The constant-pool length is `int` through
+  V8 14.7.142 and `SafeHeapObjectSize` from V8 14.7.173 onward. Semantic replay
+  passes 57/57 tags, changes exactly five files, and preserves both
+  deserializer files byte-for-byte.
+- Modern Windows SDK audit: all 57 exact V8 tags resolve through DEPS to 33
+  immutable Chromium build revisions. The first 56 tags pin SDK 10.0.26100.0;
+  V8 15.3.25 alone pins 10.0.28000.0. All three workflows provide the audited
+  non-native SDK alias before generation.
 - Host-tool audit: 369 exact tags, 172 DEPS-selected Chromium build revisions,
   161 DEPS-selected Chromium tools/clang revisions, six Windows
   generator/toolchain templates, 231 historical-toolset tags with a forwarded

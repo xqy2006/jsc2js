@@ -166,10 +166,18 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
         self.assertIn("previous.is_identical_to(current)", loader)
         self.assertIn("pending.emplace_back", loader)
         self.assertIn("auto constants = bytecode->constant_pool();", loader)
+        self.assertIn("constants->length().value()", loader)
         self.assertNotIn("i::Tagged<i::FixedArray> constants", loader)
         self.assertNotIn("std::vector<i::DirectHandle", loader)
         self.assertNotIn("void Disassemble(", loader)
         self.assertNotIn("HeapObjectShortPrint(", loader)
+
+    def test_loader_supports_the_pre_strong_alias_length_api(self):
+        loader = _loadjsc_definition("int")
+        self.assertIn(
+            "static_cast<uint32_t>(constants->length())", loader
+        )
+        self.assertNotIn("constants->length().value()", loader)
 
 
 class FailedVersionTrackingTest(unittest.TestCase):

@@ -10,16 +10,40 @@
     "versions": 57,
     "passed": 57,
     "failed": 0,
-    "families": 3
+    "families": 4
   },
   "families": [
     {
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
-      "count": 27,
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
+      "count": 6,
       "first": "14.7.84",
-      "last": "14.9.197",
+      "last": "14.7.142",
       "representatives": [
         "14.7.84",
+        "14.7.142"
+      ],
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "handle_container": "DirectHandleVector",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      }
+    },
+    {
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
+      "count": 21,
+      "first": "14.7.173",
+      "last": "14.9.197",
+      "representatives": [
+        "14.7.173",
         "14.9.197"
       ],
       "api": {
@@ -32,12 +56,13 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       }
     },
     {
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "count": 16,
       "first": "14.9.205",
       "last": "15.0.1240245",
@@ -55,12 +80,13 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       }
     },
     {
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "count": 14,
       "first": "15.1.16",
       "last": "15.3.25",
@@ -78,6 +104,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       }
@@ -87,7 +114,7 @@
     {
       "version": "14.7.84",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -98,6 +125,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -121,7 +149,7 @@
     {
       "version": "14.7.107",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -132,6 +160,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -155,7 +184,7 @@
     {
       "version": "14.7.114",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -166,6 +195,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -189,7 +219,7 @@
     {
       "version": "14.7.127",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -200,6 +230,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -223,7 +254,7 @@
     {
       "version": "14.7.128",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -234,6 +265,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -257,7 +289,7 @@
     {
       "version": "14.7.142",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-int-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -268,6 +300,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "int",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -291,7 +324,7 @@
     {
       "version": "14.7.173",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -302,6 +335,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -325,7 +359,7 @@
     {
       "version": "14.8.21",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -336,6 +370,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -359,7 +394,7 @@
     {
       "version": "14.8.40",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -370,6 +405,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -393,7 +429,7 @@
     {
       "version": "14.8.51",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -404,6 +440,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -427,7 +464,7 @@
     {
       "version": "14.8.67",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -438,6 +475,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -461,7 +499,7 @@
     {
       "version": "14.8.95",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -472,6 +510,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -495,7 +534,7 @@
     {
       "version": "14.8.148",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -506,6 +545,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -529,7 +569,7 @@
     {
       "version": "14.8.151",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -540,6 +580,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -563,7 +604,7 @@
     {
       "version": "14.8.172",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -574,6 +615,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -597,7 +639,7 @@
     {
       "version": "14.8.178",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -608,6 +650,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -631,7 +674,7 @@
     {
       "version": "14.8.178.1",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -642,6 +685,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -665,7 +709,7 @@
     {
       "version": "14.8.178.6",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -676,6 +720,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -699,7 +744,7 @@
     {
       "version": "14.8.178.14",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -710,6 +755,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -733,7 +779,7 @@
     {
       "version": "14.8.178.22",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -744,6 +790,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -767,7 +814,7 @@
     {
       "version": "14.8.178.28",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -778,6 +825,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -801,7 +849,7 @@
     {
       "version": "14.8.178.29",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -812,6 +860,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -835,7 +884,7 @@
     {
       "version": "14.8.178.31",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -846,6 +895,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -869,7 +919,7 @@
     {
       "version": "14.8.178.33",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -880,6 +930,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -903,7 +954,7 @@
     {
       "version": "14.8.178.38",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -914,6 +965,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -937,7 +989,7 @@
     {
       "version": "14.9.195",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -948,6 +1000,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -971,7 +1024,7 @@
     {
       "version": "14.9.197",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -982,6 +1035,7 @@
         "object_predicate_generation": "objects-h-macro",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1005,7 +1059,7 @@
     {
       "version": "14.9.205",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1016,6 +1070,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1039,7 +1094,7 @@
     {
       "version": "14.9.207",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1050,6 +1105,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1073,7 +1129,7 @@
     {
       "version": "15.0.19",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1084,6 +1140,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1107,7 +1164,7 @@
     {
       "version": "15.0.30",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1118,6 +1175,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1141,7 +1199,7 @@
     {
       "version": "15.0.43",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1152,6 +1210,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1175,7 +1234,7 @@
     {
       "version": "15.0.108",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1186,6 +1245,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1209,7 +1269,7 @@
     {
       "version": "15.0.129",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1220,6 +1280,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1243,7 +1304,7 @@
     {
       "version": "15.0.163",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1254,6 +1315,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1277,7 +1339,7 @@
     {
       "version": "15.0.204",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1288,6 +1350,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1311,7 +1374,7 @@
     {
       "version": "15.0.223",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1322,6 +1385,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1345,7 +1409,7 @@
     {
       "version": "15.0.245.4",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1356,6 +1420,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1379,7 +1444,7 @@
     {
       "version": "15.0.245.5",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1390,6 +1455,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1413,7 +1479,7 @@
     {
       "version": "15.0.245.13",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1424,6 +1490,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1447,7 +1514,7 @@
     {
       "version": "15.0.245.15",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1458,6 +1525,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1481,7 +1549,7 @@
     {
       "version": "15.0.245.23",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1492,6 +1560,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1515,7 +1584,7 @@
     {
       "version": "15.0.1240245",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1526,6 +1595,7 @@
         "object_predicate_generation": "objects-inl-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1549,7 +1619,7 @@
     {
       "version": "15.1.16",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1560,6 +1630,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1583,7 +1654,7 @@
     {
       "version": "15.1.113",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1594,6 +1665,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1617,7 +1689,7 @@
     {
       "version": "15.1.151",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1628,6 +1700,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1651,7 +1724,7 @@
     {
       "version": "15.2.38",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1662,6 +1735,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1685,7 +1759,7 @@
     {
       "version": "15.2.61",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1696,6 +1770,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1719,7 +1794,7 @@
     {
       "version": "15.2.87",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1730,6 +1805,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1753,7 +1829,7 @@
     {
       "version": "15.2.102",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1764,6 +1840,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1787,7 +1864,7 @@
     {
       "version": "15.2.107",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1798,6 +1875,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1821,7 +1899,7 @@
     {
       "version": "15.2.116",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1832,6 +1910,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1855,7 +1934,7 @@
     {
       "version": "15.2.124",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1866,6 +1945,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1889,7 +1969,7 @@
     {
       "version": "15.2.124.1",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1900,6 +1980,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1923,7 +2004,7 @@
     {
       "version": "15.2.124.5",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1934,6 +2015,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1957,7 +2039,7 @@
     {
       "version": "15.3.14",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -1968,6 +2050,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },
@@ -1991,7 +2074,7 @@
     {
       "version": "15.3.25",
       "status": "ok",
-      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
+      "family": "alignedcacheddata-directhandle-directhandlevector-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-safeheapobjectsize-split-readonly-checksum",
       "api": {
         "cache_type": "AlignedCachedData",
         "handle_type": "DirectHandle",
@@ -2002,6 +2085,7 @@
         "object_predicate_generation": "objects-inl-def-cast-traits",
         "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
         "constant_pool_type": "TrustedFixedArray",
+        "constant_pool_length_type": "SafeHeapObjectSize",
         "sanity_style": "split-readonly-checksum",
         "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
       },

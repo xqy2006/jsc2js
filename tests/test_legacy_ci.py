@@ -24,7 +24,7 @@ class LegacyCiPlanTest(unittest.TestCase):
             {"version": "5.3.1", "family": "b"},
             {"version": "6.0.1", "family": "b"},
         ]
-        batches = plan_batches(records, batch_size=5)
+        batches = plan_batches(records, batch_size=3)
         self.assertEqual(
             [batch["versions"] for batch in batches],
             [["5.1.1", "5.1.2"], ["5.2.1"], ["5.3.1"], ["6.0.1"]],
@@ -34,8 +34,17 @@ class LegacyCiPlanTest(unittest.TestCase):
         records = [
             {"version": f"11.0.{index}", "family": "a"} for index in range(12)
         ]
-        batches = plan_batches(records, batch_size=5)
-        self.assertEqual([len(batch["versions"]) for batch in batches], [5, 5, 2])
+        batches = plan_batches(records, batch_size=3)
+        self.assertEqual(
+            [len(batch["versions"]) for batch in batches], [3, 3, 3, 3]
+        )
+
+    def test_rejects_a_batch_that_can_overrun_the_actions_limit(self):
+        records = [
+            {"version": f"15.0.{index}", "family": "a"} for index in range(4)
+        ]
+        with self.assertRaises(ValueError):
+            plan_batches(records, batch_size=4)
 
     def test_extracts_run_id(self):
         run_id, url = parse_run_url(

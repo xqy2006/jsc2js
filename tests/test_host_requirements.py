@@ -43,6 +43,13 @@ class HostRequirementTest(unittest.TestCase):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 parse_versions(raw)
 
+    def test_validation_workflow_caps_batches_at_three_tags(self):
+        with self.assertRaises(ValueError):
+            parse_versions(
+                '["15.0.19","15.0.30","15.0.43","15.0.108"]',
+                maximum=3,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

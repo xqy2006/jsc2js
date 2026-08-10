@@ -21,9 +21,9 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def plan_batches(records: list[dict], batch_size: int = 5) -> list[dict]:
-    if not 1 <= batch_size <= 5:
-        raise ValueError("batch_size must be between 1 and 5")
+def plan_batches(records: list[dict], batch_size: int = 3) -> list[dict]:
+    if not 1 <= batch_size <= 3:
+        raise ValueError("batch_size must be between 1 and 3")
     batches: list[dict] = []
     current_key = None
     current: list[str] = []
@@ -457,7 +457,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--repo", default="xqy2006/jsc2js")
     parser.add_argument("--branch", default="v12-legacy-support")
     parser.add_argument("--workflow", default="compile.yml")
-    parser.add_argument("--batch-size", type=int, default=5)
+    parser.add_argument("--batch-size", type=int, default=3)
     parser.add_argument("--start-batch", type=int, default=0)
     parser.add_argument("--count", type=int, default=10)
     parser.add_argument("--workers", type=int, default=8)

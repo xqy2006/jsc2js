@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       versions_json:
-        description: "Optional JSON array of 1-5 tags; first must equal version"
+        description: "Optional JSON array of 1-3 tags; first must equal version"
         required: false
         default: ""
         type: string
@@ -45,7 +45,7 @@ jobs:
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
       SKIP_BACKUP: "1"
       # Validation batches stay within one audited API family. Reusing Ninja
-      # outputs makes tags 2-5 incremental while `gn gen` still runs per tag.
+      # outputs makes tags 2-3 incremental while `gn gen` still runs per tag.
       KEEP_WORK_DIR: "1"
     steps:
       - name: Checkout infra repo
@@ -65,6 +65,7 @@ jobs:
           python3 tools/classify_legacy_host.py
           --versions-json "$ASSIGNED_JSON"
           --expected-first "$VERSION"
+          --max-versions 3
           --github-output "$GITHUB_OUTPUT"
 
       - name: Prepare (Linux)

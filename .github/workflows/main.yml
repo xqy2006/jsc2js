@@ -39,6 +39,7 @@ jobs:
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
+          [ -f public/retry_needed.json ] || echo "[]" > public/retry_needed.json
       - name: Determine versions
         id: determine
         run: python3 determine_versions.py
@@ -300,6 +301,7 @@ jobs:
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
+          [ -f public/retry_needed.json ] || echo "[]" > public/retry_needed.json
           find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
           find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
           tr -d '\r' < _all_success.txt | sed '/^$/d' | sort -Vu > _all_success.normalized
@@ -356,6 +358,11 @@ jobs:
             if [ ! -f "$LIN_BIN" ] || [ ! -f "$LIN_SNAP" ] || \
                [ ! -f "$WIN_BIN" ] || [ ! -f "$WIN_SNAP" ]; then
               echo "Skip release $v: both Linux and Windows artifacts are required."
+              printf '%s\n' "$v" > _missing_release.txt
+              python3 tools/update_failed_versions.py \
+                --failed-json public/failed.json --add-file _missing_release.txt
+              python3 tools/update_failed_versions.py \
+                --failed-json public/retry_needed.json --remove "$v"
               continue
             fi
             ASSETS=()
@@ -389,6 +396,8 @@ jobs:
             # artifacts were reconstructed and its release was updated.
             python3 tools/update_failed_versions.py \
               --failed-json public/failed.json --remove "$v"
+            python3 tools/update_failed_versions.py \
+              --failed-json public/retry_needed.json --remove "$v"
           done
 
           if [ "$updated" = true ]; then

@@ -65,6 +65,10 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                     "i::ScriptDetails script_details",
                 )
             ),
+            "trusted_constant_pool_inferred": (
+                "auto constants = bytecode->constant_pool();" in d8
+                and "i::Tagged<i::FixedArray> constants" not in d8
+            ),
             "owned_vector_reader_used": "base::OwnedVector<char> file_data" in d8,
             "flat_non_recursive_worklist": all(
                 token in d8

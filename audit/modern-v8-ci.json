@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "created_at": "2026-08-10T01:46:54.413674+00:00",
-  "updated_at": "2026-08-10T01:47:16.002267+00:00",
+  "created_at": "2026-08-10T01:50:59.688141+00:00",
+  "updated_at": "2026-08-10T01:50:59.688141+00:00",
   "repository": "xqy2006/jsc2js",
   "branch": "v12-legacy-support",
   "workflow": "compile.yml",
   "batch_size": 5,
   "source_audit": "audit/modern-v8-api.json",
-  "source_audit_sha256": "b1dc4bfa157bdaddb0073ecd5070a2a92b610c0d3ee70ab0f7aacf924d9895ac",
+  "source_audit_sha256": "c7c8a0ea7f1fed9bb4b509382586633ee7bdadc131d90b35f56d23403d2dfad7",
   "summary": {
     "versions": 57,
     "batches": 13,
@@ -22,7 +22,7 @@
       "index": 0,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -38,7 +38,7 @@
       "index": 1,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -54,7 +54,7 @@
       "index": 2,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -70,7 +70,7 @@
       "index": 3,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -86,7 +86,7 @@
       "index": 4,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -102,7 +102,7 @@
       "index": 5,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -115,7 +115,7 @@
       "index": 6,
       "group": {
         "major": 14,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -128,7 +128,7 @@
       "index": 7,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -144,7 +144,7 @@
       "index": 8,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -160,7 +160,7 @@
       "index": 9,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -175,7 +175,7 @@
       "index": 10,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -191,7 +191,7 @@
       "index": 11,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [
@@ -207,7 +207,7 @@
       "index": 12,
       "group": {
         "major": 15,
-        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+        "api_family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-trustedfixedarray-split-readonly-checksum",
         "in_tree_gyp": false
       },
       "versions": [

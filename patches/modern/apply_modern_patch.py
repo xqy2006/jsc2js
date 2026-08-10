@@ -44,6 +44,7 @@ D8_H = "src/d8/d8.h"
 STRING_CC = "src/objects/string.cc"
 PRINTER_CC = "src/diagnostics/objects-printer.cc"
 SFI_H = "src/objects/shared-function-info.h"
+BYTECODE_ARRAY_H = "src/objects/bytecode-array.h"
 FIXED_ARRAY_H = "src/objects/fixed-array.h"
 OBJECTS_H = "src/objects/objects.h"
 OBJECTS_INL_H = "src/objects/objects-inl.h"
@@ -58,6 +59,7 @@ SOURCE_PATHS = (
     STRING_CC,
     PRINTER_CC,
     SFI_H,
+    BYTECODE_ARRAY_H,
     FIXED_ARRAY_H,
     OBJECTS_H,
     OBJECTS_INL_H,
@@ -77,6 +79,7 @@ class ModernFeatures:
     read_chars_type: str
     object_predicate_generation: str
     bytecode_accessor: str
+    constant_pool_type: str
     sanity_style: str
 
     @property
@@ -88,6 +91,7 @@ class ModernFeatures:
                 self.read_chars_type.lower().replace("::", "-"),
                 self.object_predicate_generation,
                 self.bytecode_accessor,
+                self.constant_pool_type.lower(),
                 self.sanity_style,
             )
         )
@@ -125,6 +129,7 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
     serializer_h = sources[SERIALIZER_H]
     serializer_cc = sources[SERIALIZER_CC]
     sfi_h = sources[SFI_H]
+    bytecode_array_h = sources[BYTECODE_ARRAY_H]
     objects_h = sources[OBJECTS_H]
     objects_inl_h = sources[OBJECTS_INL_H]
     fixed_array_h = sources[FIXED_ARRAY_H]
@@ -152,6 +157,10 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         raise PatchError("SharedFunctionInfo::GetBytecodeArray(IsolateT*) is missing")
     if "HasBytecodeArray" not in sfi_h:
         raise PatchError("SharedFunctionInfo::HasBytecodeArray is missing")
+    if not re.search(
+        r"constant_pool\s*,\s*TrustedFixedArray\s*\)", bytecode_array_h
+    ):
+        raise PatchError("modern TrustedFixedArray constant-pool API is missing")
     if "Tagged<ElementT> get(uint32_t index)" not in fixed_array_h:
         raise PatchError("modern tagged-array get API is missing")
 
@@ -184,6 +193,7 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         read_chars_type="base::OwnedVector<char>",
         object_predicate_generation=predicate_generation,
         bytecode_accessor="GetBytecodeArray(IsolateT*)",
+        constant_pool_type="TrustedFixedArray",
         sanity_style="split-readonly-checksum",
     )
 
@@ -266,7 +276,7 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
       std::cout << "\\nEnd BytecodeArray\\n";
       std::cout << "End SharedFunctionInfo\\n" << std::flush;
 
-      i::Tagged<i::FixedArray> constants = bytecode->constant_pool();
+      auto constants = bytecode->constant_pool();
       for (int index = 0; index < constants->length(); ++index) {{
         i::Tagged<i::Object> object = constants->get(index);
         if (i::IsSharedFunctionInfo(object)) {{

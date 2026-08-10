@@ -105,7 +105,13 @@ def load_or_create_manifest(args: argparse.Namespace) -> dict:
     if args.manifest.is_file():
         manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
         if manifest["source_audit_sha256"] != audit_digest(args.audit):
-            raise RuntimeError("manifest audit digest does not match the current audit")
+            if any(batch.get("dispatches") for batch in manifest.get("batches", [])):
+                raise RuntimeError(
+                    "manifest audit digest changed after dispatch; use a new manifest"
+                )
+            return create_manifest(
+                args.audit, args.repo, args.branch, args.workflow, args.batch_size
+            )
         return manifest
     return create_manifest(
         args.audit, args.repo, args.branch, args.workflow, args.batch_size

@@ -147,6 +147,8 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
         self.assertIn("i::MaybeDirectHandle<i::SharedFunctionInfo>", loader)
         self.assertIn("previous.is_identical_to(current)", loader)
         self.assertIn("pending.emplace_back", loader)
+        self.assertIn("auto constants = bytecode->constant_pool();", loader)
+        self.assertNotIn("i::Tagged<i::FixedArray> constants", loader)
         self.assertNotIn("void Disassemble(", loader)
         self.assertNotIn("HeapObjectShortPrint(", loader)
 

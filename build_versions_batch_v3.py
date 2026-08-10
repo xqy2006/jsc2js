@@ -94,6 +94,24 @@ def write_list(path: str, items):
             f.write(it + "\n")
 
 
+def select_patch_implementation(version: str) -> tuple[str, str]:
+    """Return (strategy, path) for one exact V8 tag."""
+    if not re.fullmatch(r"\d+\.\d+\.\d+(?:\.\d+)?", version):
+        raise ValueError(f"invalid V8 tag: {version!r}")
+    parts = tuple(int(part) for part in version.split("."))
+    number = parts + (0,) * (4 - len(parts))
+    major, minor, patch, _ = number
+    if major < 12:
+        return "legacy-semantic", "patches/legacy/apply_legacy_patch.py"
+    if number >= (14, 7, 84, 0):
+        return "modern-semantic", "patches/modern/apply_modern_patch.py"
+    if major == 12 and minor < 6:
+        return "unified-diff", "patches/current/v8-12.0-to-12.5.patch"
+    if major < 13 or (major == 13 and (minor < 2 or (minor == 2 and patch < 135))):
+        return "unified-diff", "patches/current/v8-12.6-to-13.2.134.patch"
+    return "unified-diff", "patches/current/v8-13.2.135-to-14.7.83.patch"
+
+
 def restore_version_worktrees(v8_root: Path = Path("v8")):
     """Restore tracked compatibility edits in V8 and its //build checkout."""
     roots = [v8_root]
@@ -150,7 +168,7 @@ def compress_backup(path: Path):
         return zip_name
 
 
-def run_legacy_rejection_smoke(built_bin: Path) -> str:
+def run_rejection_smoke(built_bin: Path) -> str:
     """Verify malformed cache data is rejected without aborting the process."""
     build_dir = built_bin.parent.resolve()
     bad_cache = build_dir / "jsc2js-invalid-cache.jsc"
@@ -172,13 +190,13 @@ def run_legacy_rejection_smoke(built_bin: Path) -> str:
     output = completed.stdout or ""
     if completed.returncode != 0 or marker not in output:
         raise RuntimeError(
-            "legacy malformed-cache smoke test failed: "
+            "malformed-cache smoke test failed: "
             f"exit={completed.returncode} output={output[-2000:]}"
         )
     return output
 
 
-def run_legacy_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
+def run_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
     """Verify a real cache from the matching Electron/V8 build is printable."""
     if not cache_path.is_file() or cache_path.stat().st_size == 0:
         raise RuntimeError(f"legacy valid-cache fixture is missing: {cache_path}")
@@ -205,7 +223,7 @@ def run_legacy_valid_cache_smoke(built_bin: Path, cache_path: Path) -> str:
         or "Start SharedFunctionInfo" not in output
     ):
         raise RuntimeError(
-            "legacy valid-cache smoke test failed: "
+            "valid-cache smoke test failed: "
             f"exit={completed.returncode} output={output[-4000:]}"
         )
     return output
@@ -822,30 +840,21 @@ def main():
                 if not keep_work_dir:
                     shutil.rmtree(work_dir, ignore_errors=True)
 
-            # Select a named V8 12+ patch, or the source-aware legacy patcher.
+            # Select a named stable patch, or one of the source-aware patchers.
             try:
-                # Split version string into parts and convert major/minor to integers
-                version_parts = ver.split('.')
-                major = int(version_parts[0])
-                minor = int(version_parts[1])
-                minor_2 = int(version_parts[2])
-                is_legacy = major < 12
-                if is_legacy:
-                    patch_file_to_use = None
-                elif major > 12 or (major == 12 and minor >= 6):
-                    if major > 13 or (major == 13 and minor > 2) or (major == 13 and minor == 2 and minor_2 >= 135):
-                        patch_file_to_use = "patches/current/v8-13.2.135-plus.patch"
-                    else:  
-                        patch_file_to_use = "patches/current/v8-12.6-to-13.2.134.patch"
-                else:
-                    patch_file_to_use = "patches/current/v8-12.0-to-12.5.patch"
-                selected = patch_file_to_use or "patches/legacy/apply_legacy_patch.py"
+                patch_strategy, selected = select_patch_implementation(ver)
+                is_legacy = patch_strategy == "legacy-semantic"
+                is_modern_semantic = patch_strategy == "modern-semantic"
+                patch_file_to_use = (
+                    selected if patch_strategy == "unified-diff" else None
+                )
                 log(f"Selected patch implementation for version {ver}: {selected}")
             
             except (ValueError, IndexError) as e:
                 # Handle cases where version string is malformed (e.g., "12" or "a.b.c")
                 log(f"[ERROR] Could not parse version string '{ver}': {e}. Defaulting to the current midrange patch")
                 is_legacy = False
+                is_modern_semantic = False
                 patch_file_to_use = "patches/current/v8-12.6-to-13.2.134.patch"
 
             # Apply patch
@@ -857,6 +866,21 @@ def main():
                     [
                         sys.executable,
                         str(legacy_patcher),
+                        "--root",
+                        ".",
+                        "--report",
+                        "apply_patch_report.json",
+                    ],
+                    cwd="v8",
+                ).returncode
+            elif is_modern_semantic:
+                modern_patcher = Path("patches/modern/apply_modern_patch.py").resolve()
+                if not modern_patcher.exists():
+                    raise RuntimeError(f"Missing modern patcher {modern_patcher}")
+                rc = subprocess.run(
+                    [
+                        sys.executable,
+                        str(modern_patcher),
                         "--root",
                         ".",
                         "--report",
@@ -944,11 +968,11 @@ def main():
 
             smoke_output = ""
             valid_cache_output = ""
-            if is_legacy:
-                smoke_output = run_legacy_rejection_smoke(built_bin)
+            if is_legacy or is_modern_semantic:
+                smoke_output = run_rejection_smoke(built_bin)
                 valid_cache = os.environ.get("JSC2JS_VALID_CACHE")
                 if valid_cache:
-                    valid_cache_output = run_legacy_valid_cache_smoke(
+                    valid_cache_output = run_valid_cache_smoke(
                         built_bin, Path(valid_cache).resolve()
                     )
 

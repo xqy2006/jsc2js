@@ -254,11 +254,11 @@ jobs:
           ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
-          "$JSC2JS_PYTHON3" build_versions_batch_v3.py || true
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Batch processing complete (errors captured in failed_versions.txt)."
 
       - name: Upload batch artifacts
-        if: steps.partition.outputs.has_any == 'true'
+        if: always() && steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-batch-${{ matrix.os }}-slot${{ matrix.slot }}
@@ -271,7 +271,7 @@ jobs:
   aggregate-and-release:
     name: Aggregate & release
     needs: [determine-versions, build]
-    if: needs.determine-versions.outputs.has_versions == 'true'
+    if: always() && needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
@@ -295,13 +295,12 @@ jobs:
           [ -f public/failed.json ] || echo "[]" > public/failed.json
           find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
           find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
-          sort -u -o _all_success.txt _all_success.txt || true
-          sort -u -o _all_failed.txt _all_failed.txt || true
-          while read -r v; do
-            [ -z "$v" ] && continue
-            jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
-              jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
-          done < _all_failed.txt
+          tr -d '\r' < _all_success.txt | sed '/^$/d' | sort -Vu > _all_success.normalized
+          mv _all_success.normalized _all_success.txt
+          tr -d '\r' < _all_failed.txt | sed '/^$/d' | sort -Vu > _all_failed.normalized
+          mv _all_failed.normalized _all_failed.txt
+          python3 tools/update_failed_versions.py \
+            --failed-json public/failed.json --add-file _all_failed.txt
       - name: Reconstruct per-version dirs
         run: |
           set -e
@@ -379,6 +378,10 @@ jobs:
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
               updated=true
             fi
+            # A version leaves the failure blacklist only after both platform
+            # artifacts were reconstructed and its release was updated.
+            python3 tools/update_failed_versions.py \
+              --failed-json public/failed.json --remove "$v"
           done
 
           if [ "$updated" = true ]; then

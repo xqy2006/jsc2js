@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""Replay and verify the modern semantic patch against every audited tag."""
+
+from __future__ import annotations
+
+import argparse
+import concurrent.futures
+import json
+from pathlib import Path
+import sys
+import tempfile
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+
+from patches.legacy.apply_legacy_patch import (  # noqa: E402
+    UPSTREAM_PROTECTION_TOKENS,
+    upstream_protections,
+)
+from patches.modern.apply_modern_patch import (  # noqa: E402
+    DESERIALIZER_CC,
+    D8_CC,
+    D8_H,
+    OBJECT_DESERIALIZER_CC,
+    PATCH_MARKER,
+    PRINTER_CC,
+    SERIALIZER_CC,
+    SOURCE_PATHS,
+    STRING_CC,
+    transform_sources,
+)
+from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
+
+
+def protected_token_counts_unchanged(before: str, after: str) -> bool:
+    return all(
+        tuple(before.count(token) for token in tokens)
+        == tuple(after.count(token) for token in tokens)
+        for tokens in UPSTREAM_PROTECTION_TOKENS.values()
+    )
+
+
+def validate_version(cache: RawSourceCache, version: str) -> dict:
+    sources: dict[str, str] = {}
+    try:
+        for path in SOURCE_PATHS:
+            content = cache.get(version, path)
+            if content is not None:
+                sources[path] = content
+        transformed, features, changed = transform_sources(sources)
+        d8 = transformed[D8_CC]
+        serializer = transformed[SERIALIZER_CC]
+        checks = {
+            "exactly_four_files_changed": changed
+            == sorted((D8_CC, D8_H, STRING_CC, SERIALIZER_CC)),
+            "loader_registered": (
+                PATCH_MARKER in d8 and 'global_template->Set(isolate, "loadjsc"' in d8
+            ),
+            "direct_handle_api_used": all(
+                token in d8
+                for token in (
+                    "i::MaybeDirectHandle<i::SharedFunctionInfo>",
+                    "i::DirectHandle<i::SharedFunctionInfo>",
+                    "i::ScriptDetails script_details",
+                )
+            ),
+            "owned_vector_reader_used": "base::OwnedVector<char> file_data" in d8,
+            "flat_non_recursive_worklist": all(
+                token in d8
+                for token in (
+                    "std::vector<i::DirectHandle<i::SharedFunctionInfo>> pending",
+                    "previous.is_identical_to(current)",
+                    "pending.emplace_back(i::Cast<i::SharedFunctionInfo>(object), isolate)",
+                )
+            ),
+            "source_version_flags_bypassed": all(
+                marker in serializer
+                for marker in (
+                    "JSC2JS_SOURCE_HASH_BYPASS",
+                    "JSC2JS_VERSION_HASH_BYPASS",
+                    "JSC2JS_FLAGS_HASH_BYPASS",
+                )
+            ),
+            "protected_cache_checks_byte_preserved": protected_token_counts_unchanged(
+                sources[SERIALIZER_CC], serializer
+            ),
+            "read_only_checksum_preserved": (
+                "kReadOnlySnapshotChecksumOffset" in serializer
+                and "kReadOnlySnapshotChecksumMismatch" in serializer
+            ),
+            "deserializers_byte_identical": all(
+                transformed[path] == sources[path]
+                for path in (DESERIALIZER_CC, OBJECT_DESERIALIZER_CC)
+            ),
+            "heap_and_sfi_printer_byte_identical": (
+                transformed[PRINTER_CC] == sources[PRINTER_CC]
+            ),
+            "string_truncation_only_printer_edit": (
+                "JSC2JS_FULL_STRING_PRINT" in transformed[STRING_CC]
+            ),
+        }
+        if not all(checks.values()):
+            raise RuntimeError(f"post-transform checks failed: {checks}")
+        return {
+            "version": version,
+            "status": "ok",
+            "family": features.family_name,
+            "changed_files": changed,
+            "upstream_checks_present": upstream_protections(
+                sources[SERIALIZER_CC]
+            ),
+            "checks": checks,
+        }
+    except Exception as error:
+        return {"version": version, "status": "failed", "error": str(error)}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--versions",
+        type=Path,
+        default=Path("audit/modern-v8-versions.json"),
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("audit/modern-v8-patch-validation.json"),
+    )
+    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=Path(tempfile.gettempdir()) / "jsc2js-v8-source-audit",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    versions = json.loads(args.versions.read_text(encoding="utf-8"))
+    versions = sorted(set(versions), key=version_key)
+    cache = RawSourceCache(args.cache_dir)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
+        records = list(
+            executor.map(lambda version: validate_version(cache, version), versions)
+        )
+    records.sort(key=lambda item: version_key(item["version"]))
+    failed = [record for record in records if record["status"] != "ok"]
+    payload = {
+        "scope": {"first": versions[0], "last": versions[-1]},
+        "summary": {
+            "versions": len(records),
+            "passed": len(records) - len(failed),
+            "failed": len(failed),
+            "families": len(
+                {
+                    record["family"]
+                    for record in records
+                    if record["status"] == "ok"
+                }
+            ),
+        },
+        "safety_invariants": {
+            "changed_files_per_version": 4,
+            "cross_embedder_hashes_bypassed": ["source", "version", "flags"],
+            "read_only_snapshot_checksum_preserved": True,
+            "magic_header_length_and_checksum_preserved": True,
+            "deserializer_protocol_checks_preserved": True,
+            "heap_short_print_and_sfi_printer_preserved": True,
+            "nested_functions_use_a_flat_deduplicated_worklist": True,
+        },
+        "versions": records,
+    }
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(payload["summary"], ensure_ascii=False))
+    for record in failed:
+        print(json.dumps(record, ensure_ascii=False), file=sys.stderr)
+    return 0 if not failed else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

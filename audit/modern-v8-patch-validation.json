@@ -1,0 +1,1851 @@
+{
+  "scope": {
+    "first": "14.7.84",
+    "last": "15.3.25"
+  },
+  "summary": {
+    "versions": 57,
+    "passed": 57,
+    "failed": 0,
+    "families": 3
+  },
+  "safety_invariants": {
+    "changed_files_per_version": 4,
+    "cross_embedder_hashes_bypassed": [
+      "source",
+      "version",
+      "flags"
+    ],
+    "read_only_snapshot_checksum_preserved": true,
+    "magic_header_length_and_checksum_preserved": true,
+    "deserializer_protocol_checks_preserved": true,
+    "heap_short_print_and_sfi_printer_preserved": true,
+    "nested_functions_use_a_flat_deduplicated_worklist": true
+  },
+  "versions": [
+    {
+      "version": "14.7.84",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.107",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.114",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.127",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.128",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.142",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.7.173",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.21",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.40",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.51",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.67",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.95",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.148",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.151",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.172",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.1",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.6",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.14",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.22",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.28",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.29",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.31",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.33",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.8.178.38",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.9.195",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.9.197",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.9.205",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "14.9.207",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.19",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.30",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.43",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.108",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.129",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.163",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.204",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.223",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.245.4",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.245.5",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.245.13",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.245.15",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.245.23",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.0.1240245",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.1.16",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.1.113",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.1.151",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.38",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.61",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.87",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.102",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.107",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.116",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.124",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.124.1",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.2.124.5",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.3.14",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    },
+    {
+      "version": "15.3.25",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "changed_files": [
+        "src/d8/d8.cc",
+        "src/d8/d8.h",
+        "src/objects/string.cc",
+        "src/snapshot/code-serializer.cc"
+      ],
+      "upstream_checks_present": {
+        "magic": true,
+        "checksum": true,
+        "invalid_header": true,
+        "payload_length": true,
+        "cpu_features": false,
+        "read_only_snapshot_checksum": true
+      },
+      "checks": {
+        "exactly_four_files_changed": true,
+        "loader_registered": true,
+        "direct_handle_api_used": true,
+        "owned_vector_reader_used": true,
+        "flat_non_recursive_worklist": true,
+        "source_version_flags_bypassed": true,
+        "protected_cache_checks_byte_preserved": true,
+        "read_only_checksum_preserved": true,
+        "deserializers_byte_identical": true,
+        "heap_and_sfi_printer_byte_identical": true,
+        "string_truncation_only_printer_edit": true
+      }
+    }
+  ]
+}

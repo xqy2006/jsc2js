@@ -17,7 +17,7 @@ class LegacyHookPythonTest(unittest.TestCase):
         expected = {
             "v8-12.0-to-12.5.patch": "baa4e8f1cc4e5465fbe797a641b3e7e8c1ae1246",
             "v8-12.6-to-13.2.134.patch": "cddc24c96135bafd720bcb428023eea0dfb93262",
-            "v8-13.2.135-plus.patch": "3ec516d1cbf30e54e2f25879db21a7d4a429fca5",
+            "v8-13.2.135-to-14.7.83.patch": "3ec516d1cbf30e54e2f25879db21a7d4a429fca5",
         }
         for name, blob in expected.items():
             with self.subTest(name=name):

@@ -1,0 +1,1792 @@
+{
+  "scope": {
+    "first": "14.7.84",
+    "last": "15.3.25",
+    "source": "https://github.com/v8/v8 raw tag source files",
+    "repository_cloned": false,
+    "files_per_tag": 12
+  },
+  "summary": {
+    "versions": 57,
+    "passed": 57,
+    "failed": 0,
+    "families": 3
+  },
+  "families": [
+    {
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "count": 27,
+      "first": "14.7.84",
+      "last": "14.9.197",
+      "representatives": [
+        "14.7.84",
+        "14.9.197"
+      ],
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      }
+    },
+    {
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "count": 16,
+      "first": "14.9.205",
+      "last": "15.0.1240245",
+      "representatives": [
+        "14.9.205",
+        "15.0.1240245"
+      ],
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      }
+    },
+    {
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "count": 14,
+      "first": "15.1.16",
+      "last": "15.3.25",
+      "representatives": [
+        "15.1.16",
+        "15.3.25"
+      ],
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      }
+    }
+  ],
+  "versions": [
+    {
+      "version": "14.7.84",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "1f7f56fe20d45c8310a434479f20fad959cccc25dacaf51db27ccd3a8232c1b5",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "17cc0aed02b8cb3883b5957e1749d77c6bc51c90d42b7e8c1b14890c65b1588b",
+        "src/objects/fixed-array.h": "2806362d5800dda9dea87a7f5ab43ac1ae9e9c7589fe5d6063e8670b37b504f0",
+        "src/objects/objects-inl.h": "17ae8b973d55b54afd851687f6943c79690cb806fd0a6febf952b07154483927",
+        "src/objects/objects.h": "97b701b8b5f98d03c555376183e93305ac934646056b5ac3c617349e8b2ce3be",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "e4a6890f10d9c7ea3f01bdf640aad08d879f2737f88c4bea4e6508a1bfe9b2ed",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0b4809d9ca68187f15cf92cefaa872001d1307009c7ab1137acda651ea9378fe",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.107",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "efdb9002f52a06243c78176bf6efda21464ecba1816dbe7261982e47b9779d1b",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "b7ccc196c5cec3c750f49940de706b3f7f09e8b18651916035993e1f537e5df9",
+        "src/objects/fixed-array.h": "f5f9f4b8c70f199314d9fc0410498923df30a581935fa5a03f8657746c676aef",
+        "src/objects/objects-inl.h": "b04d8b74c7422e41a9fe77a709dbfc3f072a90bc01bd76c3d733ae11ada401ce",
+        "src/objects/objects.h": "97b701b8b5f98d03c555376183e93305ac934646056b5ac3c617349e8b2ce3be",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "0668b9833485da5ca1b1d7ccedade1e1edfd71f6e5424ee77a08f329069e473d",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.114",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "efdb9002f52a06243c78176bf6efda21464ecba1816dbe7261982e47b9779d1b",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "fa4282c7c8e5ba0c9def12c53f72b0ea6ccde5eb8f15d0fd1f2f041e17fc60e4",
+        "src/objects/fixed-array.h": "f5f9f4b8c70f199314d9fc0410498923df30a581935fa5a03f8657746c676aef",
+        "src/objects/objects-inl.h": "b04d8b74c7422e41a9fe77a709dbfc3f072a90bc01bd76c3d733ae11ada401ce",
+        "src/objects/objects.h": "97b701b8b5f98d03c555376183e93305ac934646056b5ac3c617349e8b2ce3be",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "0668b9833485da5ca1b1d7ccedade1e1edfd71f6e5424ee77a08f329069e473d",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.127",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "efdb9002f52a06243c78176bf6efda21464ecba1816dbe7261982e47b9779d1b",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "22a1deed20b308935691051b4f981afe4106ea5e8d73e3f3038c7c4a4b2a92b4",
+        "src/objects/fixed-array.h": "f5f9f4b8c70f199314d9fc0410498923df30a581935fa5a03f8657746c676aef",
+        "src/objects/objects-inl.h": "b04d8b74c7422e41a9fe77a709dbfc3f072a90bc01bd76c3d733ae11ada401ce",
+        "src/objects/objects.h": "97b701b8b5f98d03c555376183e93305ac934646056b5ac3c617349e8b2ce3be",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "0668b9833485da5ca1b1d7ccedade1e1edfd71f6e5424ee77a08f329069e473d",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.128",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "efdb9002f52a06243c78176bf6efda21464ecba1816dbe7261982e47b9779d1b",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "22a1deed20b308935691051b4f981afe4106ea5e8d73e3f3038c7c4a4b2a92b4",
+        "src/objects/fixed-array.h": "f5f9f4b8c70f199314d9fc0410498923df30a581935fa5a03f8657746c676aef",
+        "src/objects/objects-inl.h": "b04d8b74c7422e41a9fe77a709dbfc3f072a90bc01bd76c3d733ae11ada401ce",
+        "src/objects/objects.h": "97b701b8b5f98d03c555376183e93305ac934646056b5ac3c617349e8b2ce3be",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "0668b9833485da5ca1b1d7ccedade1e1edfd71f6e5424ee77a08f329069e473d",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.142",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8e8e6104e61c53bf0def455378f96e923c6e02b266e9d067d5ff440b1fa921d8",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "3ea5c921ded01a4fe817135c69546476691f6a0855582bbb612bf9c447fd7354",
+        "src/objects/fixed-array.h": "d380da70df6c7f33d6f4fd9d47bb90504fa563b86584967975503fa308e992fd",
+        "src/objects/objects-inl.h": "b04d8b74c7422e41a9fe77a709dbfc3f072a90bc01bd76c3d733ae11ada401ce",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "0668b9833485da5ca1b1d7ccedade1e1edfd71f6e5424ee77a08f329069e473d",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.7.173",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "067f3529438181110426f2832432a436507b33fbb0f9bf610cc9e80c6948c1d4",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "11211e7b4a07573083ca8ee14a8116778e97a664602428a36e43858dc390cc37",
+        "src/objects/fixed-array.h": "aaeb4ebc372de43c5383576ff6d20ffdecfb3718f25133425334dd0ab06501fe",
+        "src/objects/objects-inl.h": "c6bf71f204d447920dbe990bcbd60409f4225e8ad70c4038986a2654e6d92358",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.21",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2a907f68d28c91761af3e419586b8dc0c405d4758fe54043fdeb2688a624f23f",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "f4b478b0a624419cf6a29631cbd7f734e27cd38f1a85b06e4c58aad1872f9163",
+        "src/objects/fixed-array.h": "8c7eea9e3485aa9e8e82642f876d15c533ba9e7d7897d503ff0b60fdbccc8a57",
+        "src/objects/objects-inl.h": "c6bf71f204d447920dbe990bcbd60409f4225e8ad70c4038986a2654e6d92358",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.40",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2a907f68d28c91761af3e419586b8dc0c405d4758fe54043fdeb2688a624f23f",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "f4b478b0a624419cf6a29631cbd7f734e27cd38f1a85b06e4c58aad1872f9163",
+        "src/objects/fixed-array.h": "8c7eea9e3485aa9e8e82642f876d15c533ba9e7d7897d503ff0b60fdbccc8a57",
+        "src/objects/objects-inl.h": "c6bf71f204d447920dbe990bcbd60409f4225e8ad70c4038986a2654e6d92358",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.51",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2a907f68d28c91761af3e419586b8dc0c405d4758fe54043fdeb2688a624f23f",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "f4b478b0a624419cf6a29631cbd7f734e27cd38f1a85b06e4c58aad1872f9163",
+        "src/objects/fixed-array.h": "8c7eea9e3485aa9e8e82642f876d15c533ba9e7d7897d503ff0b60fdbccc8a57",
+        "src/objects/objects-inl.h": "c6bf71f204d447920dbe990bcbd60409f4225e8ad70c4038986a2654e6d92358",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.67",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a012eb86461d3c105f979697adfb0d6ae3580a63f6f17b89c09c44302092b018",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "f4b478b0a624419cf6a29631cbd7f734e27cd38f1a85b06e4c58aad1872f9163",
+        "src/objects/fixed-array.h": "8c7eea9e3485aa9e8e82642f876d15c533ba9e7d7897d503ff0b60fdbccc8a57",
+        "src/objects/objects-inl.h": "662c9b21bf81c16c9f1093ac610fb3f3a9411739abc9df5da645bbb801f26357",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "0cea32470c077bd04ad31858e1ac862123f9bd15e1c4b05fe99cd2cbc9b21994",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.95",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "660f5c4f70d4d55a7370387c08926db4808a4292c7ff7fa58995c1167f604128",
+        "src/d8/d8.h": "a0b9fd558e86b5384f2bcf1934003a1902a03a84056b74420d11cba04b57b826",
+        "src/diagnostics/objects-printer.cc": "e2e11e0e1167b5aaa916151f96ba08fd05bd3469ec318a7f57957003a98a6613",
+        "src/objects/fixed-array.h": "bf24bb0e1954fd1f01458b8765fc51e7fba5b32a547aab1008eb9a92df698a9d",
+        "src/objects/objects-inl.h": "5f3ab7c0eda69b02b83885684146caa95ea605b8ab3f330a28de655d743a8738",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "628d3ba150df91b7fe70cb8ffb97d43e0058e83f2354195a9f624036f82278e2",
+        "src/objects/string.cc": "22b4f539af69d3b7c3ad0f88c0c7747efb61134205c1193c91917a8d50c48933",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.148",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "79d1ef5a6b263de96d725c7f5ee3196c50b74b9a66d68c9011bfdd47db64975e",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "82f753c4fff0255d926a9301429c8043f00a6cb95d0760753c756aab6351c559",
+        "src/objects/fixed-array.h": "bf24bb0e1954fd1f01458b8765fc51e7fba5b32a547aab1008eb9a92df698a9d",
+        "src/objects/objects-inl.h": "b3d78c48d741a0c4e73010f9725e6113e8af04fee39a29c89fce2f635f0c113e",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "f6d269f81bbc6c545e9464ed4d8267bba5f8a9eac92f813ec7a3aac66055f98e",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.151",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "79d1ef5a6b263de96d725c7f5ee3196c50b74b9a66d68c9011bfdd47db64975e",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "82f753c4fff0255d926a9301429c8043f00a6cb95d0760753c756aab6351c559",
+        "src/objects/fixed-array.h": "bf24bb0e1954fd1f01458b8765fc51e7fba5b32a547aab1008eb9a92df698a9d",
+        "src/objects/objects-inl.h": "b3d78c48d741a0c4e73010f9725e6113e8af04fee39a29c89fce2f635f0c113e",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "f6d269f81bbc6c545e9464ed4d8267bba5f8a9eac92f813ec7a3aac66055f98e",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.172",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "d87e98ab73437436e7a5730acac7cc405a6ddd6d94ccce6ce62733d14687f868",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.1",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.6",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.14",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.22",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.28",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.29",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.31",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.33",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.8.178.38",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a56ffd897132d83b6f8fcc29d3208bfb3ec33193d0529078a538c5e682652a08",
+        "src/d8/d8.h": "5264ed7c77af7163f94e54a535d8f3119793f71f02990161b33248069bcc53b4",
+        "src/diagnostics/objects-printer.cc": "6c1861246f5b3531634faeb9fd3350dd88107bd95d47109f452c00ff15307b7d",
+        "src/objects/fixed-array.h": "a872aefff5b80e39bf66556eb59fdd53f088669e83a595960cb06f8726688221",
+        "src/objects/objects-inl.h": "634505e0da3a75496a61621ed8ca36be641d54f88739b705ccc48424509bccb2",
+        "src/objects/objects.h": "4994c608ad5a45f0c68c66ebc92f73cc7bec2536e465fda41513025f57d1c7cb",
+        "src/objects/shared-function-info.h": "73346d513f1d1b5ee1641853402b7dcb0b7555029247f39b6c27df884ee41fa7",
+        "src/objects/string.cc": "1ad4dabd6272d752fc67416cf36e2b0d2c5a0dd3cc92ad278d4cff22b1b4ca6b",
+        "src/snapshot/code-serializer.cc": "40e67bbf4c335ac3eefd652097a86d9359fe1833b710ce56ba89d7a3873a277c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.9.195",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "1cbfd90fdf3161529fa4b95f5706bcdeee4ecb233bc3110d4fbd5fcba7067311",
+        "src/d8/d8.h": "fcd830a378b148c30a0124c8c41dc7cbb29b24b66465cd7305642fb9500bab14",
+        "src/diagnostics/objects-printer.cc": "7d9ecdbe58b331be89bb3bb0a5e543d2384802fe308ba9dee5ee9378e8eeab94",
+        "src/objects/fixed-array.h": "4354d9ddeaef6b316376151ca07d097086bcd58d24c969d097eb8bddb203fe4b",
+        "src/objects/objects-inl.h": "c5626e0edd5758b389f08ee5d615fc6e18d61b9e1fa7e24a82b22ed32fa98b91",
+        "src/objects/objects.h": "0fd5869c56c2f624ec8bebe29fbde697821930e7e7a08f7e21b29188c50ec59e",
+        "src/objects/shared-function-info.h": "3b60142f2e2dd8b5fad2a7f28b794e4c925192515038ae67a4539c45a8fefed5",
+        "src/objects/string.cc": "9ea9e7848532199d756f95c5094711b64d23a6faa37e3f8727729062e0608f35",
+        "src/snapshot/code-serializer.cc": "99b7df1386a45f623f485fe13e98062c1e2f586a311aac78eaf59782cb79c20b",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.9.197",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-h-macro-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-h-macro",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "b5b1ab2aee2a2893eec2359ae0ee630bb67c050caebe098197f10b1ecb48c299",
+        "src/d8/d8.h": "d667df737eddac764856e87de687684f2f9a203f900349fe2a1f17eb8fc65524",
+        "src/diagnostics/objects-printer.cc": "32f357b0647b29d8948c39c2f0a6ae8a9803f75e24de5b4f783e5f601e319116",
+        "src/objects/fixed-array.h": "4354d9ddeaef6b316376151ca07d097086bcd58d24c969d097eb8bddb203fe4b",
+        "src/objects/objects-inl.h": "c5626e0edd5758b389f08ee5d615fc6e18d61b9e1fa7e24a82b22ed32fa98b91",
+        "src/objects/objects.h": "0fd5869c56c2f624ec8bebe29fbde697821930e7e7a08f7e21b29188c50ec59e",
+        "src/objects/shared-function-info.h": "61dee8c10fb766eac9e4636eb0e5ba1f8147a5158e7d6a8ce011c5625b502a0f",
+        "src/objects/string.cc": "9ea9e7848532199d756f95c5094711b64d23a6faa37e3f8727729062e0608f35",
+        "src/snapshot/code-serializer.cc": "99b7df1386a45f623f485fe13e98062c1e2f586a311aac78eaf59782cb79c20b",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.9.205",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "5e30f97426cab5d9652b2fb5d410fd613e08ad88676c0934852947b62cabfd7e",
+        "src/d8/d8.h": "1921e612bf960b2b1046b3d93b3322eb14e58bde57b27300de126f45593f13e7",
+        "src/diagnostics/objects-printer.cc": "813a3b29490473749b95128a0aea8aed058512575216b86a84d6796b1f77f7c7",
+        "src/objects/fixed-array.h": "427d833022545afec86d013a8ecca3f37998ebe1bdaae43ad5e5b61f8644c022",
+        "src/objects/objects-inl.h": "374d4750d8619549f16a7c69159af56e95faa93179b2efb21c1a35ac6c5bc870",
+        "src/objects/objects.h": "bc7fa4c79f6ac08ce476be903cde559e3553e748348b3d996c726ab8d5ace31b",
+        "src/objects/shared-function-info.h": "61dee8c10fb766eac9e4636eb0e5ba1f8147a5158e7d6a8ce011c5625b502a0f",
+        "src/objects/string.cc": "9ea9e7848532199d756f95c5094711b64d23a6faa37e3f8727729062e0608f35",
+        "src/snapshot/code-serializer.cc": "99b7df1386a45f623f485fe13e98062c1e2f586a311aac78eaf59782cb79c20b",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "14.9.207",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "5e30f97426cab5d9652b2fb5d410fd613e08ad88676c0934852947b62cabfd7e",
+        "src/d8/d8.h": "1921e612bf960b2b1046b3d93b3322eb14e58bde57b27300de126f45593f13e7",
+        "src/diagnostics/objects-printer.cc": "813a3b29490473749b95128a0aea8aed058512575216b86a84d6796b1f77f7c7",
+        "src/objects/fixed-array.h": "427d833022545afec86d013a8ecca3f37998ebe1bdaae43ad5e5b61f8644c022",
+        "src/objects/objects-inl.h": "374d4750d8619549f16a7c69159af56e95faa93179b2efb21c1a35ac6c5bc870",
+        "src/objects/objects.h": "bc7fa4c79f6ac08ce476be903cde559e3553e748348b3d996c726ab8d5ace31b",
+        "src/objects/shared-function-info.h": "61dee8c10fb766eac9e4636eb0e5ba1f8147a5158e7d6a8ce011c5625b502a0f",
+        "src/objects/string.cc": "9ea9e7848532199d756f95c5094711b64d23a6faa37e3f8727729062e0608f35",
+        "src/snapshot/code-serializer.cc": "99b7df1386a45f623f485fe13e98062c1e2f586a311aac78eaf59782cb79c20b",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "ec0fc0728458591926b67a6320a18884ed0d61d8f429c82f811299880ca2f841",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.19",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "77df9c45698368e5c523ee1d191d89ed79d1fff7f55904c41b69b52362d7b062",
+        "src/d8/d8.h": "1921e612bf960b2b1046b3d93b3322eb14e58bde57b27300de126f45593f13e7",
+        "src/diagnostics/objects-printer.cc": "5f112577816d3dea98e4b383f77b80485cb8fb2d7656b138cbcc1297a2a8a407",
+        "src/objects/fixed-array.h": "b848dfc20e58d457c2176d472f026a75c4872697addca374cd9bd6eeeb9b60a0",
+        "src/objects/objects-inl.h": "56570e6f4b5a24b7d3b8ab12fc35cb95eb4a588f740b8a13fc0647235b7d30a1",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "5e96f53cca3bc1d696638251042430e107b5aba798128e11477e829beda334ad",
+        "src/objects/string.cc": "6b1563457e14ab5dafa31edaf563124229fcb757a8e8c9d1a721cc24b6a3f407",
+        "src/snapshot/code-serializer.cc": "a78c1c10c8612591a6c5a2e8cb0219d45659d21bd0d3e6e1a18e7675f98e899a",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9ccecd83155176a9c62b23eaf24e254ebed47aaf44963bc3cb774aba3c739113",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.30",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "fb4d704545d460af53138c6461df7f3fb0df682c2cafdc67276971f7010e4efb",
+        "src/d8/d8.h": "1921e612bf960b2b1046b3d93b3322eb14e58bde57b27300de126f45593f13e7",
+        "src/diagnostics/objects-printer.cc": "5f112577816d3dea98e4b383f77b80485cb8fb2d7656b138cbcc1297a2a8a407",
+        "src/objects/fixed-array.h": "b848dfc20e58d457c2176d472f026a75c4872697addca374cd9bd6eeeb9b60a0",
+        "src/objects/objects-inl.h": "356df995f15bd4f82aec64fd95224164bdc10b0a4071d945cf180c9674d5656c",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "5e96f53cca3bc1d696638251042430e107b5aba798128e11477e829beda334ad",
+        "src/objects/string.cc": "6b1563457e14ab5dafa31edaf563124229fcb757a8e8c9d1a721cc24b6a3f407",
+        "src/snapshot/code-serializer.cc": "a78c1c10c8612591a6c5a2e8cb0219d45659d21bd0d3e6e1a18e7675f98e899a",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9ccecd83155176a9c62b23eaf24e254ebed47aaf44963bc3cb774aba3c739113",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.43",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a0e9d9893bd3fa51cd122cc449eba2bcdd9cecc9bbd5664f2a929bc00b4a6355",
+        "src/d8/d8.h": "1921e612bf960b2b1046b3d93b3322eb14e58bde57b27300de126f45593f13e7",
+        "src/diagnostics/objects-printer.cc": "47c549d390a32212973c32b36b33743e4b44ac4ecbccad20ccee26eedda781b4",
+        "src/objects/fixed-array.h": "b848dfc20e58d457c2176d472f026a75c4872697addca374cd9bd6eeeb9b60a0",
+        "src/objects/objects-inl.h": "356df995f15bd4f82aec64fd95224164bdc10b0a4071d945cf180c9674d5656c",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "09277e52ee1f000232cf97ea6dc972fdce2608d06404a28bcb71facf14582530",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "b15e0580e682ea97c83f60e49f4709c7d7cde84a43f4e7ebd0d933639abe5fea",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "d87afd9fa9abc471b79838a49c517688306d0f1974aa0d59d96c1dc479a49fb2",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.108",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "1c37ce8995ab54d26ed08757e8debde93b11441297c0e65eeb53bb48e0e2a80c",
+        "src/d8/d8.h": "48ae2f79d01aad8a1ec5554e5feae1d7748ecf37f83cd5226ceb140068cbf2b0",
+        "src/diagnostics/objects-printer.cc": "8defb30e5a187a44e758728b94be3646cb2e4c10945b132712c1daba5d7bccb7",
+        "src/objects/fixed-array.h": "b848dfc20e58d457c2176d472f026a75c4872697addca374cd9bd6eeeb9b60a0",
+        "src/objects/objects-inl.h": "4b147392d2e1e641c026213daa52cab567fbdf386b7bbef1053c5affa1d1ee57",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "09277e52ee1f000232cf97ea6dc972fdce2608d06404a28bcb71facf14582530",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "b15e0580e682ea97c83f60e49f4709c7d7cde84a43f4e7ebd0d933639abe5fea",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "46f069d535f466dc9a32d0c18416c1bfb05c27a351203617731d3ac4a58ddd13",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.129",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "92bfd95ac10a73edea23d08bb3c51a56a04297844a273f95e93d5eb2891c7794",
+        "src/d8/d8.h": "48ae2f79d01aad8a1ec5554e5feae1d7748ecf37f83cd5226ceb140068cbf2b0",
+        "src/diagnostics/objects-printer.cc": "8defb30e5a187a44e758728b94be3646cb2e4c10945b132712c1daba5d7bccb7",
+        "src/objects/fixed-array.h": "b848dfc20e58d457c2176d472f026a75c4872697addca374cd9bd6eeeb9b60a0",
+        "src/objects/objects-inl.h": "4b147392d2e1e641c026213daa52cab567fbdf386b7bbef1053c5affa1d1ee57",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "09277e52ee1f000232cf97ea6dc972fdce2608d06404a28bcb71facf14582530",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "b15e0580e682ea97c83f60e49f4709c7d7cde84a43f4e7ebd0d933639abe5fea",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "46f069d535f466dc9a32d0c18416c1bfb05c27a351203617731d3ac4a58ddd13",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.163",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "06207ea43a15ea774cfa9ec658680f9e7d90421cd816362836b2918d6cb9992a",
+        "src/d8/d8.h": "48ae2f79d01aad8a1ec5554e5feae1d7748ecf37f83cd5226ceb140068cbf2b0",
+        "src/diagnostics/objects-printer.cc": "8defb30e5a187a44e758728b94be3646cb2e4c10945b132712c1daba5d7bccb7",
+        "src/objects/fixed-array.h": "655790841e8fe582b73d5271b56c015b04ad165d852cfaad055a0f5482a025f0",
+        "src/objects/objects-inl.h": "2504896baa4067e2736ad16f105d9496ab6b402634a67eaa98084a133d1c1dee",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "09277e52ee1f000232cf97ea6dc972fdce2608d06404a28bcb71facf14582530",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "b15e0580e682ea97c83f60e49f4709c7d7cde84a43f4e7ebd0d933639abe5fea",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "46f069d535f466dc9a32d0c18416c1bfb05c27a351203617731d3ac4a58ddd13",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.204",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "a5ab2ceb0cf9620bc7b6c30fce149a207f046c9e8a36c3ec1959e54db26511c2",
+        "src/d8/d8.h": "87706ccc4d81e25efe61f5a57b73bba13d2c0907af669c8c4c70d9bac91750e0",
+        "src/diagnostics/objects-printer.cc": "8defb30e5a187a44e758728b94be3646cb2e4c10945b132712c1daba5d7bccb7",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "2504896baa4067e2736ad16f105d9496ab6b402634a67eaa98084a133d1c1dee",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "b15e0580e682ea97c83f60e49f4709c7d7cde84a43f4e7ebd0d933639abe5fea",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "46f069d535f466dc9a32d0c18416c1bfb05c27a351203617731d3ac4a58ddd13",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.223",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "42b1ab1a311114ae030e2745f38d5d2ba25c326d023b31ee1b4a40e887dba02f",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "2504896baa4067e2736ad16f105d9496ab6b402634a67eaa98084a133d1c1dee",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "1e6785791d4f7507e34aa4595a75a8634c02d0c36b26ae3bb8f3a67e4a4fecf7",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.245.4",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.245.5",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.245.13",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.245.15",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.245.23",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.0.1240245",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "8fbf941afffc85c90af7ee34479d067f2bf976cb123754383abd394dd61a4d89",
+        "src/d8/d8.h": "9255db796cc04b96fc138a128f269e8aec6904019cbac4e7084b53dd1754200c",
+        "src/diagnostics/objects-printer.cc": "a8727920cb7007107a09ec670ae99377b97d4434670902c8f4393e0c35b6843d",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "b56d754867204af4ca2ac647eb7db6d3b37b12b8694c7109ca9072817c819140",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "ba963d18b2b6969289655ab0037f49848f9591e0b95df41cfa8677be169f3dee",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.1.16",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2090c4a6c36b92437a78d114ab56c61309ca89e74571aa186398da0b44627ac2",
+        "src/d8/d8.h": "a69294cf16377b8f00fe38225e2242da00508b604a5d6aff76c382b770ecb24e",
+        "src/diagnostics/objects-printer.cc": "c0d1ad41e43ffa969b252d0c244420570dfce5db0a20d9a2a14fadd5f04cfc36",
+        "src/objects/fixed-array.h": "5202b6e80a6c46a4551f67ffd93a9188233a7be07f85521b611736f1c2333db3",
+        "src/objects/objects-inl.h": "d0c75560777dbda2b323fce698d52e114fe650764658f074971272b8f5b1c446",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "c4b061f31bbd47221a4ecc03926c3fc69bc6a1c6d6413cb7bc4d4fa205c256d8",
+        "src/objects/string.cc": "b7bf38d2835cd6b9c66f7af8fa317acd895b59d145218c5c8a7742411289285a",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "091e48fbcbd1fd3aafe177e75ccaf4919887b423a3a6fead0950b5355ea015f9",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.1.113",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "231184fcc42004c365f5d10047d337757f870683438f37d26bf727de9ef28c8b",
+        "src/d8/d8.h": "998944915abd22ac96f8d116c5c9405d2bae7d802d193204f0598b2eb8e173a4",
+        "src/diagnostics/objects-printer.cc": "85dbe631ae170c37954918036b313a9612e2341f6591c718d8d97c39c6c34a47",
+        "src/objects/fixed-array.h": "743c814a5f1713c1995aba5cdd5171f58814d66749763f8f8ce29082457b5d64",
+        "src/objects/objects-inl.h": "af1db11126ff2fb9ae87583b6da7d80b742ff5ae3469f09e71e3e2d8e63b7e48",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "406090573736c43684f166b64d3e773f28e3543f499831d253723b888c92506c",
+        "src/objects/string.cc": "f37dc104f6ffdcd5d0f7901612c1b81376225b90f34a1a169fdeba9f1e2a0f72",
+        "src/snapshot/code-serializer.cc": "d952fcb571e55d444225fbd900d1677a49eab857c9a0d977840e1f90d2611b7f",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "a25392a87dd4ca80e311463fe486a1ea6cb3bfbe064a8e489ef5d0ff46ce9eb6",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.1.151",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2f2b9b2cda78c1144f059ea631a35605ec519c1b0fea2578be1e66a92c433cad",
+        "src/d8/d8.h": "998944915abd22ac96f8d116c5c9405d2bae7d802d193204f0598b2eb8e173a4",
+        "src/diagnostics/objects-printer.cc": "cb2235412ca8251f0f3b968a4f0f219bca23f2ee48fdf81c354aea49ebdfd8a6",
+        "src/objects/fixed-array.h": "2ac38a3ba9349770cf2448bf5b64d32d99d944ebc52b7a893f1822a80b569f02",
+        "src/objects/objects-inl.h": "af1db11126ff2fb9ae87583b6da7d80b742ff5ae3469f09e71e3e2d8e63b7e48",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "406090573736c43684f166b64d3e773f28e3543f499831d253723b888c92506c",
+        "src/objects/string.cc": "cc092bf0836822f3fbeb0822f16be69faa891f1a57abedb1d08075a46d71a052",
+        "src/snapshot/code-serializer.cc": "15b10464b47e62a9bacd9febe30dc13cad20d8d0c54fcfd367dbd353bc6abea7",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "a25392a87dd4ca80e311463fe486a1ea6cb3bfbe064a8e489ef5d0ff46ce9eb6",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.2.38",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "f3e7cde72bfd90768285ac6f1ba7980e666fff74bdd277acb7cd757e2a6dd152",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "bc1772a5778ba053b48f524dac6565350ffbba6e56c2b55f5e3e5a59cb8d57d7",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "21fff5575c6088f6aa4d4220c0c52979279c220f84270e8bca90f0cadcffc8b3",
+        "src/objects/objects.h": "a33979227ae6b12c5e11c5734cf86c49bae06307ce923e04e9aa7e95c94150f4",
+        "src/objects/shared-function-info.h": "bf4281092c572228afa936de77a41314dd5e2801c9eb2e801a8af6e51bd2555c",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "15b10464b47e62a9bacd9febe30dc13cad20d8d0c54fcfd367dbd353bc6abea7",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "90aa0a1413c8333d35cd13194347204b0fe08e268b0db26569c3b1ca82466721",
+        "src/snapshot/object-deserializer.cc": "1f10043258e9c409601563454935fbe4342f0ea5a7691333a063ae60d6026d1a"
+      }
+    },
+    {
+      "version": "15.2.61",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "34035465c4f8e1ff29b1245015134f63df5493caa1a2ba4834b70274dbf3814f",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "b2001da97d7de850bc3f3c65fcc2c772c51e78d6345aa827ffc8726fdc6b8f32",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "bf4281092c572228afa936de77a41314dd5e2801c9eb2e801a8af6e51bd2555c",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "c300f2794c801e302033eb75607aebfa547f748a165279d931d528ff598d4c0c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "f77cb0df4924620908d48c5e7be64259b88dbdaea1dea5416a2366274e3c73e9",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.87",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "f4aadc158f1f537354c77511cefb1391e8c215977ae595704e77bfe3c406cc95",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "b2001da97d7de850bc3f3c65fcc2c772c51e78d6345aa827ffc8726fdc6b8f32",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "bf4281092c572228afa936de77a41314dd5e2801c9eb2e801a8af6e51bd2555c",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "c300f2794c801e302033eb75607aebfa547f748a165279d931d528ff598d4c0c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "f77cb0df4924620908d48c5e7be64259b88dbdaea1dea5416a2366274e3c73e9",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.102",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "f4aadc158f1f537354c77511cefb1391e8c215977ae595704e77bfe3c406cc95",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "69fef1c261b7374d1af2a07ef65d6a9d84ca4326fa2dfeb69272ad44dacf155b",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "bf4281092c572228afa936de77a41314dd5e2801c9eb2e801a8af6e51bd2555c",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "c300f2794c801e302033eb75607aebfa547f748a165279d931d528ff598d4c0c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.107",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "f4aadc158f1f537354c77511cefb1391e8c215977ae595704e77bfe3c406cc95",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "69fef1c261b7374d1af2a07ef65d6a9d84ca4326fa2dfeb69272ad44dacf155b",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "bf4281092c572228afa936de77a41314dd5e2801c9eb2e801a8af6e51bd2555c",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "c300f2794c801e302033eb75607aebfa547f748a165279d931d528ff598d4c0c",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.116",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "2e375611a6b8c369aa940b6ce2523ea9990fe87adfd18eea3ce80f9f726720c5",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "2e4da3933eb5a4ee0902d4eb15ec7f72c50787623a247a8b3afbab9b02d43116",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.124",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "7d41136d59b9e1dd811bb13601097b24b55ec7453f09102a4acebe8a810ae75a",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "19525a50f0938470ae19bc095ca2704d84fadfd01e03e76e4c21fa52a53dc7f8",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.124.1",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "7d41136d59b9e1dd811bb13601097b24b55ec7453f09102a4acebe8a810ae75a",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "19525a50f0938470ae19bc095ca2704d84fadfd01e03e76e4c21fa52a53dc7f8",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.2.124.5",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "7d41136d59b9e1dd811bb13601097b24b55ec7453f09102a4acebe8a810ae75a",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "19525a50f0938470ae19bc095ca2704d84fadfd01e03e76e4c21fa52a53dc7f8",
+        "src/objects/objects-inl.h": "bdab765c29a2dd4599bbfad2e51787aa2c6fd5663a00dd8eba856b90625b2850",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.3.14",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "7d41136d59b9e1dd811bb13601097b24b55ec7453f09102a4acebe8a810ae75a",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "19525a50f0938470ae19bc095ca2704d84fadfd01e03e76e4c21fa52a53dc7f8",
+        "src/objects/objects-inl.h": "d517de2bc62f82a458922fe581de3b864f00a836acb6acadf8f2dabcf437be6c",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    },
+    {
+      "version": "15.3.25",
+      "status": "ok",
+      "family": "alignedcacheddata-directhandle-base-ownedvector<char>-objects-inl-def-cast-traits-GetBytecodeArray(IsolateT*)-split-readonly-checksum",
+      "api": {
+        "cache_type": "AlignedCachedData",
+        "handle_type": "DirectHandle",
+        "script_details": true,
+        "cached_script": true,
+        "read_chars_type": "base::OwnedVector<char>",
+        "object_predicate_generation": "objects-inl-def-cast-traits",
+        "bytecode_accessor": "GetBytecodeArray(IsolateT*)",
+        "sanity_style": "split-readonly-checksum",
+        "deserialize_signature": "Isolate* isolate, AlignedCachedData* cached_data, DirectHandle<String> source, const ScriptDetails& script_details, MaybeDirectHandle<Script> maybe_cached_script = {}"
+      },
+      "source_sha256": {
+        "src/d8/d8.cc": "7d41136d59b9e1dd811bb13601097b24b55ec7453f09102a4acebe8a810ae75a",
+        "src/d8/d8.h": "c8ad79c66a770758b35284012f7dfc87b0a238679a6aa931c2509bea92c94c63",
+        "src/diagnostics/objects-printer.cc": "7dd23156a86c37d0c79af63edc9467b98785c9c100994f543ce50d9a390fdcd4",
+        "src/objects/fixed-array.h": "19525a50f0938470ae19bc095ca2704d84fadfd01e03e76e4c21fa52a53dc7f8",
+        "src/objects/objects-inl.h": "d517de2bc62f82a458922fe581de3b864f00a836acb6acadf8f2dabcf437be6c",
+        "src/objects/objects.h": "757dba4309fe2b3c51f09e6da81b1b6b66fb8a08a798d8ca19bab1896b025e81",
+        "src/objects/shared-function-info.h": "3d6dcfa2ecdf39ec65c166db9f2b8234f5b52be00a97f57053de60dbdfb1a354",
+        "src/objects/string.cc": "de0f49c784b85a06ccf94f779f06015fb61b957c5de78bad5057e71d20836665",
+        "src/snapshot/code-serializer.cc": "bc32b56c5b56988400f90c2a61a3d8fbd9517e87f32de20cf344d1df47399fc9",
+        "src/snapshot/code-serializer.h": "2f6b770181738757a86e0cc1c7227083427d9c398247ea996649b547d71afa65",
+        "src/snapshot/deserializer.cc": "9accd9b2ffd9f1a2891529bc6640332478ccb55a2b7a538de8733f01e37683c1",
+        "src/snapshot/object-deserializer.cc": "ca181f7660e6dd7ee45ac48d62cd32874ca0eb05789bb4ded925e34a38363d7a"
+      }
+    }
+  ]
+}

@@ -260,11 +260,11 @@ jobs:
           ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
-          "$JSC2JS_PYTHON3" build_versions_batch_v3.py || true
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Batch processing complete (errors captured in failed_versions.txt)."
 
       - name: Upload batch artifacts
-        if: steps.partition.outputs.has_any == 'true'
+        if: always() && steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: update-shard${{ github.event.inputs.shard_index }}-${{ matrix.os }}-slot${{ matrix.slot }}
@@ -277,7 +277,7 @@ jobs:
   aggregate-and-release:
     name: "Shard ${{ github.event.inputs.shard_index }} — Aggregate & update releases"
     needs: [determine-versions, build]
-    if: needs.determine-versions.outputs.has_versions == 'true'
+    if: always() && needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -301,8 +301,10 @@ jobs:
           [ -f public/update_needed.json ] || echo "[]" > public/update_needed.json
           find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
           find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
-          sort -u -o _all_success.txt _all_success.txt || true
-          sort -u -o _all_failed.txt _all_failed.txt || true
+          tr -d '\r' < _all_success.txt | sed '/^$/d' | sort -Vu > _all_success.normalized
+          mv _all_success.normalized _all_success.txt
+          tr -d '\r' < _all_failed.txt | sed '/^$/d' | sort -Vu > _all_failed.normalized
+          mv _all_failed.normalized _all_failed.txt
       - name: Reconstruct per-version dirs
         run: |
           set -e

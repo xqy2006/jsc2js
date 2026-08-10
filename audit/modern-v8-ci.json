@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "created_at": "2026-08-10T03:38:40.545731+00:00",
-  "updated_at": "2026-08-10T10:41:03.087676+00:00",
+  "updated_at": "2026-08-10T10:50:26.404748+00:00",
   "repository": "xqy2006/jsc2js",
   "branch": "v12-legacy-support",
   "workflow": "compile.yml",
@@ -13,8 +13,8 @@
     "batches": 14,
     "dispatched": 14,
     "successful": 4,
-    "failed": 9,
-    "active": 3,
+    "failed": 10,
+    "active": 0,
     "verified_versions": 9
   },
   "batches": [
@@ -38,13 +38,13 @@
           "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357586030",
           "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
           "dispatched_at": "2026-08-10T05:07:16.197930+00:00",
-          "status": "in_progress",
-          "conclusion": "",
+          "status": "completed",
+          "conclusion": "cancelled",
           "jobs": [
             {
               "name": "Build windows-2022 - 14.7.84",
-              "status": "in_progress",
-              "conclusion": "",
+              "status": "completed",
+              "conclusion": "cancelled",
               "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357586030/job/93360774731"
             },
             {
@@ -494,8 +494,8 @@
           "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357643349",
           "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
           "dispatched_at": "2026-08-10T05:08:25.422666+00:00",
-          "status": "in_progress",
-          "conclusion": "",
+          "status": "completed",
+          "conclusion": "cancelled",
           "jobs": [
             {
               "name": "Build windows-2022 - 15.2.87",
@@ -505,8 +505,8 @@
             },
             {
               "name": "Build ubuntu-22.04 - 15.2.87",
-              "status": "in_progress",
-              "conclusion": "",
+              "status": "completed",
+              "conclusion": "success",
               "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357643349/job/93360237659"
             }
           ]
@@ -532,13 +532,13 @@
           "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357648137",
           "head_sha": "e51a16873dee0eca11d6588db4fc87b8207411b0",
           "dispatched_at": "2026-08-10T05:08:30.662336+00:00",
-          "status": "in_progress",
-          "conclusion": "",
+          "status": "completed",
+          "conclusion": "cancelled",
           "jobs": [
             {
               "name": "Build windows-2022 - 15.2.124.1",
-              "status": "in_progress",
-              "conclusion": "",
+              "status": "completed",
+              "conclusion": "cancelled",
               "url": "https://github.com/xqy2006/jsc2js/actions/runs/31357648137/job/93360251798"
             },
             {

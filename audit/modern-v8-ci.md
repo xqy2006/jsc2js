@@ -4,11 +4,11 @@ Exact tags: **57**
 
 Verified on Linux and Windows: **9**
 
-Batches: **4 successful**, **9 failed**, **3 active**
+Batches: **4 successful**, **10 failed**, **0 active**
 
 | Batch | Exact tags | Run | Conclusion |
 |---:|---|---|---|
-| 0 | 14.7.84, 14.7.107, 14.7.114, 14.7.127, 14.7.128 | [31357586030](https://github.com/xqy2006/jsc2js/actions/runs/31357586030) | in_progress |
+| 0 | 14.7.84, 14.7.107, 14.7.114, 14.7.127, 14.7.128 | [31357586030](https://github.com/xqy2006/jsc2js/actions/runs/31357586030) | cancelled |
 | 1 | 14.7.142 | [31357589955](https://github.com/xqy2006/jsc2js/actions/runs/31357589955) | success |
 | 2 | 14.7.173, 14.8.21, 14.8.40, 14.8.51, 14.8.67 | [31357593902](https://github.com/xqy2006/jsc2js/actions/runs/31357593902) | cancelled |
 | 3 | 14.8.95, 14.8.148, 14.8.151, 14.8.172, 14.8.178 | [31357598228](https://github.com/xqy2006/jsc2js/actions/runs/31357598228) | cancelled |
@@ -20,5 +20,5 @@ Batches: **4 successful**, **9 failed**, **3 active**
 | 9 | 15.0.163, 15.0.204, 15.0.223, 15.0.245.4, 15.0.245.5 | [31357629087](https://github.com/xqy2006/jsc2js/actions/runs/31357629087) | success |
 | 10 | 15.0.245.13, 15.0.245.15, 15.0.245.23, 15.0.1240245 | [31357633905](https://github.com/xqy2006/jsc2js/actions/runs/31357633905) | failure |
 | 11 | 15.1.16, 15.1.113, 15.1.151, 15.2.38, 15.2.61 | [31357638967](https://github.com/xqy2006/jsc2js/actions/runs/31357638967) | cancelled |
-| 12 | 15.2.87, 15.2.102, 15.2.107, 15.2.116, 15.2.124 | [31357643349](https://github.com/xqy2006/jsc2js/actions/runs/31357643349) | in_progress |
-| 13 | 15.2.124.1, 15.2.124.5, 15.3.14, 15.3.25 | [31357648137](https://github.com/xqy2006/jsc2js/actions/runs/31357648137) | in_progress |
+| 12 | 15.2.87, 15.2.102, 15.2.107, 15.2.116, 15.2.124 | [31357643349](https://github.com/xqy2006/jsc2js/actions/runs/31357643349) | cancelled |
+| 13 | 15.2.124.1, 15.2.124.5, 15.3.14, 15.3.25 | [31357648137](https://github.com/xqy2006/jsc2js/actions/runs/31357648137) | cancelled |

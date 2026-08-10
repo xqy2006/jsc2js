@@ -99,7 +99,8 @@ using the modern handle APIs:
 | Area | Modern behavior |
 |---|---|
 | Embedder-dependent identity | External-reference-table-size magic normalized in the loader's private copy; version, source, flags, and read-only snapshot checks bypassed |
-| Upstream cache checks | Normalized magic, header, payload length, and payload checksum checks preserved |
+| Cache structure | Before normalization, require the V8 magic family and an exact declared-payload/file boundary |
+| Upstream cache checks | Normalized magic and optional payload checksum checks preserved |
 | Deserializer | Unchanged |
 | `HeapObjectShortPrint` | Unchanged |
 | Missing source text | Only `SharedFunctionInfoPrint`'s source-text call is disabled |
@@ -147,7 +148,9 @@ failure rather than a long, misleading V8 build.
 - Modern source/API audit: 57 exact V8 tags from 14.7.84 through 15.3.25,
   four API families, 57 compatible and zero fetch failures. Fourteen exact
   source files are hashed per tag, including the `DirectHandleVector` and
-  `TrustedFixedArray` declarations. The constant-pool length is `int` through
+  `TrustedFixedArray` declarations; `snapshot-data.h` and `base/memory.h` are
+  additionally fetched and validated for the cache-layout and little-endian
+  APIs without changing the stable report projection. The constant-pool length is `int` through
   V8 14.7.142 and `SafeHeapObjectSize` from V8 14.7.173 onward. Semantic replay
   passes 57/57 tags, changes exactly five files, and preserves both
   deserializer files byte-for-byte.
@@ -246,3 +249,10 @@ parsed it with the patched upstream V8 10.8.168.25 d8, printed five complete
 `SharedFunctionInfo` sections, exited normally, and ended with
 `JSC2JS_VALID_CACHE_OK`. This synthetic cache exercises the matching runtime
 path but does not replace reproduction with the unavailable issue attachment.
+
+After the modern-cache and CI retry changes, the final branch head was tested
+again in [run 31381368677](https://github.com/xqy2006/jsc2js/actions/runs/31381368677).
+Both platforms safely rejected the short-header, wrong-magic-family, and
+inconsistent-payload-length fixtures, then printed five `SharedFunctionInfo`
+and five `BytecodeArray` sections from the exact Electron 22.3.27 cache and
+ended with `JSC2JS_VALID_CACHE_OK`.

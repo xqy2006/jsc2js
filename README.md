@@ -90,7 +90,9 @@ View8 需要：
   [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
   [`audit/modern-v8-windows.md`](audit/modern-v8-windows.md)、
   [`audit/modern-v8-patch-validation.json`](audit/modern-v8-patch-validation.json)
-  和 [`audit/modern-v8-ci.md`](audit/modern-v8-ci.md)。
+  和 [`audit/modern-v8-final-ci.md`](audit/modern-v8-final-ci.md)；第一次批次的
+  失败原因及修复对照见
+  [`audit/modern-v8-ci-failure-analysis.md`](audit/modern-v8-ci-failure-analysis.md)。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -214,7 +216,9 @@ View8 requires:
   [modern API audit](audit/modern-v8-api.md),
   [Windows SDK audit](audit/modern-v8-windows.md),
   [semantic replay](audit/modern-v8-patch-validation.json), and
-  [cross-platform build audit](audit/modern-v8-ci.md).
+  [final cross-platform build audit](audit/modern-v8-final-ci.md). The
+  [initial CI failure analysis](audit/modern-v8-ci-failure-analysis.md)
+  records the original causes and their corresponding corrections.
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:

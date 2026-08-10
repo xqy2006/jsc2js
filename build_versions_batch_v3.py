@@ -25,10 +25,18 @@ Env vars:
   KEEP_WORK_DIR         "1" to reuse existing x64.release directory (won't delete before rebuild)
   SKIP_BACKUP           "1" to skip copying the full build directory (validation workflows)
 """
-import json, os, platform, shlex, shutil, subprocess, sys, traceback
-from pathlib import Path
 from datetime import datetime
+import json
+import os
+from pathlib import Path
+import platform
 import re
+import shlex
+import shutil
+import struct
+import subprocess
+import sys
+import traceback
 
 EXPECTED_FILES = {
     "src/d8/d8.cc",
@@ -86,7 +94,7 @@ def git_diff_files() -> set:
     out = subprocess.check_output(
         "git -C v8 diff --name-only", shell=True, text=True, stderr=subprocess.STDOUT
     )
-    return {l.strip() for l in out.splitlines() if l.strip()}
+    return {line.strip() for line in out.splitlines() if line.strip()}
 
 def write_list(path: str, items):
     with open(path, "w", encoding="utf-8") as f:
@@ -168,19 +176,40 @@ def compress_backup(path: Path):
         return zip_name
 
 
+def rejection_cache_fixtures() -> dict[str, bytes]:
+    """Return malformed modern-cache shapes that must be rejected up front."""
+    bad_magic = bytearray(48)
+    struct.pack_into("<I", bad_magic, 0, 0x12345678)
+    struct.pack_into("<I", bad_magic, 20, 16)
+
+    bad_length = bytearray(48)
+    struct.pack_into("<I", bad_length, 0, 0xC0DE0000)
+    struct.pack_into("<I", bad_length, 20, 0)
+    return {
+        "short": b"not-v8",
+        "magic-family": bytes(bad_magic),
+        "payload-length": bytes(bad_length),
+    }
+
+
 def run_rejection_smoke(built_bin: Path) -> str:
     """Verify malformed cache data is rejected without aborting the process."""
     build_dir = built_bin.parent.resolve()
-    bad_cache = build_dir / "jsc2js-invalid-cache.jsc"
-    bad_cache.write_bytes(b"not-a-v8-code-cache\0" + bytes(64))
     marker = "JSC2JS_SAFE_REJECTION"
-    javascript = (
-        "try { loadjsc('jsc2js-invalid-cache.jsc'); "
-        "print('JSC2JS_UNEXPECTED_ACCEPT'); quit(3); } "
-        f"catch (error) {{ print('{marker}:' + error); }}"
-    )
+    javascript_parts = []
+    expected_markers = []
+    for label, content in rejection_cache_fixtures().items():
+        filename = f"jsc2js-invalid-{label}.jsc"
+        (build_dir / filename).write_bytes(content)
+        expected = f"{marker}:{label}:"
+        expected_markers.append(expected)
+        javascript_parts.append(
+            f"try {{ loadjsc('{filename}'); "
+            f"print('JSC2JS_UNEXPECTED_ACCEPT:{label}'); quit(3); }} "
+            f"catch (error) {{ print('{expected}' + error); }}"
+        )
     completed = subprocess.run(
-        [str(built_bin.resolve()), "-e", javascript],
+        [str(built_bin.resolve()), "-e", "".join(javascript_parts)],
         cwd=str(build_dir),
         text=True,
         stdout=subprocess.PIPE,
@@ -188,7 +217,11 @@ def run_rejection_smoke(built_bin: Path) -> str:
         timeout=60,
     )
     output = completed.stdout or ""
-    if completed.returncode != 0 or marker not in output:
+    if (
+        completed.returncode != 0
+        or any(expected not in output for expected in expected_markers)
+        or "JSC2JS_UNEXPECTED_ACCEPT" in output
+    ):
         raise RuntimeError(
             "malformed-cache smoke test failed: "
             f"exit={completed.returncode} output={output[-2000:]}"

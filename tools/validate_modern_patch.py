@@ -83,6 +83,18 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 and "index < constants->length()" not in d8
             ),
             "owned_vector_reader_used": "base::OwnedVector<char> file_data" in d8,
+            "strict_cache_preflight_before_magic_normalization": all(
+                token in d8
+                for token in (
+                    "i::SerializedCodeData::kHeaderSize",
+                    "i::SerializedCodeData::kPayloadLengthOffset",
+                    "base::ReadLittleEndianValue<uint32_t>",
+                    "payload_length != expected_payload_length",
+                    "original_magic & ~kEmbedderMagicBits",
+                )
+            )
+            and d8.index("payload_length != expected_payload_length")
+            < d8.index("JSC2JS_EMBEDDER_MAGIC_NORMALIZATION"),
             "gc_rooted_flat_non_recursive_worklist": all(
                 token in d8
                 for token in (
@@ -114,11 +126,7 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
             )
             and '"src/snapshot/snapshot-data.h"'
-            in sources[SERIALIZER_H]
-            and features.magic_number_offset == 0
-            and features.magic_number_uses_external_reference_table_size
-            and features.little_endian_write_api
-            == "WriteLittleEndianValue(Address, V)",
+            in sources[SERIALIZER_H],
             "magic_layout_dependencies_byte_identical": all(
                 transformed[path] == sources[path]
                 for path in (BASE_MEMORY_H, SNAPSHOT_DATA_H)
@@ -220,6 +228,8 @@ def main() -> int:
                 "read_only_snapshot",
             ],
             "loader_magic_normalized_to_local_table": True,
+            "loader_requires_exact_header_payload_boundary": True,
+            "loader_rejects_non_v8_magic_family": True,
             "exact_tag_magic_layout_and_write_api_verified": True,
             "upstream_magic_checks_preserved": True,
             "read_only_snapshot_checksum_preserved": False,

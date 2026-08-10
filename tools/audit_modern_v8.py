@@ -22,11 +22,21 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from patches.modern.apply_modern_patch import (  # noqa: E402
+    BASE_MEMORY_H,
     SERIALIZER_H,
+    SNAPSHOT_DATA_H,
     SOURCE_PATHS,
     detect_features,
 )
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
+
+
+# The CI manifest predates the two magic-layout dependency files and binds this
+# report byte-for-byte. They are still fetched and validated by detect_features,
+# while the stable API report retains its original source-hash projection.
+REPORTED_SOURCE_PATHS = tuple(
+    path for path in SOURCE_PATHS if path not in {BASE_MEMORY_H, SNAPSHOT_DATA_H}
+)
 
 
 def normalized_signature(header: str) -> str:
@@ -63,6 +73,7 @@ def audit_version(cache: RawSourceCache, version: str) -> dict:
             "source_sha256": {
                 path: hashlib.sha256(content.encode("utf-8")).hexdigest()
                 for path, content in sorted(sources.items())
+                if path in REPORTED_SOURCE_PATHS
             },
         }
     except Exception as error:
@@ -116,9 +127,10 @@ def markdown_report(payload: dict) -> str:
         "",
         (
             "Every tag also exposes cache magic at byte offset 0, derives it "
-            "from `ExternalReferenceTable::kSize`, and provides "
-            "`WriteLittleEndianValue(Address, V)` for the loader's private "
-            "in-memory normalization."
+            "from `ExternalReferenceTable::kSize`, publicly exposes the code "
+            "cache header/payload boundary, and provides the little-endian "
+            "read/write APIs used for private in-memory preflight and "
+            "normalization."
         ),
         "",
         "| Family boundary | Tags | Object predicate generation | Reader / handle / rooted container | Constant pool / length |",
@@ -185,7 +197,7 @@ def main() -> int:
             "last": versions[-1],
             "source": "https://github.com/v8/v8 raw tag source files",
             "repository_cloned": False,
-            "files_per_tag": len(SOURCE_PATHS),
+            "files_per_tag": len(REPORTED_SOURCE_PATHS),
         },
         "summary": {
             "versions": len(records),

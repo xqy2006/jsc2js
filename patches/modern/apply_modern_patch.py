@@ -8,10 +8,11 @@ the exact APIs before making five narrowly-scoped edits.
 
 The source, version, flags, embedder-specific read-only snapshot identity, and
 the embedder-sized part of the cache magic are relaxed for source-less caches
-from another embedder.  The loader normalizes only its private in-memory magic
-copy, so V8's header, magic, payload length, payload checksum, and deserializer
-protocol checks still execute.  Printing the absent source text is disabled so
-cached source positions cannot index the dummy text.
+from another embedder.  Before normalizing its private in-memory magic copy,
+the loader verifies the cache family and the exact header/payload boundary.
+V8's remaining header, normalized magic, optional payload checksum, and
+deserializer protocol checks still execute.  Printing the absent source text
+is disabled so cached source positions cannot index the dummy text.
 """
 
 from __future__ import annotations
@@ -91,9 +92,6 @@ class ModernFeatures:
     constant_pool_type: str
     constant_pool_length_type: str
     sanity_style: str
-    magic_number_offset: int
-    magic_number_uses_external_reference_table_size: bool
-    little_endian_write_api: str
 
     @property
     def family_name(self) -> str:
@@ -203,6 +201,13 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         raise PatchError("modern cache magic no longer uses ExternalReferenceTable::kSize")
     if not re.search(
         r"template\s*<\s*typename\s+V\s*>\s*"
+        r"static\s+inline\s+V\s+ReadLittleEndianValue\s*\(\s*"
+        r"Address\s+p\s*\)",
+        base_memory_h,
+    ):
+        raise PatchError("modern little-endian Address read API is missing")
+    if not re.search(
+        r"template\s*<\s*typename\s+V\s*>\s*"
         r"static\s+inline\s+void\s+WriteLittleEndianValue\s*\(\s*"
         r"Address\s+p\s*,\s*V\s+value\s*\)",
         base_memory_h,
@@ -219,6 +224,17 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         raise PatchError(
             "unsupported modern Deserialize signature; missing " + ", ".join(absent)
         )
+    serialized_code_data = re.search(
+        r"class\s+SerializedCodeData\s*:\s*public\s+SerializedData\s*"
+        r"\{\s*public\s*:(?P<body>.*?)(?=\n\s*private\s*:)",
+        serializer_h,
+        flags=re.DOTALL,
+    )
+    if not serialized_code_data or not all(
+        token in serialized_code_data.group("body")
+        for token in ("kPayloadLengthOffset", "kHeaderSize")
+    ):
+        raise PatchError("SerializedCodeData preflight layout is not public")
     if not re.search(
         r"base::OwnedVector\s*<\s*char\s*>\s+Shell::ReadChars\s*\(", d8
     ):
@@ -280,9 +296,6 @@ def detect_features(sources: dict[str, str]) -> ModernFeatures:
         constant_pool_type="TrustedFixedArray",
         constant_pool_length_type=constant_pool_length_type,
         sanity_style="split-readonly-checksum",
-        magic_number_offset=0,
-        magic_number_uses_external_reference_table_size=True,
-        little_endian_write_api="WriteLittleEndianValue(Address, V)",
     )
 
 
@@ -325,16 +338,52 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
       return;
     }}
 
+    // Validate everything needed to create a bounded payload view before
+    // relaxing embedder-specific identity fields. V8's Payload() requires an
+    // exact boundary even though its normal sanity check accepts trailing data.
+    static_assert(i::SerializedData::kMagicNumberOffset == 0);
+    constexpr uint32_t kEmbedderMagicBits = 0x0000FFFFu;
+    static_assert(
+        static_cast<uint32_t>(i::ExternalReferenceTable::kSize) <=
+        kEmbedderMagicBits);
+    if (file_data.size() < i::SerializedCodeData::kHeaderSize ||
+        file_data.size() >
+            static_cast<decltype(file_data.size())>(
+                std::numeric_limits<int>::max())) {{
+      args.GetIsolate()->ThrowException(Exception::Error(
+          String::NewFromUtf8(args.GetIsolate(),
+                              "Invalid JSC cache structure",
+                              NewStringType::kNormal)
+              .ToLocalChecked()));
+      return;
+    }}
+    const i::Address cache_start =
+        reinterpret_cast<i::Address>(file_data.data());
+    const uint32_t original_magic =
+        base::ReadLittleEndianValue<uint32_t>(
+            cache_start + i::SerializedData::kMagicNumberOffset);
+    const uint32_t payload_length =
+        base::ReadLittleEndianValue<uint32_t>(
+            cache_start + i::SerializedCodeData::kPayloadLengthOffset);
+    const auto expected_payload_length =
+        file_data.size() - i::SerializedCodeData::kHeaderSize;
+    if ((original_magic & ~kEmbedderMagicBits) !=
+            (i::SerializedData::kMagicNumber & ~kEmbedderMagicBits) ||
+        payload_length != expected_payload_length) {{
+      args.GetIsolate()->ThrowException(Exception::Error(
+          String::NewFromUtf8(args.GetIsolate(),
+                              "Invalid JSC cache structure",
+                              NewStringType::kNormal)
+              .ToLocalChecked()));
+      return;
+    }}
+
     // JSC2JS_EMBEDDER_MAGIC_NORMALIZATION: V8 folds the compile-time
     // ExternalReferenceTable size into this identity value. Electron and d8
     // can use different table sizes at the same V8 tag. Normalize only the
     // private file copy; the upstream magic checks still execute twice.
-    if (file_data.size() >= sizeof(uint32_t)) {{
-      static_assert(i::SerializedData::kMagicNumberOffset == 0);
-      base::WriteLittleEndianValue(
-          reinterpret_cast<i::Address>(file_data.data()),
-          i::SerializedData::kMagicNumber);
-    }}
+    base::WriteLittleEndianValue(cache_start,
+                                 i::SerializedData::kMagicNumber);
 
     i::AlignedCachedData cached_data(
         reinterpret_cast<const uint8_t*>(file_data.data()),
@@ -409,6 +458,7 @@ def patch_d8_cc(text: str, features: ModernFeatures) -> str:
         '"src/handles/handles.h"',
         '"src/snapshot/code-serializer.h"',
         "<iostream>",
+        "<limits>",
     ):
         text = _ensure_include(text, include)
 
@@ -626,13 +676,16 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
                 "read_only_snapshot",
             ],
             "loader_magic_normalized_to_local_table": True,
+            "loader_requires_exact_header_payload_boundary": True,
+            "loader_rejects_non_v8_magic_family": True,
             "upstream_magic_checks_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
             "upstream_cache_checks_detected_before_patch": upstream_protections(
                 sources[SERIALIZER_CC]
             ),
             "preserved_cache_checks": [
-                "header",
+                "header_and_exact_payload_boundary",
+                "v8_magic_family_before_normalization",
                 "magic_after_loader_normalization",
                 "payload_length",
                 "payload_checksum",

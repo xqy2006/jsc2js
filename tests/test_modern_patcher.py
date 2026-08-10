@@ -94,6 +94,24 @@ class ModernPatchRoutingTest(unittest.TestCase):
         source = Path(builder.__file__).read_text(encoding="utf-8")
         self.assertIn('"--profile-deserialization"', source)
 
+    def test_rejection_fixtures_cover_structure_before_deserialization(self):
+        fixtures = builder.rejection_cache_fixtures()
+        self.assertEqual(set(fixtures), {"short", "magic-family", "payload-length"})
+        self.assertLess(len(fixtures["short"]), 32)
+        self.assertEqual(
+            int.from_bytes(fixtures["magic-family"][20:24], "little"),
+            len(fixtures["magic-family"]) - 32,
+        )
+        self.assertEqual(
+            int.from_bytes(fixtures["payload-length"][:4], "little")
+            & 0xFFFF0000,
+            0xC0DE0000,
+        )
+        self.assertNotEqual(
+            int.from_bytes(fixtures["payload-length"][20:24], "little"),
+            len(fixtures["payload-length"]) - 32,
+        )
+
 
 class ModernPatchSafetyTest(unittest.TestCase):
     def test_disables_only_the_missing_source_print_call(self):
@@ -164,6 +182,17 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
     def test_loader_uses_flat_direct_handle_worklist(self):
         loader = _loadjsc_definition()
         self.assertIn("base::OwnedVector<char> file_data", loader)
+        self.assertIn("i::SerializedCodeData::kHeaderSize", loader)
+        self.assertIn(
+            "i::SerializedCodeData::kPayloadLengthOffset", loader
+        )
+        self.assertIn("base::ReadLittleEndianValue<uint32_t>", loader)
+        self.assertIn("payload_length != expected_payload_length", loader)
+        self.assertIn("original_magic & ~kEmbedderMagicBits", loader)
+        self.assertLess(
+            loader.index("payload_length != expected_payload_length"),
+            loader.index("JSC2JS_EMBEDDER_MAGIC_NORMALIZATION"),
+        )
         self.assertIn("JSC2JS_EMBEDDER_MAGIC_NORMALIZATION", loader)
         self.assertIn(
             "i::SerializedData::kMagicNumberOffset == 0", loader

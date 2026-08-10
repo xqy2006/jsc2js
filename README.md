@@ -83,8 +83,9 @@ View8 需要：
   `OwnedVector`、`DirectHandleVector`、对象谓词生成、`TrustedFixedArray` 及其
   强类型长度，并识别出四种组合的 API 边界。它只跳过 source、version、flags、
   宿主特定的只读快照身份校验，并在私有内存副本中规范化包含外部引用表大小的
-  magic；上游 magic 检查仍执行，同时保留 header、payload 长度、payload
-  checksum 以及全部反序列化协议检查；嵌套函数通过去重的平面
+  magic；规范化前会检查 V8 magic 家族以及 header 声明的 payload 长度与文件
+  边界完全一致。上游 magic 检查仍执行，同时保留 payload checksum 以及全部
+  反序列化协议检查；嵌套函数通过去重的平面
   GC 强根工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
   [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
   [`audit/modern-v8-windows.md`](audit/modern-v8-windows.md)、
@@ -204,9 +205,10 @@ View8 requires:
   generated object-predicate, `TrustedFixedArray`, and strong length API
   boundaries. It bypasses only the source, version, flags, and embedder-specific
   read-only-snapshot identity checks, and normalizes the external-reference-table
-  size encoded in the private in-memory magic copy. The upstream magic check
-  still executes; header, payload-length, payload checksum, and every
-  deserializer protocol check are preserved. Nested functions are printed with
+  size encoded in the private in-memory magic copy. Before normalization, it
+  requires the V8 magic family and an exact match between the declared payload
+  length and file boundary. The upstream magic check still executes; payload
+  checksum and every deserializer protocol check are preserved. Nested functions are printed with
   a GC-rooted, deduplicated flat
   worklist instead of recursively expanding `HeapObjectShortPrint`. See the
   [modern API audit](audit/modern-v8-api.md),

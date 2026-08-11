@@ -5,10 +5,12 @@
 只针对这些版本（且满足 MIN_VERSION、未处理、未失败）进行构建批处理。
 
 环境变量：
-  MIN_VERSION        (默认为 12.0.1 或 workflow 里传入)
+  MIN_VERSION        (默认为 5.1.0 或 workflow 里传入)
   V8_REPO            (默认 https://github.com/v8/v8.git)
-  MAX_PER_RUN        (批次上限，默认为 20)
+  MAX_PER_RUN        (批次安全上限，默认为 18)
   SOURCES            (逗号分隔: node, electron；默认 "node,electron")
+  public/retry_needed.json
+                     (保留失败状态、但允许重新进入正式构建的版本队列)
   GITHUB_OUTPUT      (GitHub Actions 传入，用于写输出)
 """
 import json
@@ -20,14 +22,19 @@ import urllib.request
 import urllib.error
 from typing import List, Set, Iterable
 
-MIN_VERSION = os.environ.get("MIN_VERSION", "12.0.1").strip()
+MIN_VERSION = os.environ.get("MIN_VERSION", "5.1.0").strip()
 REPO_URL = os.environ.get("V8_REPO", "https://github.com/v8/v8.git")
-DEFAULT_CAP = 20
+DEFAULT_CAP = 18
+# The first modern validation pass showed that five sequential V8 builds can
+# reach the 330-minute job timeout. Production uses six workers per OS, so keep
+# every worker at the validated maximum of three exact versions.
+MAX_SAFE_CAP = 18
 _raw_cap = os.environ.get("MAX_PER_RUN", "").strip()
 try:
     CAP = int(_raw_cap) if _raw_cap else DEFAULT_CAP
     if CAP <= 0:
         CAP = DEFAULT_CAP
+    CAP = min(CAP, MAX_SAFE_CAP)
 except ValueError:
     CAP = DEFAULT_CAP
 
@@ -149,14 +156,39 @@ def sort_versions(versions: Iterable[str]) -> List[str]:
     return sorted(set(versions), key=sort_key)
 
 
+def select_pending_versions(
+    existing_candidates: Set[str],
+    processed_set: Set[str],
+    failed_set: Set[str],
+    retry_set: Set[str],
+) -> List[str]:
+    """Prioritize explicit retries without clearing their failure state early."""
+    eligible_retries = {
+        version
+        for version in retry_set & existing_candidates
+        if version_ge(version, MIN_VERSION)
+    }
+    new_versions = {
+        version
+        for version in existing_candidates
+        if version_ge(version, MIN_VERSION)
+        and version not in processed_set
+        and version not in failed_set
+        and version not in eligible_retries
+    }
+    return sort_versions(eligible_retries) + sort_versions(new_versions)
+
+
 def main():
     print(f"[determine_versions] MIN_VERSION={MIN_VERSION} CAP={CAP} SOURCES={','.join(sorted(SOURCES))}")
 
     os.makedirs("public", exist_ok=True)
     processed = load_list("public/version.json")
     failed = load_list("public/failed.json")
+    retry_needed = load_list("public/retry_needed.json")
     processed_set = set(processed)
     failed_set = set(failed)
+    retry_set = set(retry_needed)
 
     # Step 1: 获取 Node / Electron 使用过的 V8 版本集合
     candidate_set: Set[str] = set()
@@ -203,12 +235,11 @@ def main():
         if missing:
             print(f"[info] 跳过 {len(missing)} 个在 Node/Electron 中出现但远端无对应 tag 的版本: {list(sorted(missing))}")
 
-        # Step 3: 按 MIN_VERSION / processed / failed 过滤
-        filtered = [
-            v for v in existing_candidates
-            if version_ge(v, MIN_VERSION) and v not in processed_set and v not in failed_set
-        ]
-        filtered = sort_versions(filtered)
+        # Step 3: 显式重试优先；普通候选仍按 processed / failed 过滤。
+        # 重试项保留在 failed.json 中，直到双平台 release 真正成功。
+        filtered = select_pending_versions(
+            existing_candidates, processed_set, failed_set, retry_set
+        )
 
         # Step 4: 拆分批次
         batch = filtered[:CAP]
@@ -227,6 +258,7 @@ def main():
     print(f"最终可处理新版本(过滤 MIN_VERSION/processed/failed)={len(batch)} 剩余待后续处理={leftover}")
     print("本批次版本列表:", batch)
     print("失败黑名单大小:", len(failed_set))
+    print("显式重试队列大小:", len(retry_set))
 
     if OUTPUT:
         with open(OUTPUT, "a", encoding="utf-8") as out:

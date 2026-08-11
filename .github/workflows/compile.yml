@@ -1,12 +1,23 @@
-name: "Patch & build single V8 d8 (Linux + Windows)"
+name: "Patch & build V8 d8 (Linux + Windows)"
+run-name: "Legacy V8 ${{ inputs.version }}"
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "V8 tag to build (e.g. 12.0.267.5)"
+        description: "First V8 tag to build (e.g. 12.0.267.5)"
         required: true
         type: string
+      versions_json:
+        description: "Optional JSON array of 1-3 tags; first must equal version"
+        required: false
+        default: ""
+        type: string
+      audit_only:
+        description: "Upload only validation records, not d8 binaries"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -24,22 +35,38 @@ jobs:
   build:
     name: Build ${{ matrix.os }} - ${{ inputs.version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2022]
+        os: [ubuntu-22.04, windows-2022]
     env:
-      ASSIGNED_JSON: ${{ format('["{0}"]', inputs.version) }}
+      ASSIGNED_JSON: ${{ inputs.versions_json || format('["{0}"]', inputs.version) }}
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
-      GYP_MSVS_VERSION: "2022"
+      SKIP_BACKUP: "1"
+      # Validation batches stay within one audited API family. Reusing Ninja
+      # outputs makes tags 2-3 incremental while `gn gen` still runs per tag.
+      KEEP_WORK_DIR: "1"
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure Git to use LF line endings
-        run: git config --global core.autocrlf false
+      - name: Configure Git for historical checkouts
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+
+      - name: Classify legacy host-tool requirements
+        id: compatibility
+        shell: bash
+        run: >-
+          python3 tools/classify_legacy_host.py
+          --versions-json "$ASSIGNED_JSON"
+          --expected-first "$VERSION"
+          --max-versions 3
+          --github-output "$GITHUB_OUTPUT"
 
       - name: Prepare (Linux)
         if: runner.os == 'Linux'
@@ -47,12 +74,21 @@ jobs:
         run: |
           set -eux
           sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+          sudo apt-get install -y python3 python-is-python3 build-essential clang lld libglib2.0-dev flex bison git curl unzip pkg-config patch libtinfo5
+          if [[ "${{ steps.compatibility.outputs.python2 }}" == "true" ]]; then
+            sudo apt-get install -y python2
+            mkdir -p "$RUNNER_TEMP/python2-shim"
+            ln -sf /usr/bin/python2 "$RUNNER_TEMP/python2-shim/python"
+            echo "$RUNNER_TEMP/python2-shim" >> "$GITHUB_PATH"
+            echo "JSC2JS_PYTHON2_DIR=$RUNNER_TEMP/python2-shim" >> "$GITHUB_ENV"
+            export PATH="$RUNNER_TEMP/python2-shim:$PATH"
+          fi
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "$PWD/depot_tools" >> $GITHUB_PATH
           export PATH="$PWD/depot_tools:$PATH"
           python --version
           gclient --version
+          echo "DEPOT_TOOLS_UPDATE=0" >> "$GITHUB_ENV"
 
       - name: Prepare (Windows)
         if: runner.os == 'Windows'
@@ -65,53 +101,177 @@ jobs:
           "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
           gclient --version
+          "DEPOT_TOOLS_UPDATE=0"         | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Fix Windows SDK path for V8 10.8
+      - name: Record Python 3 executable
+        shell: bash
+        run: echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
+
+      - name: Install Python 2 for historical V8 hooks (Windows)
+        if: runner.os == 'Windows' && steps.compatibility.outputs.python2 == 'true'
+        shell: pwsh
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP "python-2.7.18.amd64.msi"
+          $installDir = Join-Path $env:RUNNER_TEMP "Python27"
+          Invoke-WebRequest "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi" -OutFile $installer
+          $process = Start-Process msiexec.exe -Wait -PassThru -ArgumentList @(
+            "/i", $installer, "/qn", "/norestart", "ALLUSERS=0",
+            "TARGETDIR=$installDir"
+          )
+          if ($process.ExitCode -ne 0) { throw "Python 2 MSI failed: $($process.ExitCode)" }
+          $python2 = Join-Path $installDir "python.exe"
+          if (-not (Test-Path $python2)) {
+            $python2 = "C:\Python27\python.exe"
+          }
+          if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
+          $python2Dir = Split-Path $python2 -Parent
+          & $python2 -m ensurepip --upgrade
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 ensurepip failed" }
+          $wheel = Join-Path $env:RUNNER_TEMP "pywin32-228-cp27-cp27m-win_amd64.whl"
+          Invoke-WebRequest "https://files.pythonhosted.org/packages/20/41/e266bb854b3d352641a4eaafe5b6b7ea3944039a9a1014ec481418e7f982/pywin32-228-cp27-cp27m-win_amd64.whl" -OutFile $wheel
+          & $python2 -m pip install --no-index $wheel
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 pywin32 installation failed" }
+          & $python2 -c "import win32file; print(win32file.__file__)"
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 cannot import win32file" }
+          $python2Dir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "JSC2JS_PYTHON2_DIR=$python2Dir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $python2 --version
+
+      - name: Map installed Visual Studio to the legacy toolchain name
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # V8 10.8's setup_toolchain.py expects SDK 10.0.20348.0 but
-          # windows-2022 has a newer version. Find the actual installed SDK
-          # and create a junction so the old path resolves.
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) { throw "Visual Studio with the C++ toolchain was not found" }
+          $compatYear = "${{ steps.compatibility.outputs.vs_year }}"
+          "GYP_MSVS_VERSION=$compatYear" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_OVERRIDE_PATH=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "vs${compatYear}_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Output "Using VS at $vsPath through the V8 $compatYear compatibility path"
+
+      - name: Install required historical MSVC headers
+        if: runner.os == 'Windows' && (steps.compatibility.outputs.v141 == 'true' || steps.compatibility.outputs.v142 == 'true')
+        shell: pwsh
+        run: |
+          $specs = @()
+          if ("${{ steps.compatibility.outputs.v141 }}" -eq "true") {
+            $specs += @{ Prefix = "14.16"; Component = "Microsoft.VisualStudio.Component.VC.v141.x86.x64" }
+          }
+          if ("${{ steps.compatibility.outputs.v142 }}" -eq "true") {
+            $specs += @{ Prefix = "14.29"; Component = "Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64" }
+          }
+          $toolsetsRoot = Join-Path $env:GYP_MSVS_OVERRIDE_PATH "VC\Tools\MSVC"
+          $missing = @($specs | Where-Object {
+            $prefix = $_.Prefix
+            -not (Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1)
+          })
+          if ($missing.Count -gt 0) {
+            $setup = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
+            if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe was not found" }
+            $arguments = @("modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"")
+            foreach ($item in $missing) { $arguments += @("--add", $item.Component) }
+            $arguments += @("--quiet", "--norestart")
+            $process = Start-Process $setup -Wait -PassThru -ArgumentList $arguments
+            if ($process.ExitCode -notin @(0, 3010)) {
+              throw "Visual Studio component install failed: $($process.ExitCode)"
+            }
+          }
+          foreach ($item in $specs) {
+            $prefix = $item.Prefix
+            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1
+            if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
+            Write-Output "Available historical MSVC toolset $($installed.Name)"
+          }
+
+      - name: Install required modern Windows SDK
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tools/install_windows_sdk.ps1 -VersionsJson $env:ASSIGNED_JSON
+
+      - name: Provide historical Windows SDK aliases
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
           $sdkBase = "C:\Program Files (x86)\Windows Kits\10"
           $installed = Get-ChildItem "$sdkBase\Include" -Directory | Where-Object { $_.Name -match '^10\.' } | Sort-Object Name -Descending | Select-Object -First 1
           if (-not $installed) { Write-Output "No SDK found"; exit 1 }
           $actualVer = $installed.Name
           Write-Output "Installed SDK: $actualVer"
-          # Check if 10.0.20348.0 already exists
-          $oldPath = "$sdkBase\Include\10.0.20348.0"
-          if (-not (Test-Path $oldPath)) {
-            Write-Output "Creating junction: $oldPath -> $($installed.FullName)"
-            cmd /c mklink /J "$oldPath" "$($installed.FullName)"
-            # Also junction the Lib path
-            $oldLib = "$sdkBase\Lib\10.0.20348.0"
-            $actualLib = "$sdkBase\Lib\$actualVer"
-            if ((Test-Path $actualLib) -and -not (Test-Path $oldLib)) {
-              cmd /c mklink /J "$oldLib" "$actualLib"
+          "JSC2JS_WINDOWS_SDK_VERSION=$actualVer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          $requiredVersions = @(
+            "10.0.14393.0", "10.0.15063.0", "10.0.16299.0",
+            "10.0.17134.0", "10.0.17763.0", "10.0.18362.0",
+            "10.0.19041.0", "10.0.20348.0", "10.0.22000.0",
+            "10.0.22621.0"
+          )
+          foreach ($requiredVersion in $requiredVersions) {
+            foreach ($section in @("Include", "Lib", "Bin", "UnionMetadata", "References")) {
+              $actual = Join-Path (Join-Path $sdkBase $section) $actualVer
+              $alias = Join-Path (Join-Path $sdkBase $section) $requiredVersion
+              if ((Test-Path $actual) -and -not (Test-Path $alias)) {
+                Write-Output "Creating SDK junction: $alias -> $actual"
+                cmd /c mklink /J "$alias" "$actual"
+                if ($LASTEXITCODE -ne 0) { throw "Failed to create $alias" }
+              }
             }
-          } else {
-            Write-Output "10.0.20348.0 already exists"
           }
 
-      - name: Initial sync (V8)
+      - name: Seed the requested V8 tag
         shell: bash
         run: |
           set -eux
           gclient config --name v8 --unmanaged $V8_REPO
-          gclient sync --nohooks -D --no-history
-          gclient runhooks
+          git init v8
+          git -C v8 remote add origin "$V8_REPO"
+          git -C v8 fetch --depth=1 origin "refs/tags/$VERSION:refs/tags/$VERSION"
+          git -C v8 checkout --detach "$VERSION"
 
-      - name: Copy helper scripts & patches
+      - name: Generate issue 23 cache with matching Electron
+        if: inputs.version == '10.8.168.25'
+        shell: bash
         run: |
-          cp apply_patch.py v8/
-          cp patch_v2.diff v8/
-          cp patch_1_v2.diff v8/
-          cp patch_old_v2.diff v8/
-          cp patch_10.8.168.25.diff v8/
-          cp partition_versions.py v8/ || true
+          set -eux
+          cache_path="$RUNNER_TEMP/issue-23-electron-22.3.27.jsc"
+          ELECTRON_RUN_AS_NODE=1 npx --yes electron@22.3.27 \
+            tests/generate_electron_cache.cjs "$cache_path" "10.8.168.25"
+          test -s "$cache_path"
+          echo "JSC2JS_VALID_CACHE=$cache_path" >> "$GITHUB_ENV"
+          echo "JSC2JS_VALID_CACHE_VERSION=10.8.168.25" >> "$GITHUB_ENV"
+
+      - name: Generate modern cross-embedder cache fixtures
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
+        run: |
+          set -eux
+          mapping="$RUNNER_TEMP/jsc2js-valid-cache-map.json"
+          echo '{}' > "$mapping"
+          generate_fixture() {
+            local v8_version="$1"
+            local electron_version="$2"
+            if ! "$JSC2JS_PYTHON3" -c \
+              'import json, os, sys; sys.exit(0 if sys.argv[1] in json.loads(os.environ["ASSIGNED_JSON"]) else 1)' \
+              "$v8_version"; then
+              return
+            fi
+            local cache_path="$RUNNER_TEMP/electron-${electron_version}-v8-${v8_version}.jsc"
+            ELECTRON_RUN_AS_NODE=1 npx --yes "electron@${electron_version}" \
+              tests/generate_electron_cache.cjs "$cache_path" "$v8_version"
+            test -s "$cache_path"
+            "$JSC2JS_PYTHON3" -c \
+              'import json, pathlib, sys; p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()); d[sys.argv[2]]=sys.argv[3]; p.write_text(json.dumps(d))' \
+              "$mapping" "$v8_version" "$cache_path"
+          }
+          generate_fixture "14.8.178.38" "42.8.1"
+          generate_fixture "15.0.1240245" "43.2.0"
+          generate_fixture "15.2.124.5" "44.0.0-beta.2"
+          echo "JSC2JS_VALID_CACHE_MAP_FILE=$mapping" >> "$GITHUB_ENV"
 
       - name: Build d8 with patch
         shell: bash
@@ -119,10 +279,11 @@ jobs:
           ASSIGNED_JSON: ${{ env.ASSIGNED_JSON }}
         run: |
           set -e
-          python3 build_versions_batch_v3.py || true
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Single-version build finished (see failed_versions.txt if any)."
 
-      - name: Upload artifacts
+      - name: Upload build artifacts
+        if: always() && !inputs.audit_only
         uses: actions/upload-artifact@v4
         with:
           name: d8-${{ inputs.version }}-${{ matrix.os }}
@@ -131,3 +292,17 @@ jobs:
             success_versions.txt
             failed_versions.txt
           retention-days: 14
+
+      - name: Upload audit records
+        if: always() && inputs.audit_only
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-${{ inputs.version }}-${{ matrix.os }}
+          path: |
+            artifacts/**/apply_patch_report.*
+            artifacts/**/build_error.txt
+            artifacts/**/runtime_smoke.txt
+            artifacts/**/runtime_valid_cache_smoke.txt
+            success_versions.txt
+            failed_versions.txt
+          retention-days: 7

@@ -1,0 +1,274 @@
+name: "Audit legacy V8 batch (Linux + Windows)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_index:
+        description: "Zero-based index in compat/legacy-v8-api.json"
+        required: true
+        default: "0"
+        type: string
+      count:
+        description: "Exact tags to test (1-30; about five per worker)"
+        required: true
+        default: "30"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legacy-audit-${{ inputs.start_index }}-${{ inputs.count }}
+  cancel-in-progress: false
+
+env:
+  V8_REPO: https://github.com/v8/v8.git
+  SLOTS_PER_OS: "6"
+
+jobs:
+  plan:
+    name: Select exact audited tags
+    runs-on: ubuntu-22.04
+    outputs:
+      versions: ${{ steps.slice.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and slice the audited version list
+        id: slice
+        shell: bash
+        env:
+          START_INDEX: ${{ inputs.start_index }}
+          VERSION_COUNT: ${{ inputs.count }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          start = int(os.environ["START_INDEX"])
+          count = int(os.environ["VERSION_COUNT"])
+          if start < 0 or not 1 <= count <= 30:
+              raise SystemExit("start_index must be >= 0 and count must be 1-30")
+          payload = json.loads(
+              Path("compat/legacy-v8-api.json").read_text(encoding="utf-8")
+          )
+          all_versions = [item["version"] for item in payload["versions"]]
+          versions = all_versions[start : start + count]
+          if not versions:
+              raise SystemExit(f"slice starting at {start} is empty")
+          compact = json.dumps(versions, separators=(",", ":"))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"versions={compact}\n")
+          print(f"Selected {len(versions)} tags: {versions[0]} through {versions[-1]}")
+          PY
+
+  build:
+    name: ${{ matrix.os }} slot ${{ matrix.slot }}
+    needs: plan
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+        slot: [0, 1, 2, 3, 4, 5]
+    env:
+      ALL_VERSIONS: ${{ needs.plan.outputs.versions }}
+      SLOT_INDEX: ${{ matrix.slot }}
+      DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
+      GYP_MSVS_VERSION: "2022"
+      SKIP_BACKUP: "1"
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+
+      - name: Configure Git for historical checkouts
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+
+      - name: Partition exact tags
+        id: partition
+        shell: bash
+        env:
+          VERSIONS_JSON: ${{ env.ALL_VERSIONS }}
+          SLOT_INDEX: ${{ env.SLOT_INDEX }}
+          SLOTS_PER_OS: ${{ env.SLOTS_PER_OS }}
+        run: python3 partition_versions.py
+
+      - name: Classify slot requirements
+        if: steps.partition.outputs.has_any == 'true'
+        id: requirements
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: >-
+          python3 tools/classify_legacy_host.py
+          --versions-json "$ASSIGNED_JSON"
+          --github-output "$GITHUB_OUTPUT"
+
+      - name: Prepare Linux host
+        if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y python3 python-is-python3 build-essential clang lld libglib2.0-dev flex bison git curl unzip pkg-config patch libtinfo5
+          if [[ "${{ steps.requirements.outputs.python2 }}" == "true" ]]; then
+            sudo apt-get install -y python2
+            mkdir -p "$RUNNER_TEMP/python2-shim"
+            ln -sf /usr/bin/python2 "$RUNNER_TEMP/python2-shim/python"
+            echo "$RUNNER_TEMP/python2-shim" >> "$GITHUB_PATH"
+            echo "JSC2JS_PYTHON2_DIR=$RUNNER_TEMP/python2-shim" >> "$GITHUB_ENV"
+          fi
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "$PWD/depot_tools" >> "$GITHUB_PATH"
+
+      - name: Prepare Windows host
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          chcp 65001
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          "$PWD\depot_tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "PYTHONUTF8=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PYTHONIOENCODING=UTF-8" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "DEPOT_TOOLS_WIN_TOOLCHAIN=0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Record Python 3 executable
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
+          python3 --version
+          gclient --version
+          echo "DEPOT_TOOLS_UPDATE=0" >> "$GITHUB_ENV"
+
+      - name: Install Python 2 for historical Windows hooks
+        if: runner.os == 'Windows' && steps.requirements.outputs.python2 == 'true'
+        shell: pwsh
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP "python-2.7.18.amd64.msi"
+          $installDir = Join-Path $env:RUNNER_TEMP "Python27"
+          Invoke-WebRequest "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi" -OutFile $installer
+          $process = Start-Process msiexec.exe -Wait -PassThru -ArgumentList @(
+            "/i", $installer, "/qn", "/norestart", "ALLUSERS=0", "TARGETDIR=$installDir"
+          )
+          if ($process.ExitCode -ne 0) { throw "Python 2 MSI failed: $($process.ExitCode)" }
+          $python2 = Join-Path $installDir "python.exe"
+          if (-not (Test-Path $python2)) { $python2 = "C:\Python27\python.exe" }
+          if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
+          $python2Dir = Split-Path $python2 -Parent
+          & $python2 -m ensurepip --upgrade
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 ensurepip failed" }
+          $wheel = Join-Path $env:RUNNER_TEMP "pywin32-228-cp27-cp27m-win_amd64.whl"
+          Invoke-WebRequest "https://files.pythonhosted.org/packages/20/41/e266bb854b3d352641a4eaafe5b6b7ea3944039a9a1014ec481418e7f982/pywin32-228-cp27-cp27m-win_amd64.whl" -OutFile $wheel
+          & $python2 -m pip install --no-index $wheel
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 pywin32 installation failed" }
+          & $python2 -c "import win32file; print(win32file.__file__)"
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 cannot import win32file" }
+          $python2Dir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "JSC2JS_PYTHON2_DIR=$python2Dir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Locate Visual Studio
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) { throw "Visual Studio with the C++ toolchain was not found" }
+          "GYP_MSVS_OVERRIDE_PATH=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "vs2022_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install required historical MSVC headers
+        if: runner.os == 'Windows' && (steps.requirements.outputs.v141 == 'true' || steps.requirements.outputs.v142 == 'true')
+        shell: pwsh
+        run: |
+          $specs = @()
+          if ("${{ steps.requirements.outputs.v141 }}" -eq "true") {
+            $specs += @{ Prefix = "14.16"; Component = "Microsoft.VisualStudio.Component.VC.v141.x86.x64" }
+          }
+          if ("${{ steps.requirements.outputs.v142 }}" -eq "true") {
+            $specs += @{ Prefix = "14.29"; Component = "Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64" }
+          }
+          $toolsetsRoot = Join-Path $env:GYP_MSVS_OVERRIDE_PATH "VC\Tools\MSVC"
+          $missing = @($specs | Where-Object {
+            $prefix = $_.Prefix
+            -not (Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1)
+          })
+          if ($missing.Count -gt 0) {
+            $setup = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
+            $arguments = @("modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"")
+            foreach ($item in $missing) { $arguments += @("--add", $item.Component) }
+            $arguments += @("--quiet", "--norestart")
+            $process = Start-Process $setup -Wait -PassThru -ArgumentList $arguments
+            if ($process.ExitCode -notin @(0, 3010)) {
+              throw "Visual Studio component install failed: $($process.ExitCode)"
+            }
+          }
+          foreach ($item in $specs) {
+            $prefix = $item.Prefix
+            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1
+            if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
+            Write-Output "Using historical MSVC toolset $($installed.Name)"
+          }
+
+      - name: Provide the installed Windows SDK to old vcvars templates
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          $sdkBase = "C:\Program Files (x86)\Windows Kits\10"
+          $installed = Get-ChildItem "$sdkBase\Include" -Directory |
+            Where-Object { $_.Name -match '^10\.' } |
+            Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $installed) { throw "No Windows SDK was found" }
+          $actualVer = $installed.Name
+          "JSC2JS_WINDOWS_SDK_VERSION=$actualVer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          foreach ($legacyVersion in @(
+            "10.0.14393.0", "10.0.15063.0", "10.0.16299.0", "10.0.17134.0",
+            "10.0.17763.0", "10.0.18362.0", "10.0.19041.0", "10.0.20348.0",
+            "10.0.22000.0", "10.0.22621.0"
+          )) {
+            foreach ($section in @("Include", "Lib", "Bin", "UnionMetadata", "References")) {
+              $actual = Join-Path (Join-Path $sdkBase $section) $actualVer
+              $alias = Join-Path (Join-Path $sdkBase $section) $legacyVersion
+              if ((Test-Path $actual) -and -not (Test-Path $alias)) {
+                cmd /c mklink /J "$alias" "$actual"
+                if ($LASTEXITCODE -ne 0) { throw "Failed to create $alias" }
+              }
+            }
+          }
+
+      - name: Initialize the shallow V8 worktree
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: |
+          set -eux
+          gclient config --name v8 --unmanaged "$V8_REPO"
+          git init v8
+          git -C v8 remote add origin "$V8_REPO"
+
+      - name: Build and smoke-test the assigned exact tags
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: |
+          set -e
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
+
+      - name: Upload audit records
+        if: always() && steps.partition.outputs.has_any == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-audit-${{ inputs.start_index }}-${{ matrix.os }}-slot${{ matrix.slot }}
+          path: |
+            artifacts/**/apply_patch_report.*
+            artifacts/**/build_error.txt
+            artifacts/**/runtime_smoke.txt
+            success_versions.txt
+            failed_versions.txt
+          retention-days: 7

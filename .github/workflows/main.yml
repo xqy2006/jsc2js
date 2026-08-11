@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       max_per_run:
-        description: "本次最多处理多少个新版本（默认 24）"
+        description: "本次最多处理多少个版本（安全上限 18）"
         required: false
-        default: "24"
+        default: "18"
 permissions:
   contents: write
   actions: write
@@ -19,10 +19,8 @@ concurrency:
 
 env:
   V8_REPO: https://github.com/v8/v8.git
-  MIN_VERSION: 12.0.100
-  # PATCH_FILE 现在在 build_versions_batch.py 内部根据版本决定
-  EXPECTED_PATCH_FILE_COUNT: "6"
-  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '30' }}
+  MIN_VERSION: 5.1.0
+  MAX_PER_RUN: ${{ github.event.inputs.max_per_run || '18' }}
   SLOTS_PER_OS: 6
 
 jobs:
@@ -41,6 +39,7 @@ jobs:
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
+          [ -f public/retry_needed.json ] || echo "[]" > public/retry_needed.json
       - name: Determine versions
         id: determine
         run: python3 determine_versions.py
@@ -50,23 +49,26 @@ jobs:
     needs: determine-versions
     if: needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-2022]
         slot: [0,1,2,3,4,5]
     env:
       ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}
       SLOT_INDEX: ${{ matrix.slot }}
       SLOTS_PER_OS: 6
       DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
-      GYP_MSVS_VERSION: "2022"
+      SKIP_BACKUP: "1"
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - name: Configure Git to use LF line endings
-        run: git config --global core.autocrlf false
+      - name: Configure Git for historical checkouts
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
         
       - name: Write versions.json
         run: |
@@ -84,18 +86,38 @@ jobs:
         if: steps.partition.outputs.has_any == 'false'
         run: echo "This slot has no assigned versions."
 
+      - name: Classify legacy host-tool requirements
+        if: steps.partition.outputs.has_any == 'true'
+        id: compatibility
+        shell: bash
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: >-
+          python3 tools/classify_legacy_host.py
+          --versions-json "$ASSIGNED_JSON"
+          --github-output "$GITHUB_OUTPUT"
+
       - name: Prepare (Linux)
         if: runner.os == 'Linux' && steps.partition.outputs.has_any == 'true'
         shell: bash
         run: |
           set -eux
           sudo apt-get update
-          sudo apt-get install -y python3 python-is-python3 build-essential clang libglib2.0-dev flex bison git curl unzip pkg-config patch
+          sudo apt-get install -y python3 python-is-python3 build-essential clang lld libglib2.0-dev flex bison git curl unzip pkg-config patch libtinfo5
+          if [[ "${{ steps.compatibility.outputs.python2 }}" == "true" ]]; then
+            sudo apt-get install -y python2
+            mkdir -p "$RUNNER_TEMP/python2-shim"
+            ln -sf /usr/bin/python2 "$RUNNER_TEMP/python2-shim/python"
+            echo "$RUNNER_TEMP/python2-shim" >> "$GITHUB_PATH"
+            echo "JSC2JS_PYTHON2_DIR=$RUNNER_TEMP/python2-shim" >> "$GITHUB_ENV"
+            export PATH="$RUNNER_TEMP/python2-shim:$PATH"
+          fi
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           export PATH="$PWD/depot_tools:$PATH"
           echo "$PWD/depot_tools" >> $GITHUB_PATH
           python --version
           gclient --version
+          echo "DEPOT_TOOLS_UPDATE=0" >> "$GITHUB_ENV"
 
       - name: Prepare (Windows)
         if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
@@ -108,27 +130,130 @@ jobs:
           "PYTHONUTF8=1"                 | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PYTHONIOENCODING=UTF-8"       | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "DEPOT_TOOLS_WIN_TOOLCHAIN=0"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "GYP_MSVS_VERSION=2022"        | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           python --version
           gclient --version
+          "DEPOT_TOOLS_UPDATE=0"         | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Initial sync (GitHub main repo)
+      - name: Record Python 3 executable
+        if: steps.partition.outputs.has_any == 'true'
+        shell: bash
+        run: echo "JSC2JS_PYTHON3=$(command -v python3)" >> "$GITHUB_ENV"
+
+      - name: Install Python 2 for historical V8 hooks (Windows)
+        if: runner.os == 'Windows' && steps.compatibility.outputs.python2 == 'true'
+        shell: pwsh
+        run: |
+          $installer = Join-Path $env:RUNNER_TEMP "python-2.7.18.amd64.msi"
+          $installDir = Join-Path $env:RUNNER_TEMP "Python27"
+          Invoke-WebRequest "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi" -OutFile $installer
+          $process = Start-Process msiexec.exe -Wait -PassThru -ArgumentList @(
+            "/i", $installer, "/qn", "/norestart", "ALLUSERS=0",
+            "TARGETDIR=$installDir"
+          )
+          if ($process.ExitCode -ne 0) { throw "Python 2 MSI failed: $($process.ExitCode)" }
+          $python2 = Join-Path $installDir "python.exe"
+          if (-not (Test-Path $python2)) { $python2 = "C:\Python27\python.exe" }
+          if (-not (Test-Path $python2)) { throw "Python 2 executable was not installed" }
+          $python2Dir = Split-Path $python2 -Parent
+          & $python2 -m ensurepip --upgrade
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 ensurepip failed" }
+          $wheel = Join-Path $env:RUNNER_TEMP "pywin32-228-cp27-cp27m-win_amd64.whl"
+          Invoke-WebRequest "https://files.pythonhosted.org/packages/20/41/e266bb854b3d352641a4eaafe5b6b7ea3944039a9a1014ec481418e7f982/pywin32-228-cp27-cp27m-win_amd64.whl" -OutFile $wheel
+          & $python2 -m pip install --no-index $wheel
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 pywin32 installation failed" }
+          & $python2 -c "import win32file; print(win32file.__file__)"
+          if ($LASTEXITCODE -ne 0) { throw "Python 2 cannot import win32file" }
+          $python2Dir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "JSC2JS_PYTHON2_DIR=$python2Dir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Map installed Visual Studio to the legacy toolchain name
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) { throw "Visual Studio with the C++ toolchain was not found" }
+          $compatYear = "${{ steps.compatibility.outputs.vs_year }}"
+          "GYP_MSVS_VERSION=$compatYear" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "GYP_MSVS_OVERRIDE_PATH=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "vs${compatYear}_install=$vsPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install required historical MSVC headers
+        if: runner.os == 'Windows' && (steps.compatibility.outputs.v141 == 'true' || steps.compatibility.outputs.v142 == 'true')
+        shell: pwsh
+        run: |
+          $specs = @()
+          if ("${{ steps.compatibility.outputs.v141 }}" -eq "true") {
+            $specs += @{ Prefix = "14.16"; Component = "Microsoft.VisualStudio.Component.VC.v141.x86.x64" }
+          }
+          if ("${{ steps.compatibility.outputs.v142 }}" -eq "true") {
+            $specs += @{ Prefix = "14.29"; Component = "Microsoft.VisualStudio.ComponentGroup.VC.Tools.142.x86.x64" }
+          }
+          $toolsetsRoot = Join-Path $env:GYP_MSVS_OVERRIDE_PATH "VC\Tools\MSVC"
+          $missing = @($specs | Where-Object {
+            $prefix = $_.Prefix
+            -not (Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1)
+          })
+          if ($missing.Count -gt 0) {
+            $setup = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
+            if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe was not found" }
+            $arguments = @("modify", "--installPath", "`"$env:GYP_MSVS_OVERRIDE_PATH`"")
+            foreach ($item in $missing) { $arguments += @("--add", $item.Component) }
+            $arguments += @("--quiet", "--norestart")
+            $process = Start-Process $setup -Wait -PassThru -ArgumentList $arguments
+            if ($process.ExitCode -notin @(0, 3010)) {
+              throw "Visual Studio component install failed: $($process.ExitCode)"
+            }
+          }
+          foreach ($item in $specs) {
+            $prefix = $item.Prefix
+            $installed = Get-ChildItem $toolsetsRoot -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -like "$prefix*" } | Select-Object -First 1
+            if (-not $installed) { throw "MSVC toolset $prefix was not installed" }
+          }
+
+      - name: Install required modern Windows SDK
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        env:
+          ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
+        run: ./tools/install_windows_sdk.ps1 -VersionsJson $env:ASSIGNED_JSON
+
+      - name: Provide historical Windows SDK aliases
+        if: runner.os == 'Windows' && steps.partition.outputs.has_any == 'true'
+        shell: pwsh
+        run: |
+          $sdkBase = "C:\Program Files (x86)\Windows Kits\10"
+          $installed = Get-ChildItem "$sdkBase\Include" -Directory |
+            Where-Object { $_.Name -match '^10\.' } |
+            Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $installed) { throw "No Windows SDK was found" }
+          $actualVer = $installed.Name
+          "JSC2JS_WINDOWS_SDK_VERSION=$actualVer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          foreach ($requiredVersion in @(
+            "10.0.14393.0", "10.0.15063.0", "10.0.16299.0", "10.0.17134.0",
+            "10.0.17763.0", "10.0.18362.0", "10.0.19041.0", "10.0.20348.0",
+            "10.0.22000.0", "10.0.22621.0"
+          )) {
+            foreach ($section in @("Include", "Lib", "Bin", "UnionMetadata", "References")) {
+              $actual = Join-Path (Join-Path $sdkBase $section) $actualVer
+              $alias = Join-Path (Join-Path $sdkBase $section) $requiredVersion
+              if ((Test-Path $actual) -and -not (Test-Path $alias)) {
+                cmd /c mklink /J "$alias" "$actual"
+                if ($LASTEXITCODE -ne 0) { throw "Failed to create $alias" }
+              }
+            }
+          }
+
+      - name: Initialize the shallow V8 worktree
         if: steps.partition.outputs.has_any == 'true'
         shell: bash
         run: |
           set -eux
-          gclient config --name v8 --unmanaged https://github.com/v8/v8.git
-          gclient sync --nohooks -D --no-history
-          gclient runhooks
-
-      - name: Copy helper scripts
-        if: steps.partition.outputs.has_any == 'true'
-        run: |
-          cp apply_patch.py v8/
-          cp patch_v2.diff v8/
-          cp patch_1_v2.diff v8/
-          cp patch_old_v2.diff v8/
-          cp partition_versions.py v8/ || true
+          gclient config --name v8 --unmanaged "$V8_REPO"
+          git init v8
+          git -C v8 remote add origin "$V8_REPO"
 
       - name: Process versions batch
         if: steps.partition.outputs.has_any == 'true'
@@ -137,12 +262,11 @@ jobs:
           ASSIGNED_JSON: ${{ steps.partition.outputs.assigned_json }}
         run: |
           set -e
-          # 重要: 此脚本现在应负责将 d8 和正确的 snapshot_blob.bin 一起复制到 artifacts 目录
-          python3 build_versions_batch.py || true
+          "$JSC2JS_PYTHON3" build_versions_batch_v3.py
           echo "Batch processing complete (errors captured in failed_versions.txt)."
 
       - name: Upload batch artifacts
-        if: steps.partition.outputs.has_any == 'true'
+        if: always() && steps.partition.outputs.has_any == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-batch-${{ matrix.os }}-slot${{ matrix.slot }}
@@ -155,7 +279,7 @@ jobs:
   aggregate-and-release:
     name: Aggregate & release
     needs: [determine-versions, build]
-    if: needs.determine-versions.outputs.has_versions == 'true'
+    if: always() && needs.determine-versions.outputs.has_versions == 'true'
     runs-on: ubuntu-latest
     outputs:
       leftover_total: ${{ needs.determine-versions.outputs.leftover_total }}
@@ -177,15 +301,15 @@ jobs:
           mkdir -p public
           [ -f public/version.json ] || echo "[]" > public/version.json
           [ -f public/failed.json ] || echo "[]" > public/failed.json
+          [ -f public/retry_needed.json ] || echo "[]" > public/retry_needed.json
           find downloaded -type f -name success_versions.txt -exec cat {} \; > _all_success.txt || true
           find downloaded -type f -name failed_versions.txt -exec cat {} \; > _all_failed.txt || true
-          sort -u -o _all_success.txt _all_success.txt || true
-          sort -u -o _all_failed.txt _all_failed.txt || true
-          while read -r v; do
-            [ -z "$v" ] && continue
-            jq -e --arg v "$v" '.[] | select(. == $v)' public/failed.json >/dev/null || \
-              jq --arg v "$v" '. + [$v]' public/failed.json > public/.tmp && mv public/.tmp public/failed.json
-          done < _all_failed.txt
+          tr -d '\r' < _all_success.txt | sed '/^$/d' | sort -Vu > _all_success.normalized
+          mv _all_success.normalized _all_success.txt
+          tr -d '\r' < _all_failed.txt | sed '/^$/d' | sort -Vu > _all_failed.normalized
+          mv _all_failed.normalized _all_failed.txt
+          python3 tools/update_failed_versions.py \
+            --failed-json public/failed.json --add-file _all_failed.txt
       - name: Reconstruct per-version dirs
         run: |
           set -e
@@ -231,28 +355,24 @@ jobs:
             WIN_SNAP="${WIN_DIR}/snapshot_blob.bin"
             
             mkdir -p "public/$v"
-            ASSETS=()
-
-            if [ -f "$LIN_BIN" ] && [ -f "$LIN_SNAP" ]; then
-              tar_name="public/$v/d8-${v}-linux.tar.gz"
-              tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
-              ASSETS+=("$tar_name")
-            else
-              echo "Skip Linux package for $v (missing d8 or snapshot_blob.bin)."
-            fi
-
-            if [ -f "$WIN_BIN" ] && [ -f "$WIN_SNAP" ]; then
-              zip_name="public/$v/d8-${v}-windows.zip"
-              zip -j -9 "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
-              ASSETS+=("$zip_name")
-            else
-              echo "Skip Windows package for $v (missing d8.exe or snapshot_blob.bin)."
-            fi
-
-            if [ ${#ASSETS[@]} -eq 0 ]; then
-              echo "No complete artifacts for $v, skipping release asset upload."
+            if [ ! -f "$LIN_BIN" ] || [ ! -f "$LIN_SNAP" ] || \
+               [ ! -f "$WIN_BIN" ] || [ ! -f "$WIN_SNAP" ]; then
+              echo "Skip release $v: both Linux and Windows artifacts are required."
+              printf '%s\n' "$v" > _missing_release.txt
+              python3 tools/update_failed_versions.py \
+                --failed-json public/failed.json --add-file _missing_release.txt
+              python3 tools/update_failed_versions.py \
+                --failed-json public/retry_needed.json --remove "$v"
               continue
             fi
+            ASSETS=()
+
+            tar_name="public/$v/d8-${v}-linux.tar.gz"
+            tar -C "$LIN_DIR" -czf "$tar_name" d8 snapshot_blob.bin
+            ASSETS+=("$tar_name")
+            zip_name="public/$v/d8-${v}-windows.zip"
+            zip -j -9 "$zip_name" "$WIN_BIN" "$WIN_SNAP" >/dev/null
+            ASSETS+=("$zip_name")
 
             notes="Patched d8 for V8 $v (includes d8 + snapshot_blob.bin)."
             
@@ -272,6 +392,12 @@ jobs:
               jq --arg v "$v" '. + [$v]' public/version.json > public/.tmp && mv public/.tmp public/version.json
               updated=true
             fi
+            # A version leaves the failure blacklist only after both platform
+            # artifacts were reconstructed and its release was updated.
+            python3 tools/update_failed_versions.py \
+              --failed-json public/failed.json --remove "$v"
+            python3 tools/update_failed_versions.py \
+              --failed-json public/retry_needed.json --remove "$v"
           done
 
           if [ "$updated" = true ]; then

@@ -311,30 +311,10 @@ jobs:
           python3 tools/update_failed_versions.py \
             --failed-json public/failed.json --add-file _all_failed.txt
       - name: Reconstruct per-version dirs
-        run: |
-          set -e
-          mkdir -p stage
-          find downloaded -type f \( -name d8 -o -name d8.exe \) | while read -r bin; do
-            base=$(basename "$(dirname "$bin")")
-            ver="${base#d8-}"
-            if echo "$base" | grep -q "\-Linux$"; then
-              ver="${ver%-Linux}"
-              tgt="stage/d8-${ver}-Linux"
-              mkdir -p "$tgt"
-              cp "$bin" "$tgt/d8"
-              rep_dir=$(dirname "$bin")
-              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
-              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
-            elif echo "$base" | grep -q "\-Windows$"; then
-              ver="${ver%-Windows}"
-              tgt="stage/d8-${ver}-Windows"
-              mkdir -p "$tgt"
-              cp "$bin" "$tgt/d8.exe"
-              rep_dir=$(dirname "$bin")
-              [ -f "$rep_dir/snapshot_blob.bin" ] && cp "$rep_dir/snapshot_blob.bin" "$tgt/snapshot_blob.bin"
-              [ -f "$rep_dir/apply_patch_report.txt" ] && cp "$rep_dir/apply_patch_report.txt" "$tgt/"
-            fi
-          done
+        run: >-
+          python3 tools/reconstruct_release_artifacts.py
+          --input downloaded
+          --output stage
       - name: Create releases & update version.json
         env:
           ALL_VERSIONS: ${{ needs.determine-versions.outputs.versions_json }}

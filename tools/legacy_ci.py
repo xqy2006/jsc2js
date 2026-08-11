@@ -451,7 +451,7 @@ def write_markdown(path: Path, manifest: dict) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=("plan", "dispatch", "refresh"))
-    parser.add_argument("--audit", type=Path, default=Path("audit/legacy-v8-api.json"))
+    parser.add_argument("--audit", type=Path, default=Path("compat/legacy-v8-api.json"))
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--markdown", type=Path)
     parser.add_argument("--repo", default="xqy2006/jsc2js")

@@ -5,3 +5,4 @@ public/*
 
 __pycache__/
 *.py[cod]
+/artifacts/

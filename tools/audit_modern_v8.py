@@ -162,13 +162,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--versions",
         type=Path,
-        default=Path("audit/modern-v8-versions.json"),
+        default=Path("compat/modern-v8-versions.json"),
     )
     parser.add_argument(
-        "--output", type=Path, default=Path("audit/modern-v8-api.json")
+        "--output", type=Path, default=Path("artifacts/audit/modern-v8-api.json")
     )
     parser.add_argument(
-        "--markdown", type=Path, default=Path("audit/modern-v8-api.md")
+        "--markdown", type=Path, default=Path("artifacts/audit/modern-v8-api.md")
     )
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument(

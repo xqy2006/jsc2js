@@ -134,12 +134,12 @@ def validate_record(cache: RawSourceCache, record: dict) -> dict:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--audit", type=Path, default=Path("audit/legacy-v8-api.json")
+        "--audit", type=Path, default=Path("compat/legacy-v8-api.json")
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("audit/legacy-v8-patch-validation.json"),
+        default=Path("artifacts/audit/legacy-v8-patch-validation.json"),
     )
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument(

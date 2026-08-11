@@ -171,13 +171,17 @@ def markdown_report(payload: dict) -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--versions", type=Path, default=Path("audit/modern-v8-versions.json")
+        "--versions", type=Path, default=Path("compat/modern-v8-versions.json")
     )
     parser.add_argument(
-        "--output", type=Path, default=Path("audit/modern-v8-windows.json")
+        "--output",
+        type=Path,
+        default=Path("artifacts/audit/modern-v8-windows.json"),
     )
     parser.add_argument(
-        "--markdown", type=Path, default=Path("audit/modern-v8-windows.md")
+        "--markdown",
+        type=Path,
+        default=Path("artifacts/audit/modern-v8-windows.md"),
     )
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument(

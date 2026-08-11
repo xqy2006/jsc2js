@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       start_index:
-        description: "Zero-based index in audit/legacy-v8-api.json"
+        description: "Zero-based index in compat/legacy-v8-api.json"
         required: true
         default: "0"
         type: string
@@ -51,7 +51,7 @@ jobs:
           if start < 0 or not 1 <= count <= 30:
               raise SystemExit("start_index must be >= 0 and count must be 1-30")
           payload = json.loads(
-              Path("audit/legacy-v8-api.json").read_text(encoding="utf-8")
+              Path("compat/legacy-v8-api.json").read_text(encoding="utf-8")
           )
           all_versions = [item["version"] for item in payload["versions"]]
           versions = all_versions[start : start + count]

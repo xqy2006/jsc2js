@@ -649,12 +649,16 @@ def write_markdown(path: Path, payload: dict) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--audit", type=Path, default=Path("audit/legacy-v8-api.json"))
+    parser.add_argument("--audit", type=Path, default=Path("compat/legacy-v8-api.json"))
     parser.add_argument(
-        "--output", type=Path, default=Path("audit/legacy-v8-host-tools.json")
+        "--output",
+        type=Path,
+        default=Path("artifacts/audit/legacy-v8-host-tools.json"),
     )
     parser.add_argument(
-        "--markdown", type=Path, default=Path("audit/legacy-v8-host-tools.md")
+        "--markdown",
+        type=Path,
+        default=Path("artifacts/audit/legacy-v8-host-tools.md"),
     )
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument(

@@ -63,22 +63,15 @@ View8 需要：
 
 - 当前补丁覆盖 V8 5.1 及之后版本。V8 5.1–11.9 与 14.7.84+ 使用按源码
   API 自动适配的安全补丁；V8 12.0–14.7.83 继续使用内容未改动的稳定补丁。
-- V8 5.1 是当前 `.jsc` 路径的审计下界：对 5.8 之前全部 69 个
-  Node/Electron 精确 tag 的复核表明，截至 5.0 的 57 个 tag 缺少本工具所需的
-  `CodeSerializer::Deserialize` 路径；逐 tag 结果见
-  [`audit/pre-v8-5.1-api.md`](audit/pre-v8-5.1-api.md)。V8 5.9 才默认全面启用
-  Ignition，因此 5.1–5.8 仅适用于宿主实际生成了 Ignition bytecode 的缓存。
+- V8 5.1 是当前 `.jsc` 路径的兼容下界：截至 V8 5.0 的版本缺少本工具所需的
+  `CodeSerializer::Deserialize` 路径。V8 5.9 才默认全面启用 Ignition，因此
+  5.1–5.8 仅适用于宿主实际生成了 Ignition bytecode 的缓存。
 - 旧版兼容层为兼容同一 V8 发布线的不同宿主（例如 upstream d8 与
   Electron），跳过 version、source、flags 三个宿主相关哈希；上游该版本已有
   的缓存检查均原样保留：369 个 tag 都有 magic 与 checksum，358 个有 header、
   356 个有 payload 长度、45 个有 CPU feature、20 个有只读快照 checksum 检查。
-  反序列化器的同步与边界检查也完全不改。完整的逐版本审计见
-  [`audit/legacy-v8-api.md`](audit/legacy-v8-api.md)；对应 Chromium build
-  模板与 Windows 工具链审计见
-  [`audit/legacy-v8-host-tools.md`](audit/legacy-v8-host-tools.md)；369 个精确
-  tag 的 Linux/Windows 双平台构建结果见
-  [`audit/legacy-v8-ci.md`](audit/legacy-v8-ci.md)。Issue #23
-  的崩溃路径对照见 [`audit/issue-23-crash-analysis.md`](audit/issue-23-crash-analysis.md)。
+  反序列化器的同步与边界检查也完全不改。369 个精确 tag 已通过 Linux 和
+  Windows 双平台构建验证，Issue #23 对应版本也包含在回归测试中。
 - 对 V8 14.7.84–15.3.25 的 57 个精确失败 tag，现代兼容层识别
   `OwnedVector`、`DirectHandleVector`、对象谓词生成、`TrustedFixedArray` 及其
   强类型长度，并识别出四种组合的 API 边界。它只跳过 source、version、flags、
@@ -86,13 +79,8 @@ View8 需要：
   magic；规范化前会检查 V8 magic 家族以及 header 声明的 payload 长度与文件
   边界完全一致。上游 magic 检查仍执行，同时保留 payload checksum 以及全部
   反序列化协议检查；嵌套函数通过去重的平面
-  GC 强根工作队列打印，不再递归展开 `HeapObjectShortPrint`。详见
-  [`audit/modern-v8-api.md`](audit/modern-v8-api.md)、
-  [`audit/modern-v8-windows.md`](audit/modern-v8-windows.md)、
-  [`audit/modern-v8-patch-validation.json`](audit/modern-v8-patch-validation.json)
-  和 [`audit/modern-v8-final-ci.md`](audit/modern-v8-final-ci.md)；第一次批次的
-  失败原因及修复对照见
-  [`audit/modern-v8-ci-failure-analysis.md`](audit/modern-v8-ci-failure-analysis.md)。
+  GC 强根工作队列打印，不再递归展开 `HeapObjectShortPrint`。这 57 个精确 tag
+  已通过补丁重放以及 Linux 和 Windows 双平台构建验证。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -184,24 +172,18 @@ View8 requires:
 - The patch set covers V8 5.1 and later. V8 5.1–11.9 and 14.7.84+ use
   source-aware compatibility patchers; the stable V8 12.0–14.7.83 patch
   contents remain unchanged.
-- V8 5.1 is the audited lower bound for this `.jsc` path. Of all 69 exact
-  pre-5.8 Node/Electron tags, the 57 tags through V8 5.0 lack the required
-  `CodeSerializer::Deserialize` path; see the
-  [pre-5.1 boundary audit](audit/pre-v8-5.1-api.md). Ignition became universal
-  by default in V8 5.9, so V8 5.1–5.8 applies only when the embedder actually
-  emitted an Ignition bytecode cache.
+- V8 5.1 is the compatibility lower bound for this `.jsc` path. Releases
+  through V8 5.0 lack the required `CodeSerializer::Deserialize` path.
+  Ignition became universal by default in V8 5.9, so V8 5.1–5.8 applies only
+  when the embedder actually emitted an Ignition bytecode cache.
 - To support different embedders on the same V8 release line (for example,
   upstream d8 and Electron), the legacy compatibility layer bypasses the
   version, source, and flags hashes. Every cache check provided by that upstream
   V8 tag remains byte-for-byte in place: all 369 tags have magic and checksum
   checks, 358 have header checks, 356 payload-length checks, 45 CPU-feature
   checks, and 20 read-only-snapshot checksum checks. The deserializer's
-  synchronization and bounds checks are unchanged.
-  See the [per-version API audit](audit/legacy-v8-api.md) and
-  [host-tool template audit](audit/legacy-v8-host-tools.md). The
-  [cross-platform Actions audit](audit/legacy-v8-ci.md) records successful
-  Linux and Windows builds for all 369 exact tags. See also the
-  [issue #23 crash-path audit](audit/issue-23-crash-analysis.md).
+  synchronization and bounds checks are unchanged. All 369 exact tags passed
+  Linux and Windows builds, including regression coverage for issue #23.
 - For the 57 exact failed tags from V8 14.7.84 through 15.3.25, the modern
   compatibility layer detects the `OwnedVector`, `DirectHandleVector`,
   generated object-predicate, `TrustedFixedArray`, and strong length API
@@ -210,15 +192,10 @@ View8 requires:
   size encoded in the private in-memory magic copy. Before normalization, it
   requires the V8 magic family and an exact match between the declared payload
   length and file boundary. The upstream magic check still executes; payload
-  checksum and every deserializer protocol check are preserved. Nested functions are printed with
-  a GC-rooted, deduplicated flat
-  worklist instead of recursively expanding `HeapObjectShortPrint`. See the
-  [modern API audit](audit/modern-v8-api.md),
-  [Windows SDK audit](audit/modern-v8-windows.md),
-  [semantic replay](audit/modern-v8-patch-validation.json), and
-  [final cross-platform build audit](audit/modern-v8-final-ci.md). The
-  [initial CI failure analysis](audit/modern-v8-ci-failure-analysis.md)
-  records the original causes and their corresponding corrections.
+  checksum and every deserializer protocol check are preserved. Nested
+  functions are printed with a GC-rooted, deduplicated flat worklist instead
+  of recursively expanding `HeapObjectShortPrint`. All 57 exact tags passed
+  patch replay plus Linux and Windows builds.
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.
 - If the output looks wrong:

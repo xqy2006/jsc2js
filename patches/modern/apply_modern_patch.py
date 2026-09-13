@@ -4,15 +4,18 @@
 V8 14.7 replaced the d8 file reader and completed the DirectHandle migration;
 V8 14.9 then moved the generated object predicates.  A unified diff tied to
 one checkout cannot safely span those changes.  This semantic patcher checks
-the exact APIs before making five narrowly-scoped edits.
+the exact APIs before making six narrowly-scoped edits.
 
 The source, version, flags, embedder-specific read-only snapshot identity, and
 the embedder-sized part of the cache magic are relaxed for source-less caches
 from another embedder.  Before normalizing its private in-memory magic copy,
 the loader verifies the cache family and the exact header/payload boundary.
 V8's remaining header, normalized magic, optional payload checksum, and
-deserializer protocol checks still execute.  Printing the absent source text
-is disabled so cached source positions cannot index the dummy text.
+deserializer protocol checks still execute.  A malformed cross-embedder
+reference is replaced locally with `undefined` only while loading user code;
+valid references and the normal startup-snapshot path are left unchanged.
+Printing the absent source text is disabled so cached source positions cannot
+index the dummy text.
 """
 
 from __future__ import annotations
@@ -631,6 +634,129 @@ def patch_sfi_printer(text: str) -> str:
     return text[:opening] + patched_body + text[closing:]
 
 
+def patch_deserializer(text: str) -> str:
+    """Add local fallbacks for malformed user-code references."""
+
+    backref_marker = "JSC2JS_BACKREF_FALLBACK"
+    readonly_marker = "JSC2JS_READ_ONLY_REF_FALLBACK"
+    markers = (backref_marker, readonly_marker)
+    if all(marker in text for marker in markers):
+        return text
+    if any(marker in text for marker in markers):
+        raise PatchError(
+            "modern deserializer fallback patch is only partially applied"
+        )
+
+    backref = re.search(
+        r"Handle<HeapObject>\s+Deserializer<IsolateT>::"
+        r"GetBackReferencedObject\s*\(\s*uint32_t\s+index\s*\)",
+        text,
+    )
+    if not backref:
+        raise PatchError("modern back-reference accessor is missing")
+    backref_opening = text.find("{", backref.end())
+    if backref_opening < 0:
+        raise PatchError("modern back-reference accessor has no body")
+    backref_closing = _matching_brace(text, backref_opening)
+    backref_body = text[backref_opening:backref_closing]
+    backref_line = "  Handle<HeapObject> obj = back_refs_[index];"
+    if backref_body.count(backref_line) != 1:
+        raise PatchError(
+            "expected one modern back-reference vector access, found "
+            f"{backref_body.count(backref_line)}"
+        )
+    backref_guard = f"""  // {backref_marker}: keep a bad cache entry local to this field.
+  if (deserializing_user_code() && index >= back_refs_.size()) {{
+    return handle(ReadOnlyRoots(isolate()).undefined_value(), isolate());
+  }}
+{backref_line}"""
+    backref_body = backref_body.replace(backref_line, backref_guard, 1)
+    text = text[:backref_opening] + backref_body + text[backref_closing:]
+
+    readonly = re.search(
+        r"int\s+Deserializer<IsolateT>::ReadReadOnlyHeapRef\s*\(\s*"
+        r"uint8_t\s+data\s*,\s*SlotAccessor\s+slot_accessor\s*\)",
+        text,
+    )
+    if not readonly:
+        raise PatchError("modern read-only heap reference accessor is missing")
+    readonly_opening = text.find("{", readonly.end())
+    if readonly_opening < 0:
+        raise PatchError(
+            "modern read-only heap reference accessor has no body"
+        )
+    readonly_closing = _matching_brace(text, readonly_opening)
+    readonly_body = text[readonly_opening:readonly_closing]
+    readonly_setup = (
+        "  ReadOnlySpace* read_only_space = isolate()->heap()->read_only_space();\n"
+        "  ReadOnlyPage* page = read_only_space->pages()[chunk_index];\n"
+        "  Address address = page->OffsetToAddress(chunk_offset);\n"
+        "  Tagged<HeapObject> heap_object = HeapObject::FromAddress(address);"
+    )
+    if readonly_body.count(readonly_setup) != 1:
+        raise PatchError(
+            "expected one modern read-only heap reference setup, found "
+            f"{readonly_body.count(readonly_setup)}"
+        )
+    readonly_replacement = "\n".join(
+        (
+            f"  // {readonly_marker}: preserve the stream and",
+            "  // replace only an invalid cross-embedder read-only reference.",
+            "  auto write_fallback = [&]() -> int {",
+            "    if (v8_flags.trace_deserialization) {",
+            '      PrintF(\"%*sReadOnlyHeapRef [%u, %u] : <fallback>\\n\", depth_, \"\",',
+            "             chunk_index, chunk_offset);",
+            "    }",
+            "    Tagged<HeapObject> fallback = ReadOnlyRoots(isolate()).undefined_value();",
+            "    return WriteHeapPointer(slot_accessor, fallback,",
+            "                            GetAndResetNextReferenceDescriptor(),",
+            "                            SKIP_WRITE_BARRIER);",
+            "  };",
+            "",
+            "  ReadOnlySpace* read_only_space = isolate()->heap()->read_only_space();",
+            "  ReadOnlyPage* page = nullptr;",
+            "  Address address = kNullAddress;",
+            "  Tagged<HeapObject> heap_object;",
+            "  if (deserializing_user_code()) {",
+            "    if (read_only_space == nullptr) return write_fallback();",
+            "    const auto& pages = read_only_space->pages();",
+            "    if (chunk_index >= pages.size()) return write_fallback();",
+            "    page = pages[chunk_index];",
+            "    if (page == nullptr || chunk_offset % kTaggedSize != 0 ||",
+            "        chunk_offset >= page->size()) {",
+            "      return write_fallback();",
+            "    }",
+            "    address = page->OffsetToAddress(chunk_offset);",
+            "    if (!page->Contains(address) ||",
+            "        !page->Contains(address + kTaggedSize - 1)) {",
+            "      return write_fallback();",
+            "    }",
+            "    heap_object = HeapObject::FromAddress(address);",
+            "",
+            "    // Reading the map is safe only after the object word is inside a real page.",
+            "    // Validate the map's storage before asking it for its map; this is the",
+            "    // instruction that otherwise makes ShortPrint dereference producer memory.",
+            "    Tagged<Map> object_map = heap_object->map();",
+            "    const Address map_address = object_map.address();",
+            "    if (map_address % kTaggedSize != 0 ||",
+            "        !read_only_space->ContainsSlow(map_address) ||",
+            "        !read_only_space->ContainsSlow(map_address + kTaggedSize - 1) ||",
+            "        object_map->map() != ReadOnlyRoots(isolate()).meta_map()) {",
+            "      return write_fallback();",
+            "    }",
+            "  } else {",
+            "    page = read_only_space->pages()[chunk_index];",
+            "    address = page->OffsetToAddress(chunk_offset);",
+            "    heap_object = HeapObject::FromAddress(address);",
+            "  }",
+        )
+    )
+    readonly_body = readonly_body.replace(readonly_setup, readonly_replacement, 1)
+    text = text[:readonly_opening] + readonly_body + text[readonly_closing:]
+
+    return text
+
+
 def transform_sources(
     sources: dict[str, str]
 ) -> tuple[dict[str, str], ModernFeatures, list[str]]:
@@ -641,8 +767,11 @@ def transform_sources(
     result[SERIALIZER_CC] = patch_serializer(sources[SERIALIZER_CC])
     result[STRING_CC] = patch_string_printer(sources[STRING_CC])
     result[PRINTER_CC] = patch_sfi_printer(sources[PRINTER_CC])
+    result[DESERIALIZER_CC] = patch_deserializer(sources[DESERIALIZER_CC])
     changed = sorted(path for path in result if result[path] != sources.get(path))
-    expected = sorted((D8_CC, D8_H, PRINTER_CC, SERIALIZER_CC, STRING_CC))
+    expected = sorted(
+        (D8_CC, D8_H, DESERIALIZER_CC, PRINTER_CC, SERIALIZER_CC, STRING_CC)
+    )
     if changed != expected:
         raise PatchError(
             f"unexpected changed files: expected={expected} actual={changed}"
@@ -690,7 +819,13 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
                 "payload_length",
                 "payload_checksum",
             ],
-            "deserializer_modified": False,
+            "deserializer_modified": True,
+            "localized_deserializer_fallbacks": [
+                "read_only_heap_reference",
+                "back_reference",
+            ],
+            "deserializer_protocol_checks_preserved": True,
+            "object_deserializer_unchanged": True,
             "recursive_short_print_modified": False,
             "missing_source_print_disabled": True,
         },

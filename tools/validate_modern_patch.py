@@ -170,12 +170,15 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                     "index >= back_refs_.size()",
                     "chunk_index >= pages.size()",
                     "chunk_offset >= page->size()",
+                    "in_read_only_page",
+                    "page_end - kTaggedSize",
                     "ReadOnlyRoots(isolate()).undefined_value()",
                     "page = read_only_space->pages()[chunk_index];",
                     "if (deserializing_user_code()) {",
                     "} else {",
                 )
             )
+            and "ContainsSlow" not in deserializer
             and "JSC2JS_REHASH_FALLBACK" in transformed[OBJECT_DESERIALIZER_CC],
             "only_missing_source_print_disabled": (
                 transformed[PRINTER_CC]

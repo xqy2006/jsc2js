@@ -10,10 +10,13 @@ patch by an opaque generation suffix or by a single patch-level tag.
 - `modern/apply_modern_patch.py`: the source-aware V8 14.7.84+ patcher.  It
   supports the `OwnedVector`/`DirectHandleVector`, `TrustedFixedArray`, and
   strong length API families and fails closed when a future source layout is
-  unknown.  The experimental full-fallback branch ports the current patch's
-  user-code deserializer guards (object sizes, references, stream markers,
-  repeat roots, read-only allocations, and rehashing) to modern APIs; startup
-  snapshot checks remain in the upstream path.
+  unknown.  The experimental full-fallback branch also ports the current
+  patch's global `SerializedCodeData::SanityCheck()` and
+  `SanityCheckWithoutSource()` `kSuccess` bypass, plus its user-code
+  deserializer guards (object sizes, references, stream markers, repeat roots,
+  read-only allocations, and rehashing) to modern APIs.  The d8 loader keeps
+  its own magic-family and exact-boundary preflight; startup snapshot checks
+  remain in the upstream path.
 - `archive/generation-1/` and `archive/generation-2/`: retained historical
   release patches.  They are not selected by the single-version validator.
 - `archive/unsafe/v8-10.8-pr18.patch`: the original PR #18 patch, retained for

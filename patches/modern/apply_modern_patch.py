@@ -8,10 +8,12 @@ the exact APIs before making seven source-aware edits.
 
 The source, version, flags, embedder-specific read-only snapshot identity, and
 the embedder-sized part of the cache magic are relaxed for source-less caches
-from another embedder.  Before normalizing its private in-memory magic copy,
-the loader verifies the cache family and the exact header/payload boundary.
-V8's payload and structural checks remain in the loader.  While loading user
-code, the deserializer uses the compatibility fallbacks from the V8 12.x
+from another embedder.  The experimental compatibility path also carries the
+legacy patch's global SerializedCodeData sanity bypass: both SanityCheck() and
+SanityCheckWithoutSource() return kSuccess directly.  Before normalizing its
+private in-memory magic copy, the loader still verifies the cache family and
+the exact header/payload boundary.  While loading user code, the deserializer
+uses the compatibility fallbacks from the V8 12.x
 patch family: malformed objects, references, repeat counts, or stream markers
 are contained to the current field, and read-only allocations are redirected
 to old space.  The startup-snapshot path keeps the upstream checks.  Printing
@@ -37,7 +39,6 @@ from patches.legacy.apply_legacy_patch import (  # noqa: E402
     PatchError,
     _ensure_include,
     _matching_brace,
-    _remove_hash_mismatch_check,
     patch_string_printer,
     upstream_protections,
 )
@@ -516,100 +517,75 @@ def patch_d8_h(text: str) -> str:
     return text[: anchor.start()] + declaration + text[anchor.start() :]
 
 
-def _bypass_read_only_snapshot_checksum(text: str) -> str:
-    marker = "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS"
-    if marker in text:
-        return text
-    declaration = re.compile(
-        r"(?m)^(?P<indent>[ \t]*)uint32_t\s+ro_snapshot_checksum\s*=\s*"
-        r"(?:\r?\n[ \t]*)?GetHeaderValue\("
-        r"kReadOnlySnapshotChecksumOffset\);[ \t]*$"
+def _replace_sanity_function_body(
+    text: str, method: str, body: str
+) -> str:
+    """Replace exactly one SerializedCodeData sanity method body.
+
+    The modern V8 branches audited by this patch keep the two sanity methods
+    as out-of-line definitions, but their surrounding formatting changes
+    between releases.  Locate the signature semantically and use the shared
+    brace matcher instead of depending on a textual diff hunk.
+    """
+
+    signature = re.compile(
+        rf"SerializedCodeSanityCheckResult\s+"
+        rf"SerializedCodeData::{method}\s*\(",
+        flags=re.DOTALL,
     )
-    declarations = list(declaration.finditer(text))
-    if len(declarations) != 1:
+    matches = list(signature.finditer(text))
+    if len(matches) != 1:
         raise PatchError(
-            "expected one modern read-only snapshot checksum declaration, "
-            f"found {len(declarations)}"
+            f"expected one modern SerializedCodeData::{method} definition, "
+            f"found {len(matches)}"
         )
-    check = re.compile(
-        r"(?m)^(?P<indent>[ \t]*)if\s*\(\s*ro_snapshot_checksum\s*!=\s*"
-        r"expected_ro_snapshot_checksum\s*\)"
-    )
-    checks = list(check.finditer(text))
-    if len(checks) != 1:
-        raise PatchError(
-            "expected one modern read-only snapshot checksum check, "
-            f"found {len(checks)}"
-        )
-    found = checks[0]
-    line_end = text.find("\n", found.end())
-    if line_end < 0:
-        line_end = len(text)
-    opening = text.find("{", found.end(), line_end)
+    opening = text.find("{", matches[0].end())
     if opening < 0:
-        raise PatchError("read-only snapshot checksum check has no body")
-    end = _matching_brace(text, opening) + 1
-    original_check = text[found.start() : end]
-    if not any(
-        token in original_check
-        for token in (
-            "kReadOnlySnapshotChecksumMismatch",
-            "READ_ONLY_SNAPSHOT_CHECKSUM_MISMATCH",
-        )
-    ):
-        raise PatchError("unexpected read-only snapshot checksum mismatch result")
-    text = (
-        text[: found.start()]
-        + found.group("indent")
-        + f"// {marker}: accept matching V8 releases across embedder snapshots."
-        + text[end:]
-    )
-    return declaration.sub(
-        lambda match: (
-            match.group("indent")
-            + "static_cast<void>(expected_ro_snapshot_checksum);\n"
-            + match.group("indent")
-            + f"// {marker}: cached embedder snapshot identity ignored."
-        ),
-        text,
-        count=1,
+        raise PatchError(f"SerializedCodeData::{method} has no body")
+    closing = _matching_brace(text, opening)
+    return text[: opening + 1] + body + text[closing:]
+
+
+def _bypass_sanity_checks(text: str) -> str:
+    """Port the legacy patch's global SerializedCodeData sanity bypass."""
+
+    check_marker = "JSC2JS_SANITY_CHECK_FALLBACK"
+    without_source_marker = "JSC2JS_SANITY_CHECK_WITHOUT_SOURCE_FALLBACK"
+    markers = (check_marker, without_source_marker)
+    if all(marker in text for marker in markers):
+        return text
+    if any(marker in text for marker in markers):
+        raise PatchError("modern sanity fallback is only partially applied")
+
+    # Keep the per-field markers in the function comment.  They make the
+    # intentionally broad bypass auditable and preserve the reason each old
+    # fallback existed, even though the legacy implementation returned before
+    # evaluating any of those fields.
+    sanity_body = """
+  // JSC2JS_SANITY_CHECK_FALLBACK: legacy source-less caches bypass the full
+  // V8 sanity gate, including all embedder/version/flags/checksum fields.
+  // JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.
+  // JSC2JS_VERSION_HASH_BYPASS: accept caches produced by another V8 build.
+  // JSC2JS_FLAGS_HASH_BYPASS: accept caches produced with another flag set.
+  // JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS: accept another embedder's
+  // read-only snapshot identity.
+  return SerializedCodeSanityCheckResult::kSuccess;
+"""
+    without_source_body = """
+  // JSC2JS_SANITY_CHECK_WITHOUT_SOURCE_FALLBACK: mirror the legacy patch and
+  // bypass size, magic, identity, payload-length, and payload-checksum checks
+  // in this V8 sanity method.  The d8 loader performs its own boundary and
+  // magic-family preflight before invoking deserialization.
+  return SerializedCodeSanityCheckResult::kSuccess;
+"""
+    text = _replace_sanity_function_body(text, "SanityCheck", sanity_body)
+    return _replace_sanity_function_body(
+        text, "SanityCheckWithoutSource", without_source_body
     )
 
 
 def patch_serializer(text: str) -> str:
-    if "JSC2JS_SOURCE_HASH_BYPASS" not in text:
-        old = "return SanityCheckJustSource(expected_source_hash);"
-        if text.count(old) != 1:
-            raise PatchError(
-                "expected one modern SanityCheckJustSource return, found "
-                f"{text.count(old)}"
-            )
-        text = text.replace(
-            old,
-            "// JSC2JS_SOURCE_HASH_BYPASS: .jsc has no original source text.\n"
-            "  return result;",
-            1,
-        )
-    if "JSC2JS_VERSION_HASH_BYPASS" not in text:
-        text = _remove_hash_mismatch_check(
-            text,
-            variable="version_hash",
-            offset="kVersionHashOffset",
-            condition=r"version_hash\s*!=\s*Version::Hash\(\)",
-            result_tokens=("kVersionMismatch", "VERSION_MISMATCH"),
-            marker="JSC2JS_VERSION_HASH_BYPASS",
-        )
-    if "JSC2JS_FLAGS_HASH_BYPASS" not in text:
-        text = _remove_hash_mismatch_check(
-            text,
-            variable="flags_hash",
-            offset="kFlagHashOffset",
-            condition=r"flags_hash\s*!=\s*FlagList::Hash\(\)",
-            result_tokens=("kFlagsMismatch", "FLAGS_MISMATCH"),
-            marker="JSC2JS_FLAGS_HASH_BYPASS",
-        )
-    text = _bypass_read_only_snapshot_checksum(text)
-    return text
+    return _bypass_sanity_checks(text)
 
 
 def patch_sfi_printer(text: str) -> str:
@@ -1158,7 +1134,10 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
             "loader_requires_exact_header_payload_boundary": True,
             "loader_rejects_non_v8_magic_family": True,
             "upstream_magic_preflight_preserved": True,
+            "sanity_check_bypassed_globally": True,
+            "sanity_check_without_source_bypassed_globally": True,
             "read_only_snapshot_checksum_preserved": False,
+            "payload_checksum_inside_sanity_check_preserved": False,
             "upstream_cache_checks_detected_before_patch": upstream_protections(
                 sources[SERIALIZER_CC]
             ),
@@ -1166,8 +1145,7 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
                 "header_and_exact_payload_boundary",
                 "v8_magic_family_before_normalization",
                 "magic_after_loader_normalization",
-                "payload_length",
-                "payload_checksum",
+                "loader_payload_length_boundary",
             ],
             "deserializer_modified": True,
             "legacy_deserializer_fallbacks_migrated": [

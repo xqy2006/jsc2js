@@ -77,11 +77,15 @@ View8 需要：
   强类型长度，并识别出四种组合的 API 边界。它只跳过 source、version、flags、
   宿主特定的只读快照身份校验，并在私有内存副本中规范化包含外部引用表大小的
   magic；规范化前会检查 V8 magic 家族以及 header 声明的 payload 长度与文件
-  边界完全一致。payload checksum 和启动快照路径的上游校验仍保留；JSC 用户
-  代码路径迁移了 current patch 的对象、引用、同步标记、重复根和未知 opcode
-  fallback，遇到异常只在当前字段回退为 `undefined`，并将只读分配改到 old
-  space。嵌套函数通过去重的平面 GC 强根工作队列打印，不再递归展开
-  `HeapObjectShortPrint`；完整迁移在实验分支中由 release workflow 验证。
+  边界完全一致。实验兼容模式还照搬旧 patch，让
+  `SerializedCodeData::SanityCheck()` 与 `SanityCheckWithoutSource()` 直接返回
+  `kSuccess`，因此这些 V8 函数内部的 header、magic、version、flags、只读快照、
+  payload 长度和 checksum 校验都会跳过；d8 loader 自己的 magic-family 与精确
+  文件边界预检仍保留。JSC 用户代码路径迁移了 current patch 的对象、引用、
+  同步标记、重复根和未知 opcode fallback，遇到异常只在当前字段回退为
+  `undefined`，并将只读分配改到 old space。嵌套函数通过去重的平面 GC 强根工作
+  队列打印，不再递归展开 `HeapObjectShortPrint`；完整迁移在实验分支中由 release
+  workflow 验证。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -188,12 +192,16 @@ View8 requires:
 - For the audited modern tags from V8 14.7.84 through 15.3.25, the modern
   compatibility layer detects the `OwnedVector`, `DirectHandleVector`,
   generated object-predicate, `TrustedFixedArray`, and strong length API
-  boundaries. It bypasses only the source, version, flags, and embedder-specific
+  boundaries. It bypasses the source, version, flags, and embedder-specific
   read-only-snapshot identity checks, and normalizes the external-reference-table
   size encoded in the private in-memory magic copy. Before normalization, it
   requires the V8 magic family and an exact match between the declared payload
-  length and file boundary. Payload checksum and startup-snapshot checks remain
-  in place. The experimental full-fallback mode also ports the current patch's
+  length and file boundary. The experimental compatibility mode also carries the
+  old patch's global `SerializedCodeData::SanityCheck()` and
+  `SanityCheckWithoutSource()` `kSuccess` return, so their header, magic, version,
+  flags, read-only-snapshot, payload-length, and checksum checks are bypassed;
+  d8's own magic-family and exact-boundary preflight remains active. The
+  experimental full-fallback mode also ports the current patch's
   user-code guards for malformed objects, references, stream markers, repeat
   roots, read-only allocations, and rehashing; each bad field falls back to
   `undefined` without aborting the complete file. Nested functions are printed

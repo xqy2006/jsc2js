@@ -133,8 +133,27 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
         self.assertEqual(patched.count("PrintSourceCode(os);"), 1)
         self.assertIn("void HeapObject::HeapObjectShortPrint", patched)
 
-    def test_serializer_keeps_structural_and_integrity_checks(self):
+    def test_serializer_carries_the_legacy_global_sanity_fallback(self):
         source = """\
+SerializedCodeSanityCheckResult SerializedCodeData::SanityCheck(
+    uint32_t expected_ro_snapshot_checksum,
+    uint32_t expected_source_hash) const {
+  SerializedCodeSanityCheckResult result =
+      SanityCheckWithoutSource(expected_ro_snapshot_checksum);
+  if (result != SerializedCodeSanityCheckResult::kSuccess) return result;
+  return SanityCheckJustSource(expected_source_hash);
+}
+
+SerializedCodeSanityCheckResult SerializedCodeData::SanityCheckJustSource(
+    uint32_t expected_source_hash) const {
+  return SerializedCodeSanityCheckResult::kSuccess;
+}
+
+SerializedCodeSanityCheckResult SerializedCodeData::SanityCheckWithoutSource(
+    uint32_t expected_ro_snapshot_checksum) const {
+  if (size_ < kHeaderSize) {
+    return SerializedCodeSanityCheckResult::kInvalidHeader;
+  }
   uint32_t version_hash = GetHeaderValue(kVersionHashOffset);
   if (version_hash != Version::Hash()) {
     return SerializedCodeSanityCheckResult::kVersionMismatch;
@@ -143,43 +162,31 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
   if (flags_hash != FlagList::Hash()) {
     return SerializedCodeSanityCheckResult::kFlagsMismatch;
   }
-  uint32_t ro_snapshot_checksum =
-      GetHeaderValue(kReadOnlySnapshotChecksumOffset);
-  if (ro_snapshot_checksum != expected_ro_snapshot_checksum) {
-    return SerializedCodeSanityCheckResult::kReadOnlySnapshotChecksumMismatch;
-  }
-  if (size_ < kHeaderSize) return SerializedCodeSanityCheckResult::kInvalidHeader;
-  if (GetMagicNumber() != kMagicNumber) {
-    return SerializedCodeSanityCheckResult::kMagicNumberMismatch;
-  }
-  if (payload_length > max_payload_length) {
-    return SerializedCodeSanityCheckResult::kLengthMismatch;
-  }
   if (Checksum(ChecksummedContent()) != checksum) {
     return SerializedCodeSanityCheckResult::kChecksumMismatch;
   }
-  return SanityCheckJustSource(expected_source_hash);
+  return SerializedCodeSanityCheckResult::kSuccess;
+}
 """
         patched = patch_serializer(source)
         for marker in (
+            "JSC2JS_SANITY_CHECK_FALLBACK",
+            "JSC2JS_SANITY_CHECK_WITHOUT_SOURCE_FALLBACK",
             "JSC2JS_SOURCE_HASH_BYPASS",
             "JSC2JS_VERSION_HASH_BYPASS",
             "JSC2JS_FLAGS_HASH_BYPASS",
             "JSC2JS_READ_ONLY_SNAPSHOT_CHECKSUM_BYPASS",
         ):
             self.assertIn(marker, patched)
-        for required in (
-            "kInvalidHeader",
-            "kMagicNumberMismatch",
-            "kLengthMismatch",
-            "kChecksumMismatch",
-        ):
-            self.assertIn(required, patched)
-        self.assertNotIn("kReadOnlySnapshotChecksumOffset", patched)
-        self.assertNotIn("kReadOnlySnapshotChecksumMismatch", patched)
-        self.assertIn(
-            "static_cast<void>(expected_ro_snapshot_checksum);", patched
+        self.assertEqual(
+            patched.count("return SerializedCodeSanityCheckResult::kSuccess;"),
+            3,
         )
+        self.assertNotIn("SanityCheckWithoutSource(expected_ro_snapshot_checksum)", patched)
+        self.assertNotIn("kInvalidHeader", patched)
+        self.assertNotIn("kVersionMismatch", patched)
+        self.assertNotIn("kFlagsMismatch", patched)
+        self.assertNotIn("kChecksumMismatch", patched)
 
     def test_loader_uses_flat_direct_handle_worklist(self):
         loader = _loadjsc_definition()

@@ -7,6 +7,7 @@ import argparse
 import concurrent.futures
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -15,7 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from patches.legacy.apply_legacy_patch import (  # noqa: E402
-    UPSTREAM_PROTECTION_TOKENS,
+    _matching_brace,
     upstream_protections,
 )
 from patches.modern.apply_modern_patch import (  # noqa: E402
@@ -36,13 +37,22 @@ from patches.modern.apply_modern_patch import (  # noqa: E402
 from tools.audit_legacy_v8 import RawSourceCache, version_key  # noqa: E402
 
 
-def protected_token_counts_unchanged(before: str, after: str) -> bool:
-    return all(
-        tuple(before.count(token) for token in tokens)
-        == tuple(after.count(token) for token in tokens)
-        for name, tokens in UPSTREAM_PROTECTION_TOKENS.items()
-        if name != "read_only_snapshot_checksum"
+def sanity_function_body(text: str, method: str) -> str:
+    """Return one transformed SerializedCodeData sanity method body."""
+
+    match = re.search(
+        rf"SerializedCodeSanityCheckResult\s+"
+        rf"SerializedCodeData::{method}\s*\(",
+        text,
+        flags=re.DOTALL,
     )
+    if not match:
+        return ""
+    opening = text.find("{", match.end())
+    if opening < 0:
+        return ""
+    closing = _matching_brace(text, opening)
+    return text[opening + 1 : closing]
 
 
 def validate_version(cache: RawSourceCache, version: str) -> dict:
@@ -56,6 +66,10 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
         d8 = transformed[D8_CC]
         deserializer = transformed[DESERIALIZER_CC]
         serializer = transformed[SERIALIZER_CC]
+        sanity_check_body = sanity_function_body(serializer, "SanityCheck")
+        sanity_without_source_body = sanity_function_body(
+            serializer, "SanityCheckWithoutSource"
+        )
         expected_constant_count = (
             "static_cast<uint32_t>(constants->length())"
             if features.constant_pool_length_type == "int"
@@ -128,6 +142,48 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                     )
                 )
             ),
+            "global_sanity_check_fallback": (
+                "JSC2JS_SANITY_CHECK_FALLBACK" in serializer
+                and re.search(
+                    r"return\s+SerializedCodeSanityCheckResult::kSuccess\s*;",
+                    sanity_check_body,
+                )
+                is not None
+                and all(
+                    token not in sanity_check_body
+                    for token in (
+                        "SanityCheckWithoutSource(",
+                        "SanityCheckJustSource(",
+                        "kInvalidHeader",
+                        "kMagicNumberMismatch",
+                        "kVersionMismatch",
+                        "kFlagsMismatch",
+                        "kReadOnlySnapshotChecksumMismatch",
+                        "kLengthMismatch",
+                        "kChecksumMismatch",
+                    )
+                )
+            ),
+            "global_sanity_check_without_source_fallback": (
+                "JSC2JS_SANITY_CHECK_WITHOUT_SOURCE_FALLBACK" in serializer
+                and re.search(
+                    r"return\s+SerializedCodeSanityCheckResult::kSuccess\s*;",
+                    sanity_without_source_body,
+                )
+                is not None
+                and all(
+                    token not in sanity_without_source_body
+                    for token in (
+                        "kInvalidHeader",
+                        "kMagicNumberMismatch",
+                        "kVersionMismatch",
+                        "kFlagsMismatch",
+                        "kReadOnlySnapshotChecksumMismatch",
+                        "kLengthMismatch",
+                        "kChecksumMismatch",
+                    )
+                )
+            ),
             "magic_normalization_uses_upstream_local_constant": all(
                 token in d8
                 for token in (
@@ -141,15 +197,6 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
             "magic_layout_dependencies_byte_identical": all(
                 transformed[path] == sources[path]
                 for path in (BASE_MEMORY_H, SNAPSHOT_DATA_H)
-            ),
-            "protected_cache_checks_byte_preserved": protected_token_counts_unchanged(
-                sources[SERIALIZER_CC], serializer
-            ),
-            "only_read_only_snapshot_mismatch_check_removed": (
-                sources[SERIALIZER_CC].count(
-                    "kReadOnlySnapshotChecksumMismatch"
-                )
-                == serializer.count("kReadOnlySnapshotChecksumMismatch") + 1
             ),
             "legacy_deserializer_fallbacks_migrated": all(
                 token in deserializer
@@ -268,8 +315,11 @@ def main() -> int:
             "loader_rejects_non_v8_magic_family": True,
             "exact_tag_magic_layout_and_write_api_verified": True,
             "upstream_magic_preflight_preserved": True,
+            "global_sanity_check_bypass": True,
+            "global_sanity_check_without_source_bypass": True,
             "read_only_snapshot_checksum_preserved": False,
-            "header_length_checksum_and_normalized_magic_checked": True,
+            "payload_checksum_inside_sanity_check_preserved": False,
+            "loader_preflight_and_normalized_magic_checked": True,
             "deserializer_protocol_checks_preserved_for_startup": True,
             "deserializer_protocol_checks_relaxed_for_user_code": True,
             "legacy_deserializer_fallbacks_migrated": True,

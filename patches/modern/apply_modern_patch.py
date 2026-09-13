@@ -4,18 +4,19 @@
 V8 14.7 replaced the d8 file reader and completed the DirectHandle migration;
 V8 14.9 then moved the generated object predicates.  A unified diff tied to
 one checkout cannot safely span those changes.  This semantic patcher checks
-the exact APIs before making six narrowly-scoped edits.
+the exact APIs before making seven source-aware edits.
 
 The source, version, flags, embedder-specific read-only snapshot identity, and
 the embedder-sized part of the cache magic are relaxed for source-less caches
 from another embedder.  Before normalizing its private in-memory magic copy,
 the loader verifies the cache family and the exact header/payload boundary.
-V8's remaining header, normalized magic, optional payload checksum, and
-deserializer protocol checks still execute.  A malformed cross-embedder
-reference is replaced locally with `undefined` only while loading user code;
-valid references and the normal startup-snapshot path are left unchanged.
-Printing the absent source text is disabled so cached source positions cannot
-index the dummy text.
+V8's payload and structural checks remain in the loader.  While loading user
+code, the deserializer uses the compatibility fallbacks from the V8 12.x
+patch family: malformed objects, references, repeat counts, or stream markers
+are contained to the current field, and read-only allocations are redirected
+to old space.  The startup-snapshot path keeps the upstream checks.  Printing
+the absent source text is disabled so cached source positions cannot index the
+dummy text.
 """
 
 from __future__ import annotations
@@ -635,17 +636,324 @@ def patch_sfi_printer(text: str) -> str:
 
 
 def patch_deserializer(text: str) -> str:
-    """Add local fallbacks for malformed user-code references."""
+    """Port the legacy user-code fallbacks to modern V8 source APIs."""
 
-    backref_marker = "JSC2JS_BACKREF_FALLBACK"
-    readonly_marker = "JSC2JS_READ_ONLY_REF_FALLBACK"
-    markers = (backref_marker, readonly_marker)
+    markers = (
+        "JSC2JS_MAGIC_CHECK_FALLBACK",
+        "JSC2JS_SYNCHRONIZE_FALLBACK",
+        "JSC2JS_READ_OBJECT_FALLBACK",
+        "JSC2JS_OBJECT_SIZE_FALLBACK",
+        "JSC2JS_READONLY_ALLOCATION_FALLBACK",
+        "JSC2JS_META_MAP_ALLOCATION_FALLBACK",
+        "JSC2JS_REPEAT_ROOT_FALLBACK",
+        "JSC2JS_READ_DATA_OBJECT_FALLBACK",
+        "JSC2JS_READ_DATA_ROOT_FALLBACK",
+        "JSC2JS_UNKNOWN_BYTECODE_FALLBACK",
+        "JSC2JS_BACKREF_FALLBACK",
+        "JSC2JS_READ_ONLY_REF_FALLBACK",
+    )
     if all(marker in text for marker in markers):
         return text
     if any(marker in text for marker in markers):
         raise PatchError(
             "modern deserializer fallback patch is only partially applied"
         )
+
+    def edit_body(
+        source: str, signature: str, label: str, editor
+    ) -> str:
+        match = re.search(signature, source)
+        if not match:
+            raise PatchError(f"modern {label} definition is missing")
+        opening = source.find("{", match.end())
+        if opening < 0:
+            raise PatchError(f"modern {label} definition has no body")
+        closing = _matching_brace(source, opening)
+        body = source[opening:closing]
+        updated = editor(body)
+        if updated == body:
+            raise PatchError(f"modern {label} fallback anchor was not changed")
+        return source[:opening] + updated + source[closing:]
+
+    # The loader normalizes this value before deserialization.  Keep the
+    # upstream assertion for startup snapshots, but use the legacy user-code
+    # fallback when the private magic copy came from another embedder.
+    magic_line = "  CHECK_EQ(magic_number_, SerializedData::kMagicNumber);"
+    if text.count(magic_line) != 1:
+        raise PatchError(
+            "expected one modern deserializer magic check, "
+            f"found {text.count(magic_line)}"
+        )
+    text = text.replace(
+        magic_line,
+        "\n".join(
+            (
+                "  // JSC2JS_MAGIC_CHECK_FALLBACK: tolerate the private",
+                "  // cross-embedder magic value only for user-code caches.",
+                "  if (!deserializing_user_code_) {",
+                magic_line,
+                "  }",
+            )
+        ),
+        1,
+    )
+
+    sync_anchor = (
+        "  static const uint8_t expected = kSynchronize;\n"
+        "  CHECK_EQ(expected, source_.Get());"
+    )
+    if text.count(sync_anchor) != 1:
+        raise PatchError(
+            "expected one modern synchronization check, "
+            f"found {text.count(sync_anchor)}"
+        )
+    text = text.replace(
+        sync_anchor,
+        "\n".join(
+            (
+                "  static const uint8_t expected = kSynchronize;",
+                "  // JSC2JS_SYNCHRONIZE_FALLBACK: consume the marker locally",
+                "  // when a user-code cache was produced with another root set.",
+                "  if (deserializing_user_code()) {",
+                "    source_.Get();",
+                "  } else {",
+                "    CHECK_EQ(expected, source_.Get());",
+                "  }",
+            )
+        ),
+        1,
+    )
+
+    def patch_read_object_body(body: str) -> str:
+        check = re.compile(
+            r"  CHECK_EQ\(ReadSingleBytecodeData\(\s*"
+            r"source_\.Get\(\),\s*"
+            r"SlotAccessorForHandle<IsolateT>\(&ret,\s*isolate\(\)\)\),\s*"
+            r"1\);"
+        )
+        replacement = "\n".join(
+            (
+                "  // JSC2JS_READ_OBJECT_FALLBACK: keep a malformed",
+                "  // object opcode local to the current user-code field.",
+                "  int result = ReadSingleBytecodeData(",
+                "      source_.Get(), SlotAccessorForHandle<IsolateT>(&ret, isolate()));",
+                "  if (deserializing_user_code()) {",
+                "    if (result != 1 || ret.is_null()) {",
+                "      Tagged<HeapObject> fallback =",
+                "          ReadOnlyRoots(isolate()).undefined_value();",
+                "      ret = DirectHandle<HeapObject>(fallback, isolate());",
+                "    }",
+                "  } else {",
+                "    CHECK_EQ(result, 1);",
+                "  }",
+            )
+        )
+        updated, count = check.subn(replacement, body, count=1)
+        if count != 1:
+            raise PatchError(
+                "expected one modern ReadObject result check, "
+                f"found {count}"
+            )
+        return updated
+
+    text = edit_body(
+        text,
+        r"(?:DirectHandle|Handle)<HeapObject>\s+"
+        r"Deserializer<IsolateT>::ReadObject\s*\(\s*\)",
+        "ReadObject",
+        patch_read_object_body,
+    )
+
+    def patch_object_size(body: str) -> str:
+        anchor = (
+            "  const int size_in_tagged = source_.GetUint30();\n"
+            "  const int size_in_bytes = size_in_tagged * kTaggedSize;"
+        )
+        if body.count(anchor) != 1:
+            raise PatchError(
+                "expected one modern object-size anchor, "
+                f"found {body.count(anchor)}"
+            )
+        return body.replace(
+            anchor,
+            anchor
+            + "\n\n"
+            + "\n".join(
+                (
+                    "  // JSC2JS_OBJECT_SIZE_FALLBACK: preserve a backref slot",
+                    "  // when a malformed user-code object reports zero size.",
+                    "  if (deserializing_user_code() && size_in_tagged <= 0) {",
+                    "    Handle<HeapObject> fallback(",
+                    "        ReadOnlyRoots(isolate()).undefined_value(), isolate());",
+                    "    back_refs_.push_back(fallback);",
+                    "    return fallback;",
+                    "  }",
+                )
+            ),
+            1,
+        )
+
+    text = edit_body(
+        text,
+        r"Handle<HeapObject>\s+Deserializer<IsolateT>::ReadObject\s*\(\s*"
+        r"SnapshotSpace\s+space\s*\)",
+        "ReadObject(SnapshotSpace)",
+        patch_object_size,
+    )
+
+    def patch_readonly_allocation(body: str) -> str:
+        anchor = "  AllocationType allocation = SpaceToAllocation(space);"
+        if body.count(anchor) != 1:
+            raise PatchError(
+                "expected one modern allocation anchor, "
+                f"found {body.count(anchor)}"
+            )
+        return body.replace(
+            anchor,
+            anchor
+            + "\n\n"
+            + "\n".join(
+                (
+                    "  // JSC2JS_READONLY_ALLOCATION_FALLBACK: user-code",
+                    "  // objects cannot be allocated into the sealed read-only heap.",
+                    "  if (deserializing_user_code() &&",
+                    "      allocation == AllocationType::kReadOnly) {",
+                    "    allocation = AllocationType::kOld;",
+                    "  }",
+                )
+            ),
+            1,
+        )
+
+    text = edit_body(
+        text,
+        r"Handle<HeapObject>\s+Deserializer<IsolateT>::ReadObject\s*\(\s*"
+        r"SnapshotSpace\s+space\s*\)",
+        "ReadObject(SnapshotSpace) allocation",
+        patch_readonly_allocation,
+    )
+
+    def patch_meta_allocation(body: str) -> str:
+        anchor = re.compile(
+            r"  Tagged<HeapObject> raw_obj =\n"
+            r"      Allocate\(SpaceToAllocation\(space\), size_in_bytes, "
+            r"kTaggedAligned\);"
+        )
+        replacement = "\n".join(
+            (
+                "  // JSC2JS_META_MAP_ALLOCATION_FALLBACK: keep user-code",
+                "  // meta maps out of the sealed read-only heap.",
+                "  AllocationType meta_alloc = SpaceToAllocation(space);",
+                "  if (deserializing_user_code() &&",
+                "      meta_alloc == AllocationType::kReadOnly) {",
+                "    meta_alloc = AllocationType::kOld;",
+                "  }",
+                "  Tagged<HeapObject> raw_obj =",
+                "      Allocate(meta_alloc, size_in_bytes, kTaggedAligned);",
+            )
+        )
+        updated, count = anchor.subn(replacement, body, count=1)
+        if count != 1:
+            raise PatchError(
+                "expected one modern meta-map allocation anchor, "
+                f"found {count}"
+            )
+        return updated
+
+    text = edit_body(
+        text,
+        r"Handle<HeapObject>\s+Deserializer<IsolateT>::ReadMetaMap\s*\(\s*"
+        r"SnapshotSpace\s+space\s*\)",
+        "ReadMetaMap",
+        patch_meta_allocation,
+    )
+
+    def patch_repeat_root(body: str) -> str:
+        anchor = "  CHECK_LE(2, repeat_count);"
+        if body.count(anchor) != 1:
+            raise PatchError(
+                "expected one modern repeat-root check, "
+                f"found {body.count(anchor)}"
+            )
+        replacement = "\n".join(
+            (
+                "  // JSC2JS_REPEAT_ROOT_FALLBACK: retain the legacy minimum",
+                "  // repeat width only while consuming a user-code stream.",
+                "  CHECK_IMPLIES(!deserializing_user_code(), 2 <= repeat_count);",
+                "  if (deserializing_user_code() && repeat_count < 2) repeat_count = 2;",
+            )
+        )
+        return body.replace(anchor, replacement, 1)
+
+    text = edit_body(
+        text,
+        r"int\s+Deserializer<IsolateT>::ReadRepeatedRoot\s*\(",
+        "ReadRepeatedRoot",
+        patch_repeat_root,
+    )
+
+    data_checks = (
+        (
+            "  CHECK_EQ(current, end_slot_index);",
+            "  // JSC2JS_READ_DATA_OBJECT_FALLBACK: contain slot-count drift",
+            "  // to user-code deserialization while retaining startup checks.",
+            "  CHECK_IMPLIES(!deserializing_user_code(), current == end_slot_index);",
+        ),
+        (
+            "  CHECK_EQ(current, end);",
+            "  // JSC2JS_READ_DATA_ROOT_FALLBACK: contain root-slot drift",
+            "  // to user-code deserialization while retaining startup checks.",
+            "  CHECK_IMPLIES(!deserializing_user_code(), current == end);",
+        ),
+    )
+    for old, comment, detail, new_line in data_checks:
+        if text.count(old) != 1:
+            raise PatchError(
+                f"expected one modern ReadData check {old!r}, "
+                f"found {text.count(old)}"
+            )
+        text = text.replace(old, "\n".join((comment, detail, new_line)), 1)
+
+    def patch_bytecode_fallbacks(body: str) -> str:
+        case_start = body.find("    case kSynchronize:")
+        if case_start < 0:
+            raise PatchError("modern kSynchronize case is missing")
+        case_end = body.find("      UNREACHABLE();", case_start)
+        if case_end < 0:
+            raise PatchError("modern kSynchronize unreachable case is missing")
+        sync_fallback = "\n".join(
+            (
+                "      // JSC2JS_SYNCHRONIZE_BYTECODE_FALLBACK: consume the",
+                "      // marker and let the user-code stream continue.",
+                "      if (deserializing_user_code()) return 0;",
+            )
+        )
+        body = body[:case_end] + sync_fallback + "\n" + body[case_end:]
+
+        unreachable = body.rfind("  UNREACHABLE();")
+        if unreachable < 0:
+            raise PatchError("modern bytecode fallback anchor is missing")
+        unknown_fallback = "\n".join(
+            (
+                "  // JSC2JS_UNKNOWN_BYTECODE_FALLBACK: consume one unknown",
+                "  // field locally instead of aborting the complete user-code file.",
+                "  if (deserializing_user_code()) {",
+                "    Tagged<HeapObject> fallback =",
+                "        ReadOnlyRoots(isolate()).undefined_value();",
+                "    return slot_accessor.Write(fallback,",
+                "                               HeapObjectReferenceType::STRONG, 0,",
+                "                               SKIP_WRITE_BARRIER);",
+                "  }",
+            )
+        )
+        return body[:unreachable] + unknown_fallback + "\n" + body[unreachable:]
+
+    text = edit_body(
+        text,
+        r"int\s+Deserializer<IsolateT>::ReadSingleBytecodeData\s*\(",
+        "ReadSingleBytecodeData",
+        patch_bytecode_fallbacks,
+    )
 
     backref = re.search(
         r"Handle<HeapObject>\s+Deserializer<IsolateT>::"
@@ -665,7 +973,7 @@ def patch_deserializer(text: str) -> str:
             "expected one modern back-reference vector access, found "
             f"{backref_body.count(backref_line)}"
         )
-    backref_guard = f"""  // {backref_marker}: keep a bad cache entry local to this field.
+    backref_guard = f"""  // JSC2JS_BACKREF_FALLBACK: keep a bad cache entry local to this field.
   if (deserializing_user_code() && index >= back_refs_.size()) {{
     return handle(ReadOnlyRoots(isolate()).undefined_value(), isolate());
   }}
@@ -700,11 +1008,11 @@ def patch_deserializer(text: str) -> str:
         )
     readonly_replacement = "\n".join(
         (
-            f"  // {readonly_marker}: preserve the stream and",
+            "  // JSC2JS_READ_ONLY_REF_FALLBACK: preserve the stream and",
             "  // replace only an invalid cross-embedder read-only reference.",
             "  auto write_fallback = [&]() -> int {",
             "    if (v8_flags.trace_deserialization) {",
-            '      PrintF(\"%*sReadOnlyHeapRef [%u, %u] : <fallback>\\n\", depth_, \"\",',
+            '      PrintF(\"%*sReadOnlyHeapRef [%u, %u] : <fallback>\\n\", depth_, "",',
             "             chunk_index, chunk_offset);",
             "    }",
             "    Tagged<HeapObject> fallback = ReadOnlyRoots(isolate()).undefined_value();",
@@ -757,6 +1065,26 @@ def patch_deserializer(text: str) -> str:
     return text
 
 
+def patch_object_deserializer(text: str) -> str:
+    """Port the legacy cross-embedder rehash fallback to modern V8."""
+
+    marker = "JSC2JS_REHASH_FALLBACK"
+    if marker in text:
+        return text
+    pattern = re.compile(r"(?m)^(?P<indent>\s*)Rehash\(\);\s*$")
+    matches = list(pattern.finditer(text))
+    if not matches:
+        raise PatchError("modern object deserializer rehash call is missing")
+    def replace(match: re.Match[str]) -> str:
+        indent = match.group("indent")
+        return (
+            f"{indent}// {marker}: source-less user-code caches carry producer hashes.\n"
+            f"{indent}// Rehash();"
+        )
+
+    return pattern.sub(replace, text)
+
+
 def transform_sources(
     sources: dict[str, str]
 ) -> tuple[dict[str, str], ModernFeatures, list[str]]:
@@ -768,9 +1096,20 @@ def transform_sources(
     result[STRING_CC] = patch_string_printer(sources[STRING_CC])
     result[PRINTER_CC] = patch_sfi_printer(sources[PRINTER_CC])
     result[DESERIALIZER_CC] = patch_deserializer(sources[DESERIALIZER_CC])
+    result[OBJECT_DESERIALIZER_CC] = patch_object_deserializer(
+        sources[OBJECT_DESERIALIZER_CC]
+    )
     changed = sorted(path for path in result if result[path] != sources.get(path))
     expected = sorted(
-        (D8_CC, D8_H, DESERIALIZER_CC, PRINTER_CC, SERIALIZER_CC, STRING_CC)
+        (
+            D8_CC,
+            D8_H,
+            DESERIALIZER_CC,
+            OBJECT_DESERIALIZER_CC,
+            PRINTER_CC,
+            SERIALIZER_CC,
+            STRING_CC,
+        )
     )
     if changed != expected:
         raise PatchError(
@@ -807,7 +1146,7 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
             "loader_magic_normalized_to_local_table": True,
             "loader_requires_exact_header_payload_boundary": True,
             "loader_rejects_non_v8_magic_family": True,
-            "upstream_magic_checks_preserved": True,
+            "upstream_magic_preflight_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
             "upstream_cache_checks_detected_before_patch": upstream_protections(
                 sources[SERIALIZER_CC]
@@ -820,12 +1159,22 @@ def apply_to_tree(root: Path, report_path: Path) -> dict:
                 "payload_checksum",
             ],
             "deserializer_modified": True,
-            "localized_deserializer_fallbacks": [
+            "legacy_deserializer_fallbacks_migrated": [
+                "magic_check",
+                "synchronize",
+                "read_object_result",
+                "object_size",
+                "read_only_allocation",
+                "meta_map_allocation",
+                "repeat_root",
+                "read_data_slot_count",
+                "unknown_bytecode",
                 "read_only_heap_reference",
                 "back_reference",
             ],
-            "deserializer_protocol_checks_preserved": True,
-            "object_deserializer_unchanged": True,
+            "deserializer_protocol_checks_preserved_for_startup": True,
+            "deserializer_protocol_checks_relaxed_for_user_code": True,
+            "object_deserializer_rehash_bypassed": True,
             "recursive_short_print_modified": False,
             "missing_source_print_disabled": True,
         },

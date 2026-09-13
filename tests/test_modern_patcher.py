@@ -9,6 +9,7 @@ import build_versions_batch_v3 as builder
 from patches.modern.apply_modern_patch import (
     _loadjsc_definition,
     patch_deserializer,
+    patch_object_deserializer,
     patch_serializer,
     patch_sfi_printer,
 )
@@ -226,6 +227,85 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
     def test_deserializer_falls_back_per_invalid_user_code_reference(self):
         source = """\
 template <typename IsolateT>
+Deserializer<IsolateT>::Deserializer(IsolateT* isolate,
+                                     base::Vector<const uint8_t> payload,
+                                     uint32_t magic_number,
+                                     bool deserializing_user_code,
+                                     bool can_rehash)
+    : deserializing_user_code_(deserializing_user_code) {
+  CHECK_EQ(magic_number_, SerializedData::kMagicNumber);
+}
+
+template <typename IsolateT>
+void Deserializer<IsolateT>::Synchronize(VisitorSynchronization::SyncTag tag) {
+  static const uint8_t expected = kSynchronize;
+  CHECK_EQ(expected, source_.Get());
+}
+
+template <typename IsolateT>
+DirectHandle<HeapObject> Deserializer<IsolateT>::ReadObject() {
+  DirectHandle<HeapObject> ret;
+  CHECK_EQ(ReadSingleBytecodeData(
+               source_.Get(), SlotAccessorForHandle<IsolateT>(&ret, isolate())),
+           1);
+  return ret;
+}
+
+template <typename IsolateT>
+Handle<HeapObject> Deserializer<IsolateT>::ReadObject(SnapshotSpace space) {
+  const int size_in_tagged = source_.GetUint30();
+  const int size_in_bytes = size_in_tagged * kTaggedSize;
+  DirectHandle<Map> map = Cast<Map>(ReadObject());
+  AllocationType allocation = SpaceToAllocation(space);
+  return Handle<HeapObject>();
+}
+
+template <typename IsolateT>
+Handle<HeapObject> Deserializer<IsolateT>::ReadMetaMap(SnapshotSpace space) {
+  const int size_in_tagged = source_.GetUint30();
+  const int size_in_bytes = size_in_tagged * kTaggedSize;
+  const InstanceType instance_type =
+      static_cast<InstanceType>(source_.GetUint30());
+  Tagged<HeapObject> raw_obj =
+      Allocate(SpaceToAllocation(space), size_in_bytes, kTaggedAligned);
+  return Handle<HeapObject>();
+}
+
+template <typename IsolateT>
+template <typename SlotAccessor>
+int Deserializer<IsolateT>::ReadRepeatedRoot(SlotAccessor slot_accessor,
+                                             int repeat_count) {
+  CHECK_LE(2, repeat_count);
+  return repeat_count;
+}
+
+template <typename IsolateT>
+void Deserializer<IsolateT>::ReadData(Handle<HeapObject> object,
+                                      int start_slot_index,
+                                      int end_slot_index) {
+  int current = start_slot_index;
+  CHECK_EQ(current, end_slot_index);
+}
+
+template <typename IsolateT>
+void Deserializer<IsolateT>::ReadData(FullMaybeObjectSlot start,
+                                      FullMaybeObjectSlot end) {
+  FullMaybeObjectSlot current = start;
+  CHECK_EQ(current, end);
+}
+
+template <typename IsolateT>
+template <typename SlotAccessor>
+int Deserializer<IsolateT>::ReadSingleBytecodeData(uint8_t data,
+                                                   SlotAccessor slot_accessor) {
+  switch (data) {
+    case kSynchronize:
+      UNREACHABLE();
+  }
+  UNREACHABLE();
+}
+
+template <typename IsolateT>
 Handle<HeapObject> Deserializer<IsolateT>::GetBackReferencedObject(
     uint32_t index) {
   Handle<HeapObject> obj = back_refs_[index];
@@ -253,8 +333,22 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
 }
 """
         patched = patch_deserializer(source)
-        self.assertIn("JSC2JS_BACKREF_FALLBACK", patched)
-        self.assertIn("JSC2JS_READ_ONLY_REF_FALLBACK", patched)
+        for marker in (
+            "JSC2JS_MAGIC_CHECK_FALLBACK",
+            "JSC2JS_SYNCHRONIZE_FALLBACK",
+            "JSC2JS_READ_OBJECT_FALLBACK",
+            "JSC2JS_OBJECT_SIZE_FALLBACK",
+            "JSC2JS_READONLY_ALLOCATION_FALLBACK",
+            "JSC2JS_META_MAP_ALLOCATION_FALLBACK",
+            "JSC2JS_REPEAT_ROOT_FALLBACK",
+            "JSC2JS_READ_DATA_OBJECT_FALLBACK",
+            "JSC2JS_READ_DATA_ROOT_FALLBACK",
+            "JSC2JS_SYNCHRONIZE_BYTECODE_FALLBACK",
+            "JSC2JS_UNKNOWN_BYTECODE_FALLBACK",
+            "JSC2JS_BACKREF_FALLBACK",
+            "JSC2JS_READ_ONLY_REF_FALLBACK",
+        ):
+            self.assertIn(marker, patched)
         self.assertIn("index >= back_refs_.size()", patched)
         self.assertIn("chunk_index >= pages.size()", patched)
         self.assertIn("chunk_offset >= page->size()", patched)
@@ -266,6 +360,21 @@ int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
         self.assertIn(
             "page = read_only_space->pages()[chunk_index];", patched
         )
+
+    def test_object_deserializer_rehash_fallback_is_migrated(self):
+        source = """\
+MaybeDirectHandle<HeapObject> ObjectDeserializer::Deserialize() {
+  Rehash();
+  CommitPostProcessedObjects();
+}
+
+MaybeDirectHandle<HeapObject> OffThreadObjectDeserializer::Deserialize() {
+  Rehash();
+}
+"""
+        patched = patch_object_deserializer(source)
+        self.assertEqual(patched.count("JSC2JS_REHASH_FALLBACK"), 2)
+        self.assertNotIn("\n  Rehash();", patched)
 
 
 class FailedVersionTrackingTest(unittest.TestCase):

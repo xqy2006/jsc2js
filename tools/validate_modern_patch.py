@@ -62,9 +62,17 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
             else "constants->length().value()"
         )
         checks = {
-            "exactly_six_files_changed": changed
+            "exactly_seven_files_changed": changed
             == sorted(
-                (D8_CC, D8_H, DESERIALIZER_CC, PRINTER_CC, STRING_CC, SERIALIZER_CC)
+                (
+                    D8_CC,
+                    D8_H,
+                    DESERIALIZER_CC,
+                    OBJECT_DESERIALIZER_CC,
+                    PRINTER_CC,
+                    STRING_CC,
+                    SERIALIZER_CC,
+                )
             ),
             "loader_registered": (
                 PATCH_MARKER in d8 and 'global_template->Set(isolate, "loadjsc"' in d8
@@ -143,9 +151,20 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
                 == serializer.count("kReadOnlySnapshotChecksumMismatch") + 1
             ),
-            "localized_deserializer_reference_fallbacks": all(
+            "legacy_deserializer_fallbacks_migrated": all(
                 token in deserializer
                 for token in (
+                    "JSC2JS_MAGIC_CHECK_FALLBACK",
+                    "JSC2JS_SYNCHRONIZE_FALLBACK",
+                    "JSC2JS_READ_OBJECT_FALLBACK",
+                    "JSC2JS_OBJECT_SIZE_FALLBACK",
+                    "JSC2JS_READONLY_ALLOCATION_FALLBACK",
+                    "JSC2JS_META_MAP_ALLOCATION_FALLBACK",
+                    "JSC2JS_REPEAT_ROOT_FALLBACK",
+                    "JSC2JS_READ_DATA_OBJECT_FALLBACK",
+                    "JSC2JS_READ_DATA_ROOT_FALLBACK",
+                    "JSC2JS_SYNCHRONIZE_BYTECODE_FALLBACK",
+                    "JSC2JS_UNKNOWN_BYTECODE_FALLBACK",
                     "JSC2JS_BACKREF_FALLBACK",
                     "JSC2JS_READ_ONLY_REF_FALLBACK",
                     "index >= back_refs_.size()",
@@ -157,7 +176,7 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                     "} else {",
                 )
             )
-            and transformed[OBJECT_DESERIALIZER_CC] == sources[OBJECT_DESERIALIZER_CC],
+            and "JSC2JS_REHASH_FALLBACK" in transformed[OBJECT_DESERIALIZER_CC],
             "only_missing_source_print_disabled": (
                 transformed[PRINTER_CC]
                 == sources[PRINTER_CC].replace(
@@ -233,7 +252,7 @@ def main() -> int:
             ),
         },
         "safety_invariants": {
-            "changed_files_per_version": 6,
+            "changed_files_per_version": 7,
             "cross_embedder_identity_checks_bypassed": [
                 "external_reference_table_size_magic",
                 "source",
@@ -245,12 +264,13 @@ def main() -> int:
             "loader_requires_exact_header_payload_boundary": True,
             "loader_rejects_non_v8_magic_family": True,
             "exact_tag_magic_layout_and_write_api_verified": True,
-            "upstream_magic_checks_preserved": True,
+            "upstream_magic_preflight_preserved": True,
             "read_only_snapshot_checksum_preserved": False,
             "header_length_checksum_and_normalized_magic_checked": True,
-            "deserializer_protocol_checks_preserved": True,
-            "localized_deserializer_reference_fallbacks": True,
-            "object_deserializer_unchanged": True,
+            "deserializer_protocol_checks_preserved_for_startup": True,
+            "deserializer_protocol_checks_relaxed_for_user_code": True,
+            "legacy_deserializer_fallbacks_migrated": True,
+            "object_deserializer_rehash_bypassed": True,
             "heap_short_print_preserved": True,
             "missing_source_print_disabled": True,
             "nested_functions_use_a_flat_deduplicated_worklist": True,

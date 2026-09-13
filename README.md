@@ -77,11 +77,11 @@ View8 需要：
   强类型长度，并识别出四种组合的 API 边界。它只跳过 source、version、flags、
   宿主特定的只读快照身份校验，并在私有内存副本中规范化包含外部引用表大小的
   magic；规范化前会检查 V8 magic 家族以及 header 声明的 payload 长度与文件
-  边界完全一致。上游 magic 检查仍执行，同时保留 payload checksum 和正常的
-  反序列化协议；只有 JSC 用户代码中的只读堆引用、back-reference 两个入口
-  在索引或对象不属于当前堆时局部回退为 `undefined`，不会中止整个文件。嵌套
-  函数通过去重的平面 GC 强根工作队列打印，不再递归展开
-  `HeapObjectShortPrint`；具体构建结果由 release workflow 验证。
+  边界完全一致。payload checksum 和启动快照路径的上游校验仍保留；JSC 用户
+  代码路径迁移了 current patch 的对象、引用、同步标记、重复根和未知 opcode
+  fallback，遇到异常只在当前字段回退为 `undefined`，并将只读分配改到 old
+  space。嵌套函数通过去重的平面 GC 强根工作队列打印，不再递归展开
+  `HeapObjectShortPrint`；完整迁移在实验分支中由 release workflow 验证。
 - 不同 V8 版本的 Bytecode 指令集、寄存槽布局、Handlers 表结构可能不同，请务必使用 **匹配版本** 的 d8。
 - 由于没有node环境，由node编译出来的jsc可能无法正常反编译，electron则正常
 - 如果输出异常，请：
@@ -192,12 +192,12 @@ View8 requires:
   read-only-snapshot identity checks, and normalizes the external-reference-table
   size encoded in the private in-memory magic copy. Before normalization, it
   requires the V8 magic family and an exact match between the declared payload
-  length and file boundary. The upstream magic check still executes; payload
-  checksum and the normal deserializer protocol remain in place. Only the two
-  JSC reference sites that can point into another embedder's heap are guarded;
-  an invalid entry is consumed and replaced locally with `undefined` instead
-  of aborting the complete file. Nested functions are printed with a GC-rooted,
-  deduplicated flat worklist instead of recursively expanding
+  length and file boundary. Payload checksum and startup-snapshot checks remain
+  in place. The experimental full-fallback mode also ports the current patch's
+  user-code guards for malformed objects, references, stream markers, repeat
+  roots, read-only allocations, and rehashing; each bad field falls back to
+  `undefined` without aborting the complete file. Nested functions are printed
+  with a GC-rooted, deduplicated flat worklist instead of recursively expanding
   `HeapObjectShortPrint`. Build validation is run by the release workflows.
 - V8 bytecode opcodes, register/slot layouts, and handler table structures vary across versions. Always use a **matching** d8 build.
 - Because there is no Node.js environment, the JSC compiled by Node.js may not be decompiled normally, while Electron works fine.

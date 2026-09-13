@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the crash-safe jsc2js patch to modern V8 source trees.
+"""Apply the experimental compatibility jsc2js patch to modern V8 trees.
 
 V8 14.7 replaced the d8 file reader and completed the DirectHandle migration;
 V8 14.9 then moved the generated object predicates.  A unified diff tied to
@@ -318,7 +318,7 @@ def _loadjsc_definition(
         )
     return f"""
 
-// {PATCH_MARKER}: crash-safe loader for source-less V8 code caches.
+// {PATCH_MARKER}: experimental loader for source-less V8 code caches.
 void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
   i::Isolate* isolate =
       reinterpret_cast<i::Isolate*>(args.GetIsolate());
@@ -386,7 +386,9 @@ void Shell::LoadJSC(const FunctionCallbackInfo<Value>& args) {{
     // JSC2JS_EMBEDDER_MAGIC_NORMALIZATION: V8 folds the compile-time
     // ExternalReferenceTable size into this identity value. Electron and d8
     // can use different table sizes at the same V8 tag. Normalize only the
-    // private file copy; the upstream magic checks still execute twice.
+    // private file copy.  The global SanityCheck fallback below bypasses V8's
+    // duplicate internal magic/header checks, so the loader preflight above is
+    // the remaining structural gate before deserialization.
     base::WriteLittleEndianValue(cache_start,
                                  i::SerializedData::kMagicNumber);
 

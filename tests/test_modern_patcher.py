@@ -8,6 +8,7 @@ from unittest import mock
 import build_versions_batch_v3 as builder
 from patches.modern.apply_modern_patch import (
     _loadjsc_definition,
+    patch_deserializer,
     patch_serializer,
     patch_sfi_printer,
 )
@@ -221,6 +222,50 @@ void HeapObject::HeapObjectShortPrint(std::ostream& os) {
             "static_cast<uint32_t>(constants->length())", loader
         )
         self.assertNotIn("constants->length().value()", loader)
+
+    def test_deserializer_falls_back_per_invalid_user_code_reference(self):
+        source = """\
+template <typename IsolateT>
+Handle<HeapObject> Deserializer<IsolateT>::GetBackReferencedObject(
+    uint32_t index) {
+  Handle<HeapObject> obj = back_refs_[index];
+  return obj;
+}
+
+template <typename IsolateT>
+template <typename SlotAccessor>
+int Deserializer<IsolateT>::ReadReadOnlyHeapRef(uint8_t data,
+                                                SlotAccessor slot_accessor) {
+  uint32_t chunk_index = source_.GetUint30();
+  uint32_t chunk_offset = source_.GetUint30();
+
+  ReadOnlySpace* read_only_space = isolate()->heap()->read_only_space();
+  ReadOnlyPage* page = read_only_space->pages()[chunk_index];
+  Address address = page->OffsetToAddress(chunk_offset);
+  Tagged<HeapObject> heap_object = HeapObject::FromAddress(address);
+
+  if (v8_flags.trace_deserialization) {
+    ShortPrint(heap_object);
+  }
+  return WriteHeapPointer(slot_accessor, heap_object,
+                          GetAndResetNextReferenceDescriptor(),
+                          SKIP_WRITE_BARRIER);
+}
+"""
+        patched = patch_deserializer(source)
+        self.assertIn("JSC2JS_BACKREF_FALLBACK", patched)
+        self.assertIn("JSC2JS_READ_ONLY_REF_FALLBACK", patched)
+        self.assertIn("index >= back_refs_.size()", patched)
+        self.assertIn("chunk_index >= pages.size()", patched)
+        self.assertIn("chunk_offset >= page->size()", patched)
+        self.assertIn("ReadOnlyRoots(isolate()).undefined_value()", patched)
+        self.assertIn("object_map->map() != ReadOnlyRoots(isolate()).meta_map()", patched)
+        self.assertIn("return WriteHeapPointer(slot_accessor, heap_object", patched)
+        self.assertIn("if (deserializing_user_code())", patched)
+        self.assertIn("} else {", patched)
+        self.assertIn(
+            "page = read_only_space->pages()[chunk_index];", patched
+        )
 
 
 class FailedVersionTrackingTest(unittest.TestCase):

@@ -54,6 +54,7 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 sources[path] = content
         transformed, features, changed = transform_sources(sources)
         d8 = transformed[D8_CC]
+        deserializer = transformed[DESERIALIZER_CC]
         serializer = transformed[SERIALIZER_CC]
         expected_constant_count = (
             "static_cast<uint32_t>(constants->length())"
@@ -61,8 +62,10 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
             else "constants->length().value()"
         )
         checks = {
-            "exactly_five_files_changed": changed
-            == sorted((D8_CC, D8_H, PRINTER_CC, STRING_CC, SERIALIZER_CC)),
+            "exactly_six_files_changed": changed
+            == sorted(
+                (D8_CC, D8_H, DESERIALIZER_CC, PRINTER_CC, STRING_CC, SERIALIZER_CC)
+            ),
             "loader_registered": (
                 PATCH_MARKER in d8 and 'global_template->Set(isolate, "loadjsc"' in d8
             ),
@@ -140,10 +143,21 @@ def validate_version(cache: RawSourceCache, version: str) -> dict:
                 )
                 == serializer.count("kReadOnlySnapshotChecksumMismatch") + 1
             ),
-            "deserializers_byte_identical": all(
-                transformed[path] == sources[path]
-                for path in (DESERIALIZER_CC, OBJECT_DESERIALIZER_CC)
-            ),
+            "localized_deserializer_reference_fallbacks": all(
+                token in deserializer
+                for token in (
+                    "JSC2JS_BACKREF_FALLBACK",
+                    "JSC2JS_READ_ONLY_REF_FALLBACK",
+                    "index >= back_refs_.size()",
+                    "chunk_index >= pages.size()",
+                    "chunk_offset >= page->size()",
+                    "ReadOnlyRoots(isolate()).undefined_value()",
+                    "page = read_only_space->pages()[chunk_index];",
+                    "if (deserializing_user_code()) {",
+                    "} else {",
+                )
+            )
+            and transformed[OBJECT_DESERIALIZER_CC] == sources[OBJECT_DESERIALIZER_CC],
             "only_missing_source_print_disabled": (
                 transformed[PRINTER_CC]
                 == sources[PRINTER_CC].replace(
@@ -219,7 +233,7 @@ def main() -> int:
             ),
         },
         "safety_invariants": {
-            "changed_files_per_version": 5,
+            "changed_files_per_version": 6,
             "cross_embedder_identity_checks_bypassed": [
                 "external_reference_table_size_magic",
                 "source",
@@ -235,6 +249,8 @@ def main() -> int:
             "read_only_snapshot_checksum_preserved": False,
             "header_length_checksum_and_normalized_magic_checked": True,
             "deserializer_protocol_checks_preserved": True,
+            "localized_deserializer_reference_fallbacks": True,
+            "object_deserializer_unchanged": True,
             "heap_short_print_preserved": True,
             "missing_source_print_disabled": True,
             "nested_functions_use_a_flat_deduplicated_worklist": True,

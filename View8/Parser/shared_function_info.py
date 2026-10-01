@@ -1,3 +1,5 @@
+import re
+
 from Translate.translate import translate_bytecode
 from Simplify.simplify import simplify_translated_bytecode
 
@@ -41,12 +43,20 @@ class SharedFunctionInfo:
         simplify_translated_bytecode(self, self.code)
 
     def replace_const_pool(self):
-        replacements = {f"ConstPool[{idx}]": var for idx, var in enumerate(self.const_pool)}
+        # Single regex pass instead of one str.replace per constant:
+        # the naive loop is O(code_lines * pool_size), which hangs for
+        # hours on big bundle functions (76k lines * 17k constants).
+        # IDs are self-delimiting ("ConstPool[12]" can't match "ConstPool[1]")
+        # so one pass is exactly equivalent.
+        if not self.const_pool:
+            return
+        table = {f"ConstPool[{idx}]": var for idx, var in enumerate(self.const_pool)}
+        pattern = re.compile("|".join(re.escape(k) for k in table.keys()))
         for line in self.code:
-            if not line.visible:
+            if not line.visible or not line.decompiled:
                 continue
-            for const_id, var in replacements.items():
-                line.decompiled = line.decompiled.replace(const_id, var)
+            if "ConstPool[" in line.decompiled:
+                line.decompiled = pattern.sub(lambda m: table[m.group(0)], line.decompiled)
 
     def decompile(self):
         self.translate_bytecode()

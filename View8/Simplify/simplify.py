@@ -183,6 +183,12 @@ def _is_simple_slot_value(val: str) -> bool:
     return bool(_SIMPLE_VALUE_RE.match(val))
 
 
+# Cap textual inlining: values longer than this stay as register references
+# instead of being copied into every later line. Without a cap, long
+# register chains compound textually (700 lines -> gigabytes of output).
+MAX_INLINE_LEN = 1000
+
+
 class SimplifyCode:
     def __init__(self, code, sfi, ctx_id):
         self.code = code
@@ -390,14 +396,14 @@ class SimplifyCode:
                 continue
             if is_reg_defined_in_reg_value(lhs, v.value):
                 reg_scope[k].was_overwritten = True
-        if reg_is_constant(lhs, rhs2):
+        if reg_is_constant(lhs, rhs2) and len(rhs2) <= MAX_INLINE_LEN:
             reg_scope[lhs] = Register(rhs2, self.line_index)
 
         # 如果 LHS 是 Scope[num][slot]，并且 RHS 是“简单可内联”的表达式，记录到全局槽位环境
         m_lhs_slot = re.match(r"^\s*Scope\[(\d+)\]\[(\d+)\]\s*$", lhs)
         if m_lhs_slot:
             num = int(m_lhs_slot.group(1)); slot = int(m_lhs_slot.group(2))
-            if _is_simple_slot_value(rhs2):
+            if _is_simple_slot_value(rhs2) and len(rhs2) <= MAX_INLINE_LEN:
                 SCOPE_SLOT_ENV[(num, slot)] = rhs2
                 if self._is_target:
                     _dbg_write(f"[ENVSET ] Scope[{num}][{slot}] = {rhs2}")
